@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+
+<!-- General project description -->
+<project name="JSPF.core">
+    <property name="core.modulename" value="core"/>
+    
+    
+    <target name="compile.core" description="Compile the core plugin">
+        <!-- Create output folder -->
+        <mkdir dir="${build.root}/${core.modulename}/"/>
+        
+        
+        <!-- Compile all classes -->
+        <javac srcdir="${modules.root}/${core.modulename}/src" destdir="${build.root}/${core.modulename}/" source="1.6" target="1.6" debug="true">
+            <classpath>
+                <fileset dir="${modules.root}/${core.modulename}/dependencies/">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+    
+    
+    <target name="pack.core" description="Pack the core plugin with its dependencies">
+        <!-- Create output folder -->
+        <mkdir dir="${distribution.root}/"/>
+        
+        <!-- Unjar related -->
+        <unjar dest="${build.root}/${core.modulename}/" src="${modules.root}/${core.modulename}/dependencies/classworlds-1.0.mod.jar"/>
+        <unjar dest="${build.root}/${core.modulename}/" src="${modules.root}/${core.modulename}/dependencies/jcores.jar"/>
+        
+        <!-- Rejar everything -->
+        <jar destfile="${distribution.root}/${prefix}.${core.modulename}-${version}.jar" basedir="${build.root}/${core.modulename}/"/>
+    </target>
+    
+    
+    <target name="test.core" description="Pack the core plugin with its dependencies">
+        <!-- Create output folder -->
+        <mkdir dir="${distribution.root}/"/>
+        
+        <!-- Build jUnit Tests -->
+        <mkdir dir="${build.root}/${core.modulename}.junit/"/>
+        
+        <javac srcdir="${modules.root}/${core.modulename}/src" destdir="${build.root}/${core.modulename}/" source="1.6" target="1.6">
+            <classpath>
+                <fileset dir="${modules.root}/${core.modulename}/dependencies/">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+    
+    <target name="documentation.core">
+        <javadoc destdir="documentation/api/${core.modulename}/" author="true" version="true" use="true" windowtitle="JSPF API">
+            
+            <packageset dir="${modules.root}/${core.modulename}/src/" defaultexcludes="yes">
+                <!--include name="net/xeoh/plugins/*"/-->
+                <include name="net/xeoh/plugins/base"/>
+                <include name="net/xeoh/plugins/base/options/**"/>
+                <include name="net/xeoh/plugins/base/facades"/>
+                <include name="net/xeoh/plugins/base/impl/PluginManagerFactory.java"/>
+                <include name="net/xeoh/plugins/base/annotations/**"/>
+                <include name="net/xeoh/plugins/bus"/>
+                <include name="net/xeoh/plugins/bus/messages"/>
+                <include name="net/xeoh/plugins/defaultsprovider"/>
+                <include name="net/xeoh/plugins/informationbroker"/>
+            </packageset>
+            
+            <doctitle>
+                MyTitle
+            </doctitle>
+            <link href="http://developer.java.sun.com/developer/products/xml/docs/api/"/>
+        </javadoc>
+    </target>
+</project>

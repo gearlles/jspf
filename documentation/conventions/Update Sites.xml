@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bookmarks>
+   <site url="http://update15.aptana.org/studio/24896/" selected="true" name="Aptana Update Site"/>
+   <site url="http://download.eclipse.org/technology/epp/packages/galileo" selected="true" name="EPP Packages Repository"/>
+   <site url="http://findbugs.cs.umd.edu/eclipse/" selected="true" name="Findbugs"/>
+   <site url="http://www.formdev.com/download/eclipse/" selected="true" name="FormDev"/>
+   <site url="http://download.eclipse.org/releases/galileo" selected="true" name="Galileo"/>
+   <site url="http://download.eclipse.org/tools/mylyn/update/e3.4/" selected="true" name="Mylyn for Eclipse 3.4 and 3.5"/>
+   <site url="http://pydev.sourceforge.net/updates/" selected="true" name="Python IDE"/>
+   <site url="http://www.scala-lang.org/scala-eclipse-plugin" selected="true" name="Scala Plugin"/>
+   <site url="http://www.stateofflow.com/UpdateSite" selected="true" name="State of Flow"/>
+   <site url="http://download.eclipse.org/technology/subversive/0.7/update-site/" selected="true" name="Subversive"/>
+   <site url="http://community.polarion.com/projects/subversive/download/eclipse/2.0/galileo-site/" selected="true" name="Subversive Connectors"/>
+   <site url="http://download.eclipse.org/eclipse/updates/3.5" selected="true" name="The Eclipse Project Updates"/>
+   <site url="http://www.yourkit.com/download/yourkit80_eclipse34/" selected="true" name="YourKit"/>
+</bookmarks>

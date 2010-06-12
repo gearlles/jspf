@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<!-- General project description -->
+<project name="JSPF.remote.xmlrpcdelight">
+	<property name="remote.xmlrpcdelight.modulename" value="remote.xmlrpcdelight" />
+
+	<target name="compile.remote.xmlrpcdelight" description="Compile the remote.xmlrpcdelight plugin">
+		<!-- Create output folder -->
+		<mkdir dir="${build.root}/${remote.xmlrpcdelight.modulename}/" />
+
+		<!-- Compile all classes -->
+		<javac srcdir="${modules.root}/plugins/${remote.xmlrpcdelight.modulename}/src" destdir="${build.root}/${remote.xmlrpcdelight.modulename}/" source="1.6" target="1.6" debug="true">
+			<classpath>
+				<fileset dir="${modules.root}/plugins/${remote.xmlrpcdelight.modulename}/dependencies/">
+                    <include name="*.jar" />
+				</fileset>
+				<fileset dir="${distribution.root}/">
+					<filename name="*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="pack.remote.xmlrpcdelight" description="Pack the remote.xmlrpcdelight plugin with its dependencies">
+		<!-- Create output folder -->
+		<mkdir dir="${distribution.root}/" />
+
+		<!-- Unjar local interface definition (we include that too) -->
+		<unjar dest="${build.root}/${remote.xmlrpcdelight.modulename}/" src="${distribution.root}/${prefix}.${remote.modulename}-${version}.jar" />
+
+		<!-- Unjar related -->
+        <unjar dest="${build.root}/${remote.xmlrpcdelight.modulename}/">
+            <fileset dir=".">
+                <include name="${modules.root}/plugins/${remote.xmlrpcdelight.modulename}/dependencies/*.jar" />
+            </fileset>
+        </unjar>
+
+
+		<delete file="${build.root}/${remote.xmlrpcdelight.modulename}/META-INF/SUN_MICR.RSA" />
+		<delete file="${build.root}/${remote.xmlrpcdelight.modulename}/META-INF/SUN_MICR.SF" />
+
+		<!-- Rejar everything -->
+		<jar destfile="${distribution.root}/${prefix}.${remote.xmlrpcdelight.modulename}-${version}.jar" basedir="${build.root}/${remote.xmlrpcdelight.modulename}/" />
+	</target>
+</project>

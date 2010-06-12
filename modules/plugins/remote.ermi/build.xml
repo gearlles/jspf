@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<!-- General project description -->
+<project name="JSPF.remote.ermi">
+	<property name="remote.ermi.modulename" value="remote.ermi" />
+
+	<target name="compile.remote.ermi" description="Compile the remote.ermi plugin">
+		<!-- Create output folder -->
+		<mkdir dir="${build.root}/${remote.ermi.modulename}/" />
+
+
+		<!-- Compile all classes -->
+		<javac srcdir="${modules.root}/plugins/${remote.ermi.modulename}/src" destdir="${build.root}/${remote.ermi.modulename}/" source="1.6" target="1.6" debug="true">
+			<classpath>
+				<fileset dir="${modules.root}/plugins/${remote.ermi.modulename}/dependencies/">
+					<include name="commons-logging-1.1.jar" />					
+					<include name="essence-rmi-1.03.jar" />
+				</fileset>
+				<fileset dir="${distribution.root}/">
+					<filename name="*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+
+	<target name="pack.remote.ermi" description="Pack the remote.xmlrpc plugin with its dependencies">
+		<!-- Create output folder -->
+		<mkdir dir="${distribution.root}/" />
+
+		<!--copyfile dest="${build.root}/${remote.ermi.modulename}/net/xeoh/plugins/remote/impl/ermi/config.properties" src="${modules.root}/plugins/${remote.ermi.modulename}/src/net/xeoh/plugins/remote/impl/ermi/config.properties"/-->
+		
+		<!-- Unjar local interface definition (we include that too) -->
+		<unjar dest="${build.root}/${remote.ermi.modulename}/" src="${distribution.root}/${prefix}.${remote.modulename}-${version}.jar" />
+
+		<!-- Unjar related -->
+		<unjar dest="${build.root}/${remote.ermi.modulename}/" src="${modules.root}/plugins/${remote.ermi.modulename}/dependencies/essence-rmi-1.03-mod.jar" />
+
+		<delete file="${build.root}/${remote.ermi.modulename}/META-INF/SUN_MICR.RSA" />
+		<delete file="${build.root}/${remote.ermi.modulename}/META-INF/SUN_MICR.SF" />
+
+		<!-- Rejar everything -->
+		<jar destfile="${distribution.root}/${prefix}.${remote.ermi.modulename}-${version}.jar" basedir="${build.root}/${remote.ermi.modulename}/" />
+	</target>
+</project>

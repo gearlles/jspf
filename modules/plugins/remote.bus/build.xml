@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<!-- General project description -->
+<project name="JSPF.remote.bus">
+	<property name="remote.bus.modulename" value="remote.bus" />
+
+	<target name="compile.remote.bus" description="Compile the remote.bus plugin">
+		<!-- Create output folder -->
+		<mkdir dir="${build.root}/${remote.bus.modulename}/" />
+
+		<!-- Compile all classes -->
+		<javac srcdir="${modules.root}/plugins/${remote.bus.modulename}/src" destdir="${build.root}/${remote.bus.modulename}/" source="1.6" target="1.6">
+			<classpath>
+				<fileset dir="${modules.root}/plugins/${remote.bus.modulename}/dependencies/">
+                    <include name="*.jar" />
+				</fileset>
+				<fileset dir="${distribution.root}/">
+					<filename name="*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="pack.remote.bus" description="Pack the remote.bus plugin with its dependencies">
+		<!-- Create output folder -->
+		<mkdir dir="${distribution.root}/" />
+
+		<!-- Unjar local interface definition (we include that too) -->
+		<unjar dest="${build.root}/${remote.bus.modulename}/" src="${distribution.root}/${prefix}.${remote.modulename}-${version}.jar" />
+
+		<!-- Unjar related -->
+        <unjar dest="${build.root}/${remote.bus.modulename}/">
+            <fileset dir=".">
+                <include name="${modules.root}/plugins/${remote.bus.modulename}/dependencies/*.jar" />
+            </fileset>
+        </unjar>
+
+
+		<delete file="${build.root}/${remote.bus.modulename}/META-INF/SUN_MICR.RSA" />
+		<delete file="${build.root}/${remote.bus.modulename}/META-INF/SUN_MICR.SF" />
+
+		<!-- Rejar everything -->
+		<jar destfile="${distribution.root}/${prefix}.${remote.bus.modulename}-${version}.jar" basedir="${build.root}/${remote.bus.modulename}/" />
+	</target>
+</project>

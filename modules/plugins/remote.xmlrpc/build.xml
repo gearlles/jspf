@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<!-- General project description -->
+<project name="JSPF.remote.xmlrpc">
+	<property name="remote.xmlrpc.modulename" value="remote.xmlrpc" />
+
+	<target name="compile.remote.xmlrpc" description="Compile the remote.xmlrpc plugin">
+		<!-- Create output folder -->
+		<mkdir dir="${build.root}/${remote.xmlrpc.modulename}/" />
+
+
+		<!-- Compile all classes -->
+		<javac srcdir="${modules.root}/plugins/${remote.xmlrpc.modulename}/src" destdir="${build.root}/${remote.xmlrpc.modulename}/" source="1.6" target="1.6">
+			<classpath>
+				<fileset dir="${modules.root}/plugins/${remote.xmlrpc.modulename}/dependencies/">
+					<include name="commons-logging-1.1.jar" />
+					<include name="nanoxml-2.2.3.jar" />
+					<include name="rox.jar" />
+					<include name="rox-log4j.jar" />
+					<include name="xmlunit1.0.jar" />
+				</fileset>
+				<fileset dir="${distribution.root}/">
+					<filename name="*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+
+	<target name="pack.remote.xmlrpc" description="Pack the remote.xmlrpc plugin with its dependencies">
+		<!-- Create output folder -->
+		<mkdir dir="${distribution.root}/" />
+
+		<!-- Unjar local interface definition (we include that too) -->
+		<unjar dest="${build.root}/${remote.xmlrpc.modulename}/" src="${distribution.root}/${prefix}.${remote.modulename}-${version}.jar" />
+
+		<!-- Unjar related -->
+		<unjar dest="${build.root}/${remote.xmlrpc.modulename}/" src="${modules.root}/plugins/${remote.xmlrpc.modulename}/dependencies/commons-logging-1.1.jar" />
+		<unjar dest="${build.root}/${remote.xmlrpc.modulename}/" src="${modules.root}/plugins/${remote.xmlrpc.modulename}/dependencies/nanoxml-2.2.3.jar" />
+		<unjar dest="${build.root}/${remote.xmlrpc.modulename}/" src="${modules.root}/plugins/${remote.xmlrpc.modulename}/dependencies/rox.jar" />
+		<unjar dest="${build.root}/${remote.xmlrpc.modulename}/" src="${modules.root}/plugins/${remote.xmlrpc.modulename}/dependencies/rox-log4j.jar" />
+		<unjar dest="${build.root}/${remote.xmlrpc.modulename}/" src="${modules.root}/plugins/${remote.xmlrpc.modulename}/dependencies/xmlunit1.0.jar" />
+
+		<delete file="${build.root}/${remote.xmlrpc.modulename}/META-INF/SUN_MICR.RSA" />
+		<delete file="${build.root}/${remote.xmlrpc.modulename}/META-INF/SUN_MICR.SF" />
+
+		<!-- Rejar everything -->
+		<jar destfile="${distribution.root}/${prefix}.${remote.xmlrpc.modulename}-${version}.jar" basedir="${build.root}/${remote.xmlrpc.modulename}/" />
+	</target>
+</project>

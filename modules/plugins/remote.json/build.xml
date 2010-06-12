@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+
+<!-- General project description -->
+<project name="JSPF.remote.json">
+	<property name="remote.json.modulename" value="remote.json" />
+
+	<target name="compile.remote.json" description="Compile the remote.json plugin">
+		<!-- Create output folder -->
+		<mkdir dir="${build.root}/${remote.json.modulename}/" />
+
+
+		<!-- Compile all classes -->
+		<javac srcdir="${modules.root}/plugins/${remote.json.modulename}/src" destdir="${build.root}/${remote.json.modulename}/" source="1.6" target="1.6">
+			<classpath>
+				<fileset dir="${modules.root}/plugins/${remote.json.modulename}/dependencies/">
+                    <include name="*.jar" />
+				</fileset>
+				<fileset dir="${distribution.root}/">
+					<filename name="*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="pack.remote.json" description="Pack the remote.json plugin with its dependencies">
+		<!-- Create output folder -->
+		<mkdir dir="${distribution.root}/" />
+
+		<!-- Unjar local interface definition (we include that too) -->
+		<unjar dest="${build.root}/${remote.json.modulename}/" src="${distribution.root}/${prefix}.${remote.modulename}-${version}.jar" />
+
+		<!-- Unjar related -->
+        <unjar dest="${build.root}/${remote.json.modulename}/">
+            <fileset dir=".">
+                <include name="${modules.root}/plugins/${remote.json.modulename}/dependencies/*.jar" />
+            </fileset>
+        </unjar>
+
+
+		<delete file="${build.root}/${remote.json.modulename}/META-INF/SUN_MICR.RSA" />
+		<delete file="${build.root}/${remote.json.modulename}/META-INF/SUN_MICR.SF" />
+
+		<!-- Rejar everything -->
+		<jar destfile="${distribution.root}/${prefix}.${remote.json.modulename}-${version}.jar" basedir="${build.root}/${remote.json.modulename}/" />
+	</target>
+</project>

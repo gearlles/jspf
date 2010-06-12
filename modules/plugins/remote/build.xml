@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<!-- General project description -->
+<project name="JSPF.remote">
+	<property name="remote.modulename" value="remote" />
+
+	<target name="compile.remote" description="Compile the remote plugin">
+		<!-- Create output folder -->
+		<mkdir dir="${build.root}/${remote.modulename}/" />
+
+
+		<!-- Compile all classes -->
+		<javac srcdir="${modules.root}/plugins/${remote.modulename}/src" destdir="${build.root}/${remote.modulename}/" source="1.6" target="1.6">
+			<classpath>
+				<fileset dir="${distribution.root}/">
+					<filename name="*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+
+	<target name="pack.remote" description="Pack the remote plugin with its dependencies">
+		<!-- Create output folder -->
+		<mkdir dir="${distribution.root}/" />
+
+		<!-- Rejar everything -->
+		<jar destfile="${distribution.root}/${prefix}.${remote.modulename}-${version}.jar" basedir="${build.root}/${remote.modulename}/" />
+	</target>
+
+
+	<target name="documentation.remote">
+		<javadoc destdir="documentation/api/${remote.modulename}/" author="true" version="true" use="true" windowtitle="remote Module">
+
+			<packageset dir="${modules.root}/plugins/${remote.modulename}/src/" defaultexcludes="yes">
+				<include name="net/xeoh/plugins/*" />
+			</packageset>
+
+			<doctitle>MyTitle</doctitle>
+			<link href="http://developer.java.sun.com/developer/products/xml/docs/api/" />
+		</javadoc>
+	</target>
+</project>

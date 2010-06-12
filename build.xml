@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+
+<!-- General project description -->
+<project name="JSPF" default="all">
+    
+    <!-- Define different global variables -->
+    <property name="prefix" value="jspf"/>
+    <property name="version" value="0.9.0"/>
+    
+    
+    <!-- Define different roots -->
+    <property name="modules.root" value="modules/"/>
+    <property name="build.root" value="ant.build/"/>
+    <property name="distribution.root" value="dist/"/>
+    
+    
+    <!-- Clear everything up -->
+    <target name="clean" description="Remove all previous build files">
+        <delete dir="${build.root}"/>
+        <delete dir="${distribution.root}"/>
+        <delete dir="documentation/api"/>
+        
+        <mkdir dir="documentation/api"/>
+    </target>
+    
+    <!-- Import other stuff -->
+    <import file="modules/core/build.xml"/>
+    <import file="modules/plugins/remote/build.xml"/>
+    <import file="modules/plugins/remote.xmlrpc/build.xml"/>
+    <import file="modules/plugins/remote.xmlrpcdelight/build.xml"/>
+    <import file="modules/plugins/remote.ermi/build.xml"/>
+    <import file="modules/plugins/remote.lipermi/build.xml"/>
+    <import file="modules/plugins/remote.javascript/build.xml"/>
+    <import file="modules/plugins/remote.json/build.xml"/>
+    <import file="modules/plugins/remote.discovery/build.xml"/>
+    <import file="modules/plugins/remote.bus/build.xml"/>
+    
+    
+    
+    <!-- Build plugins -->
+    <target name="core" depends="clean, compile.core, pack.core"/>
+    <target name="remote" depends="clean, compile.remote, pack.remote"/>
+    <target name="remote.discovery" depends="clean, compile.remote.discovery, pack.remote.discovery"/>
+    <target name="remote.xmlrpc" depends="remote.discovery, clean, compile.remote.xmlrpc, pack.remote.xmlrpc"/>
+    <target name="remote.xmlrpcdelight" depends="remote.discovery, clean, compile.remote.xmlrpcdelight, pack.remote.xmlrpcdelight"/>
+    <target name="remote.ermi" depends="remote.discovery, clean, compile.remote.ermi, pack.remote.ermi"/>
+    <target name="remote.lipermi" depends="remote.discovery, clean, compile.remote.lipermi, pack.remote.lipermi"/>
+    <target name="remote.javascript" depends="remote.discovery, clean, compile.remote.javascript, pack.remote.javascript"/>
+    <target name="remote.json" depends="remote.discovery, clean, compile.remote.json, pack.remote.json"/>
+    <target name="remote.bus" depends="remote.discovery, clean, compile.remote.bus, pack.remote.bus"/>
+    
+    
+    <!-- Run tests before we're done -->
+    <target name="test" description="Run all testcases" depends="core, remote, remote.xmlrpc, remote.ermi, remote.lipermi, remote.javascript, remote.json, remote.discovery">
+        <mkdir dir="${build.root}/tests/"/>
+        
+        <!-- Compile all testcases -->
+        <javac srcdir="tests/src/" destdir="${build.root}/tests/" source="1.6" target="1.6">
+            <classpath>
+                <fileset dir="${distribution.root}/">
+                    <filename name="*.jar"/>
+                </fileset>
+                <fileset dir="tests/dependencies/">
+                    <filename name="*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+        
+        <!-- Jar testplugins -->
+        <jar destfile="${distribution.root}/${prefix}.testplugins-${version}.jar" basedir="${build.root}/tests/"/>
+        
+        <!-- Run all testcases -->
+        <junit printsummary="true" haltonfailure="true" fork="true">
+            <formatter type="plain" usefile="false"/>
+            <batchtest>
+                <fileset dir="${build.root}/tests/" includes="**/*Test.class"/>
+            </batchtest>
+            <classpath>
+                <fileset dir="${distribution.root}/">
+                    <include name="*.jar"/>
+                </fileset>
+                <fileset dir="tests/dependencies/">
+                    <filename name="*.jar"/>
+                </fileset>
+            </classpath>
+            <classpath location="${build.root}/tests/"/>
+        </junit>
+    </target>
+    
+    <!-- Pack plugins -->
+    <target name="documentation" depends="documentation.core, documentation.remote"/>
+    
+    <!-- Prepare distributables -->
+    <target name="preparepublish" description="Eventually generates distributable files" depends="core, remote, remote.xmlrpc, remote.xmlrpcdelight, remote.ermi, remote.lipermi, remote.javascript, remote.json, remote.discovery">
+        <delete dir="${build.root}"/>
+        
+        <!-- Zip binary -->
+        <zip destfile="${distribution.root}/${prefix}-${version}.bin.zip">
+            <fileset dir=".">
+                <include name="documentation/**/*"/>
+                <include name="${distribution.root}/*core*"/>
+                <include name="${distribution.root}/*remote*"/>
+                <include name="${distribution.root}/*db*"/>
+            </fileset>
+        </zip>
+        
+        <!-- Zip sources -->
+        <zip destfile="${distribution.root}/${prefix}-${version}.src.zip">
+            <fileset dir=".">
+                <include name="**/*"/>
+            </fileset>
+        </zip>
+    </target>
+    
+    <!-- Pack plugins -->
+    <target name="all" depends="core, remote, remote.xmlrpc, remote.xmlrpcdelight, remote.ermi, remote.lipermi, remote.javascript, remote.json, remote.discovery, remote.bus, preparepublish"/>
+    
+</project>

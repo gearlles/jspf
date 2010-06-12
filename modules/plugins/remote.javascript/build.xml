@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+
+<!-- General project description -->
+<project name="JSPF.remote.javascript">
+	<property name="remote.javascript.modulename" value="remote.javascript" />
+
+	<target name="compile.remote.javascript" description="Compile the remote.javascript plugin">
+		<!-- Create output folder -->
+		<mkdir dir="${build.root}/${remote.javascript.modulename}/" />
+
+
+		<!-- Compile all classes -->
+		<javac srcdir="${modules.root}/plugins/${remote.javascript.modulename}/src" destdir="${build.root}/${remote.javascript.modulename}/" source="1.6" target="1.6">
+			<classpath>
+				<fileset dir="${modules.root}/plugins/${remote.javascript.modulename}/dependencies/">
+                    <include name="*.jar" />
+				</fileset>
+				<fileset dir="${distribution.root}/">
+					<filename name="*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="pack.remote.javascript" description="Pack the remote.javascript plugin with its dependencies">
+		<!-- Create output folder -->
+		<mkdir dir="${distribution.root}/" />
+
+		<!-- Unjar local interface definition (we include that too) -->
+		<unjar dest="${build.root}/${remote.javascript.modulename}/" src="${distribution.root}/${prefix}.${remote.modulename}-${version}.jar" />
+
+		<!-- Unjar related -->
+        <unjar dest="${build.root}/${remote.javascript.modulename}/">
+            <fileset dir=".">
+                <include name="${modules.root}/plugins/${remote.javascript.modulename}/dependencies/*.jar" />
+            </fileset>
+        </unjar>
+
+
+		<delete file="${build.root}/${remote.javascript.modulename}/META-INF/SUN_MICR.RSA" />
+		<delete file="${build.root}/${remote.javascript.modulename}/META-INF/SUN_MICR.SF" />
+
+		<!-- Rejar everything -->
+		<jar destfile="${distribution.root}/${prefix}.${remote.javascript.modulename}-${version}.jar" basedir="${build.root}/${remote.javascript.modulename}/" />
+	</target>
+</project>

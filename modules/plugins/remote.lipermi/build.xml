@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<!-- General project description -->
+<project name="JSPF.remote.lipermi">
+	<property name="remote.lipermi.modulename" value="remote.lipermi" />
+
+	<target name="compile.remote.lipermi" description="Compile the remote.lipermi plugin">
+		<!-- Create output folder -->
+		<mkdir dir="${build.root}/${remote.lipermi.modulename}/" />
+
+		<!-- Compile all classes -->
+		<javac srcdir="${modules.root}/plugins/${remote.lipermi.modulename}/src" destdir="${build.root}/${remote.lipermi.modulename}/" source="1.6" target="1.6" debug="true">
+			<classpath>
+				<fileset dir="${modules.root}/plugins/${remote.lipermi.modulename}/dependencies/">
+                    <include name="*.jar" />
+				</fileset>
+				<fileset dir="${distribution.root}/">
+					<filename name="*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="pack.remote.lipermi" description="Pack the remote.lipermi plugin with its dependencies">
+		<!-- Create output folder -->
+		<mkdir dir="${distribution.root}/" />
+
+		<!-- Unjar local interface definition (we include that too) -->
+		<unjar dest="${build.root}/${remote.lipermi.modulename}/" src="${distribution.root}/${prefix}.${remote.modulename}-${version}.jar" />
+
+		<!-- Unjar related -->
+        <unjar dest="${build.root}/${remote.lipermi.modulename}/">
+            <fileset dir=".">
+                <include name="${modules.root}/plugins/${remote.lipermi.modulename}/dependencies/*.jar" />
+            </fileset>
+        </unjar>
+
+
+		<delete file="${build.root}/${remote.lipermi.modulename}/META-INF/SUN_MICR.RSA" />
+		<delete file="${build.root}/${remote.lipermi.modulename}/META-INF/SUN_MICR.SF" />
+
+		<!-- Rejar everything -->
+		<jar destfile="${distribution.root}/${prefix}.${remote.lipermi.modulename}-${version}.jar" basedir="${build.root}/${remote.lipermi.modulename}/" />
+	</target>
+</project>

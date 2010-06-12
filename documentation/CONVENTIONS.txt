@@ -1,0 +1,28 @@
+
+
+=== CODE CONVENTIONS ===
+
+The following rules try to ensure that the resulting code is easily readable (thus maintainable) 
+and free (haha) of bugs. In case any of these rules conflicts with the aims, ignore the rules.
+
+
+1) Use the provided formatting and cleanup templates for Eclipse. 
+
+2) Enable most of the warnings JAVAC offers For example, but not only:
+    - Field access without this.     
+    - Assignments without effects    
+    - Accidental assignments    
+    - Null pointer access    
+    - Hidden variables or field (except constructors or setters)    
+    - Missing comments    
+    - Access to deprecateds  
+       
+3) Do *not* use hungarian or any other notation. All local variables should have simple, 
+   easily readable names:    
+    - Do not write 'm_id', write 'this.id' instead.   
+    - Do not write 'iCtr', write 'ctr', or 'i' instead.
+    
+4) If several variables belong together, consider putting them in a (internal) class on 
+   their own. This unclutters code. 
+  
+5) Use final wherever possible. This prevents you from accidentally setting the wrong variable.

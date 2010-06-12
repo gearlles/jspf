@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<!-- General project description -->
+<project name="JSPF.remote.discovery">
+	<property name="remote.discovery.modulename" value="remote.discovery" />
+
+	<target name="compile.remote.discovery" description="Compile the remote.discovery plugin">
+		<!-- Create output folder -->
+		<mkdir dir="${build.root}/${remote.discovery.modulename}/" />
+
+		<!-- Compile all classes -->
+		<javac srcdir="${modules.root}/plugins/${remote.discovery.modulename}/src" destdir="${build.root}/${remote.discovery.modulename}/" source="1.6" target="1.6" debug="true">
+			<classpath>
+				<fileset dir="${modules.root}/plugins/${remote.discovery.modulename}/dependencies/">
+                    <include name="*.jar" />
+				</fileset>
+				<fileset dir="${distribution.root}/">
+					<filename name="*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="pack.remote.discovery" description="Pack the remote.discovery plugin with its dependencies">
+		<!-- Create output folder -->
+		<mkdir dir="${distribution.root}/" />
+
+		<!-- Unjar local interface definition (we include that too) -->
+		<unjar dest="${build.root}/${remote.discovery.modulename}/" src="${distribution.root}/${prefix}.${remote.modulename}-${version}.jar" />
+
+		<!-- Unjar related -->
+        <unjar dest="${build.root}/${remote.discovery.modulename}/">
+            <fileset dir=".">
+                <include name="${modules.root}/plugins/${remote.discovery.modulename}/dependencies/*.jar" />
+            </fileset>
+        </unjar>
+
+
+		<delete file="${build.root}/${remote.discovery.modulename}/META-INF/SUN_MICR.RSA" />
+		<delete file="${build.root}/${remote.discovery.modulename}/META-INF/SUN_MICR.SF" />
+
+		<!-- Rejar everything -->
+		<jar destfile="${distribution.root}/${prefix}.${remote.discovery.modulename}-${version}.jar" basedir="${build.root}/${remote.discovery.modulename}/" />
+	</target>
+</project>
