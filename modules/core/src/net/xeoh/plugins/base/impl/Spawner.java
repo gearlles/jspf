@@ -413,14 +413,17 @@ public class Spawner {
                             // TODO: Pass kind of ThreadController as argument 1 (or any fitting argument)
                             method.invoke(spawnResult.pluggable, new Object[0]);
                         } catch (final IllegalArgumentException e) {
-                            Spawner.this.logger.warning("Error starting requested thread on plugin " + spawnClass.getName());
+                            Spawner.this.logger.warning("Error starting requested thread on plugin (1)" + spawnClass.getName());
                             Spawner.this.logger.warning(e.getMessage());
+                            e.printStackTrace();
                         } catch (final IllegalAccessException e) {
-                            Spawner.this.logger.warning("Error invoking requested threada on plugin " + spawnClass.getName());
+                            Spawner.this.logger.warning("Error invoking requested thread on plugin (2) " + spawnClass.getName());
                             Spawner.this.logger.warning(e.getMessage());
+                            e.printStackTrace();                            
                         } catch (final InvocationTargetException e) {
-                            Spawner.this.logger.warning("Error invoking requested thread on plugin " + spawnClass.getName());
+                            Spawner.this.logger.warning("Error invoking requested thread on plugin (3) " + spawnClass.getName());
                             Spawner.this.logger.warning(e.getMessage());
+                            e.printStackTrace();
                         }
                     }
                 });
