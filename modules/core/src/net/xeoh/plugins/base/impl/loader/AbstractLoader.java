@@ -123,7 +123,7 @@ public abstract class AbstractLoader {
             // Don't load classes already loaded from this location
             final PluggableClassMetaInformation preexistingMeta = pluginRegistry.getMetaInformationFor((Class<? extends Plugin>) possiblePlugin);
             if (preexistingMeta != null) {
-                System.err.println("SKIPPING BECAUSE DOUBLE");
+                this.logger.info("Skipping plugin " + possiblePlugin + " because we already have it ");
                 return;
             }
 

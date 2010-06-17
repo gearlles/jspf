@@ -34,6 +34,7 @@ import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import net.xeoh.plugins.base.options.getplugin.OptionPluginSelector;
 import net.xeoh.plugins.base.options.getplugin.PluginSelector;
 import net.xeoh.plugins.base.util.JSPFProperties;
+import net.xeoh.plugins.remote.impl.lipermi.RemoteAPIImpl;
 import net.xeoh.plugins.testplugins.testannotations.TestAnnotations;
 
 import org.junit.After;
@@ -60,6 +61,8 @@ public class RemoteTest {
         props.setProperty(PluginManager.class, "cache.mode", "weak");
         props.setProperty(PluginManager.class, "cache.file", "jspf.cache");
         props.setProperty(PluginManager.class, "supervision.enabled", "true");
+        props.setProperty(RemoteAPIImpl.class, "export.port", "12345");
+
         this.pm = PluginManagerFactory.createPluginManager(props);
         this.pm.addPluginsFrom(new URI("classpath://*"));
     }
