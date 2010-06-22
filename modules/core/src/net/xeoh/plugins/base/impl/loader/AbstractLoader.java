@@ -150,7 +150,7 @@ public abstract class AbstractLoader {
             */
 
             // Avoid loading if annotation request it.
-            if (pcu.getBoolean(possiblePlugin, "disabled", false) || possiblePlugin.getAnnotation(IsDisabled.class) != null) {
+            if (pcu.getBoolean(possiblePlugin, "plugin.disabled", false) || possiblePlugin.getAnnotation(IsDisabled.class) != null) {
                 metaInformation.pluginClassStatus = PluginClassStatus.DISABLED;
                 this.logger.fine("Ignoring " + name + " due to request.");
                 return;

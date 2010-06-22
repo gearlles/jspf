@@ -418,6 +418,7 @@ public class PluginManagerImpl implements PluginManager {
 
                     interfaces[interfaces.length - 1] = PluginWrapper.class;
 
+                    // FIXME (#14): PluginMangerDisablingPlugins gives error when using TestAnnotations at this line. Probably a problem with
                     plugin = (Plugin) Proxy.newProxyInstance(plugin.getClass().getClassLoader(), interfaces, new PluginMetaHandler(this.pluginSupervisor, plugin));
                 }
             }
