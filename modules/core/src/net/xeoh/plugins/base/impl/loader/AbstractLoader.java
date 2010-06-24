@@ -156,23 +156,23 @@ public abstract class AbstractLoader {
                 return;
             }
 
-            // Up from here we know we will (eventually) use the plugin. So load
-            // its configuration.            
-            final String properties = (possiblePlugin.getAnnotation(ConfigurationFile.class) != null) ? possiblePlugin.getAnnotation(ConfigurationFile.class).configurationFile() : null;
+            // Up from here we know we will (eventually) use the plugin. So load its configuration.            
+            final String properties = (possiblePlugin.getAnnotation(ConfigurationFile.class) != null) ? possiblePlugin.getAnnotation(ConfigurationFile.class).file() : null;
             if (properties != null && properties.length() > 0) {
                 final String resourcePath = name.replaceAll("\\.", "/").replaceAll(possiblePlugin.getSimpleName(), "") + properties;
                 this.logger.fine("Adding configuration from " + resourcePath + " for plugin " + name);
-
+                
                 final Properties p = new Properties();
-
+                
                 // Try to load resource by special classloader
                 try {
                     p.load(classPathManager.getResourceAsStream(location, resourcePath));
+                    
                     final Set<Object> keys = p.keySet();
 
                     // Add every string that is not already in the configuration.
                     for (final Object object : keys) {
-                        if (pcu.getString(null, (String) object) == null) {
+                        if (pcu.getString(null, (String) object) != null) {
                             this.pluginManager.getPluginConfiguration().setConfiguration(null, (String) object, p.getProperty((String) object));
                         }
                     }

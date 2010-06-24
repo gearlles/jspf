@@ -45,6 +45,6 @@ public @interface ConfigurationFile {
      * 
      * @return Relative path to the configuration file.
      */
-    String configurationFile() default "";
+    String file() default "";
 
 }

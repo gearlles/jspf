@@ -30,6 +30,7 @@ package net.xeoh.plugins.testplugins.testannotations.impl;
 import java.lang.reflect.Method;
 
 import net.xeoh.plugins.base.annotations.PluginImplementation;
+import net.xeoh.plugins.base.annotations.configuration.ConfigurationFile;
 import net.xeoh.plugins.base.annotations.meta.Author;
 import net.xeoh.plugins.base.annotations.meta.Version;
 
@@ -39,9 +40,9 @@ import net.xeoh.plugins.base.annotations.meta.Version;
  */
 @Author(name = "AUTHOR OK")
 @Version(version = 667)
+@ConfigurationFile(file="config.properties")
 @PluginImplementation
 public class TestAnnotationsImpl extends TestAnnotationsAbtractImpl {
-//
     
     public static void main(String[] args) {
         for (final Method method : TestAnnotationsImpl.class.getMethods()) {
