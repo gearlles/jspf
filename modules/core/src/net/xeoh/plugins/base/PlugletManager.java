@@ -31,7 +31,7 @@ package net.xeoh.plugins.base;
  * @author rb
  *
  */
-public interface PlugletManager {
+public interface PlugletManager extends Plugin {
     /**
      * Spawns the given pluglet.
      * 

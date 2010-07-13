@@ -112,7 +112,6 @@ public class PluginRegistry {
      */
     public void registerPluginClass(Class<? extends Plugin> c,
                                     PluggableClassMetaInformation metaInformation) {
-
         this.pluginClassMetaInformation.put(c, metaInformation);
     }
 
@@ -122,7 +121,6 @@ public class PluginRegistry {
      */
     public Collection<Class<? extends Plugin>> getPluginClassesWithStatus(
                                                                           PluginClassStatus status) {
-
         final List<Class<? extends Plugin>> rval = new ArrayList<Class<? extends Plugin>>();
         final Set<Class<? extends Plugin>> keySet = this.pluginClassMetaInformation.keySet();
 

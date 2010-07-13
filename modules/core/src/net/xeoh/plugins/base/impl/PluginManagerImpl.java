@@ -157,7 +157,7 @@ public class PluginManagerImpl implements PluginManager {
         // Needs to be done as early as possible ...
         setupMetaHandling();
 
-        // Hook fundamental plugin
+        // Hook fundamental plugins
         hookPlugin(new SpawnResult(this, SpawnType.PLUGIN));
         hookPlugin(new SpawnResult(this.configuration, SpawnType.PLUGIN));
         hookPlugin(new SpawnResult(this.pluginSupervisor, SpawnType.PLUGIN));

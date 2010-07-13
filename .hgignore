@@ -1,0 +1,7 @@
+
+syntax: regexp
+^dist$
+syntax: regexp
+^jspf\.cache$
+syntax: regexp
+^ant\.build$

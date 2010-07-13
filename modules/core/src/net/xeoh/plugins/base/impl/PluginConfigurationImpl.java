@@ -60,7 +60,12 @@ public class PluginConfigurationImpl implements PluginConfiguration {
      * @see net.xeoh.plugins.base.PluginConfiguration#getConfiguration(java.lang.Class, java.lang.String)
      */
     public synchronized String getConfiguration(final Class<?> root, final String subkey) {
-        return this.configuration.getProperty(getKey(root, subkey));
+        final String key = getKey(root, subkey);
+        final String value = this.configuration.getProperty(key);
+
+        this.logger.fine("Returning '" + value + "' for " + "'" + key + "'");
+        
+        return value;
     }
 
     /* (non-Javadoc)
