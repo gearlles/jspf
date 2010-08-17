@@ -58,6 +58,8 @@ public class DiscoverPluginTest {
 
         props.setProperty(PluginManager.class, "cache.enabled", "false");
         props.setProperty(PluginManager.class, "cache.file", "/tmp/xxxjspf.cache");
+        props.setProperty(PluginManager.class, "logging.level", "ALL");
+
         this.pm = PluginManagerFactory.createPluginManager(props);
         this.pm.addPluginsFrom(new URI("classpath://*"));
     }
@@ -77,7 +79,6 @@ public class DiscoverPluginTest {
         RemoteAPILipe p = this.pm.getPlugin(RemoteAPILipe.class);
         TestAnnotations p2 = this.pm.getPlugin(TestAnnotations.class);
 
-        
         System.out.println("GO");
         ExportResult exportPlugin = p.exportPlugin(p2);
         System.out.println("1");
@@ -86,8 +87,7 @@ public class DiscoverPluginTest {
         Plugin rp = p.getRemoteProxy(new URI("discover://nearest"), TestAnnotations.class);
         System.out.println(rp);
         Plugin remoteProxy = p.getRemoteProxy(new URI("discover://any"), Plugin.class);
-        
-        
+
         Assert.assertNotNull(remoteProxy);
         TestAnnotations remoteProxy2 = p.getRemoteProxy(new URI("discover://nearest"), TestAnnotations.class);
         Assert.assertNotNull(remoteProxy2);

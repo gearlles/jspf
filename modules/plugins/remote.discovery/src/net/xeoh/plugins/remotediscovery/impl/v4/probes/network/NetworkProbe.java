@@ -219,7 +219,6 @@ public class NetworkProbe extends AbstractProbe {
         try {
             this.startupLatch.await();
         } catch (final InterruptedException e) {
-            e.printStackTrace();
             return new ArrayList<DiscoveredPlugin>();
         }
 

@@ -67,6 +67,9 @@ public class PluginManagerFactory {
             setLogLevel(Level.parse(level));
         }
 
+        // Lower the JMDNS level (TODO: Why doen't this work?) 
+        Logger.getLogger("javax.jmdns").setLevel(Level.OFF);
+
         return new PluginManagerImpl(initialProperties);
     }
 
@@ -75,7 +78,6 @@ public class PluginManagerFactory {
      */
     private static void setLogLevel(Level level) {
         Logger.getLogger("").setLevel(level);
-        Logger.getLogger("javax.jmdns").setLevel(Level.OFF);
 
         Handler[] handlers = Logger.getLogger("").getHandlers();
 
