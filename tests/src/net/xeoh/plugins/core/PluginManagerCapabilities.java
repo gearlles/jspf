@@ -32,8 +32,8 @@ import java.util.Collection;
 
 import junit.framework.Assert;
 import net.xeoh.plugins.base.PluginInformation;
-import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.PluginInformation.Information;
+import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import net.xeoh.plugins.base.util.JSPFProperties;
 import net.xeoh.plugins.testplugins.testannotations.TestAnnotations;

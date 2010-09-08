@@ -46,10 +46,10 @@ import net.xeoh.plugins.base.impl.Spawner;
 import net.xeoh.plugins.base.impl.classpath.ClassPathManager;
 import net.xeoh.plugins.base.impl.classpath.locator.AbstractClassPathLocation;
 import net.xeoh.plugins.base.impl.registry.PluggableClassMetaInformation;
-import net.xeoh.plugins.base.impl.registry.PluginRegistry;
 import net.xeoh.plugins.base.impl.registry.PluggableClassMetaInformation.Dependency;
 import net.xeoh.plugins.base.impl.registry.PluggableClassMetaInformation.PluginClassStatus;
 import net.xeoh.plugins.base.impl.registry.PluggableMetaInformation.PluginStatus;
+import net.xeoh.plugins.base.impl.registry.PluginRegistry;
 import net.xeoh.plugins.base.options.getplugin.OptionCapabilities;
 import net.xeoh.plugins.base.util.PluginConfigurationUtil;
 

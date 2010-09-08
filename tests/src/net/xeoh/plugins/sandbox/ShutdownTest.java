@@ -34,8 +34,8 @@ import java.util.Collection;
 
 import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.PluginInformation;
-import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.PluginInformation.Information;
+import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import net.xeoh.plugins.base.util.JSPFProperties;
 import net.xeoh.plugins.base.util.PluginManagerUtil;
