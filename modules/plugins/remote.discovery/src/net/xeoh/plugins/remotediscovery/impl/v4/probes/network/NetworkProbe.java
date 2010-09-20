@@ -257,17 +257,13 @@ public class NetworkProbe extends AbstractProbe {
 
     /** */
     void discoverThread() {
-        this.logger.finer("Starting new discover pass");
 
         try {
-            this.logger.finer("Awaiting latch");
             this.startupLatch.await();
         } catch (final InterruptedException e) {
             e.printStackTrace();
             return;
         }
-
-        this.logger.finer("Latch passed");
 
         // Increase counter
         this.discoverThreadCounter.incrementAndGet();
@@ -277,31 +273,23 @@ public class NetworkProbe extends AbstractProbe {
 
         // Magic: Get all network services of our type.
         try {
-            this.logger.finer("Trying to lock jmDNS lock");
             this.jmdnsLock.lock();
-            this.logger.finer("Lock obtained. Listing known entries of our type");
             // TODO: jmdsn can be null if no network card is present
             infos = this.jmdns.list(TYPE);
-            this.logger.finer("List obtained.");
         } catch (final IllegalStateException e) {
             this.logger.warning("Error discovering plugins ...");
         } finally {
             this.jmdnsLock.unlock();
-            this.logger.finer("Lock unlocked.");
         }
 
         // Reset all service infos
         try {
-            this.logger.finer("Trying to obtain service info lock.");
             this.serviceInfosLock.lock();
-            this.logger.finer("Service info lock obtained. Transferring data.");
             this.serviceInfos.clear();
             this.serviceInfos.addAll(Arrays.asList(infos));
 
-            this.logger.finer("Data transferred.");
         } finally {
             this.serviceInfosLock.unlock();
-            this.logger.finer("Service info unlocked.");
         }
 
         // Process all callbacks.
@@ -311,8 +299,6 @@ public class NetworkProbe extends AbstractProbe {
         //
         // TODO: This callback handling needs improvement. Check for unsynchronized access to the allRequest structure
         //
-
-        this.logger.finer("Disover pass ended.");
     }
 
     /**
