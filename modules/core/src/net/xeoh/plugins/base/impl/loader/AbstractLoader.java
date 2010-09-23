@@ -131,7 +131,7 @@ public abstract class AbstractLoader {
             final PluggableClassMetaInformation metaInformation = new PluggableClassMetaInformation();
             metaInformation.pluginClassStatus = PluginClassStatus.ACCEPTED;
             if (location != null) {
-                metaInformation.pluginOrigin = location.getLocation();
+                metaInformation.pluginOrigin = location.getToplevelLocation();
             } else {
                 metaInformation.pluginOrigin = new URI("classpath://UNDEFINED");
             }

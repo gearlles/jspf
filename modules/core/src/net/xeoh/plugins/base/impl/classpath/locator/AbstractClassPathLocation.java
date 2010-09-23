@@ -27,6 +27,8 @@
  */
 package net.xeoh.plugins.base.impl.classpath.locator;
 
+import static net.jcores.CoreKeeper.$;
+
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Collection;
@@ -52,14 +54,12 @@ public abstract class AbstractClassPathLocation {
      * 
      */
     public enum LocationType {
-        /**
-         * Is a JAR
-         */
+        /** Is a JAR */
         JAR,
-        /**
-         * Is an ordinary dir
-         */
-        DIRECTORY
+        /** Is an ordinary dir */
+        DIRECTORY,
+        /** A multiplugin*/
+        MULTI_PLUGIN
     }
 
     /** */
@@ -99,16 +99,33 @@ public abstract class AbstractClassPathLocation {
     public static AbstractClassPathLocation newClasspathLocation(JARCache cache,
                                                                  String realm,
                                                                  URI location) {
+        if ($(location).filter(".*\\.plugin[/]$").get(0) != null)
+            return new MultiPluginClasspathLocation(cache, realm, location);
         if (location.toString().endsWith(".jar"))
             return new JARClasspathLocation(cache, realm, location);
+
         return new FileClasspathLocation(cache, realm, location);
     }
 
     /**
+     * Returns the top level classpath location. This is *NOT* equal to the 
+     * the classpath-entries this location provides. Especially multi-plugins
+     * may consist of a number of JARs required for proper class resolution. 
+     * 
+     * @return The top level location
+     */
+    public URI getToplevelLocation() {
+        return this.location;
+    }
+
+    /**
+     * Gets all classpath entries required to properly load plugins. Add them
+     * to a class loader.
+     * 
      * @return the location
      */
-    public URI getLocation() {
-        return this.location;
+    public URI[] getClasspathLocations() {
+        return new URI[] { this.location };
     }
 
     /**

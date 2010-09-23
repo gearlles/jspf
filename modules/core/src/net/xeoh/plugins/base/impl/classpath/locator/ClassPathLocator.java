@@ -27,6 +27,8 @@
  */
 package net.xeoh.plugins.base.impl.classpath.locator;
 
+import static net.jcores.CoreKeeper.$;
+
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
@@ -69,21 +71,11 @@ public class ClassPathLocator {
         final Collection<AbstractClassPathLocation> rval = new ArrayList<AbstractClassPathLocation>();
         final File startPoint = new File(toplevel);
 
-        /*
-        // First, check if the entry represents a multi-plugin
-        if (startPoint.getAbsolutePath().endsWith("\\.plugin")) {
-            // Let us, for the beginning, assume it is a directory based multi-plugin (in contrast to 
-            // ZIP archives)
-            final CoreString filter = $(startPoint).dir().string().filter("\\.jar$");
-            filter.print();
-            final URI[] array = filter.file().map(new F1<File, URI>() {
-                public URI f(File x) {
-                    return x.toURI();
-                }
-            }).array(URI.class);
-
-            // rval.add(AbstractClassPathLocation.newClasspathLocation(this.cache, toplevel.toString(), array));
-        }*/
+        // First, check if the entry represents a multi-plugin (in that case we don't add anything else)
+        if ($(startPoint).filter(".*\\.plugin?$").get(0) != null) {
+            rval.add(AbstractClassPathLocation.newClasspathLocation(this.cache, toplevel.toString(), toplevel));
+            return rval;
+        }
 
         // Check if this is a directory or a file
         if (startPoint.isDirectory()) {
@@ -96,6 +88,11 @@ public class ClassPathLocator {
                     rval.add(AbstractClassPathLocation.newClasspathLocation(this.cache, file.toURI().toString(), file.toURI()));
                     hasJARs = true;
                 }
+
+                if ($(file).filter(".*\\.plugin?$").get(0) != null) {
+                    rval.add(AbstractClassPathLocation.newClasspathLocation(this.cache, file.toURI().toString(), file.toURI()));
+                    hasJARs = true;
+                }
             }
 
             // If we have JARs, we already added them
@@ -103,11 +100,13 @@ public class ClassPathLocator {
 
             // If we have no JARs, this is probably a classpath
             rval.add(AbstractClassPathLocation.newClasspathLocation(this.cache, toplevel.toString(), toplevel));
+            return rval;
         }
 
         // If this is directly a JAR, add this
         if (startPoint.isFile() && startPoint.getAbsolutePath().endsWith(".jar")) {
             rval.add(AbstractClassPathLocation.newClasspathLocation(this.cache, toplevel.toString(), toplevel));
+            return rval;
         }
 
         return rval;

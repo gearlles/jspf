@@ -76,8 +76,7 @@ public class FileClasspathLocation extends AbstractClassPathLocation {
      */
     @Override
     public LocationType getType() {
-        // TODO Auto-generated method stub
-        return null;
+        return LocationType.DIRECTORY;
     }
 
     /* (non-Javadoc)

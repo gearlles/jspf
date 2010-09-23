@@ -57,7 +57,7 @@ public class ClassFinderTest {
         for (AbstractClassPathLocation fb : findBelow) {
             cpm.registerLocation(fb);
 
-            System.out.println("Searching inside " + fb.getLocation());
+            System.out.println("Searching inside " + fb.getToplevelLocation());
             Collection<String> sc = cpm.findSubclassesFor(fb, Plugin.class);
             for (String string : sc) {
                 System.out.println("Found class " + string);

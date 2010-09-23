@@ -29,6 +29,7 @@ package net.xeoh.plugins.base.impl.classpath;
 
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
@@ -212,7 +213,11 @@ public class ClassPathManager {
 
         try {
             final ClassRealm newRealm = this.classWorld.newRealm(location.getRealm(), getClass().getClassLoader());
-            newRealm.addConstituent(location.getLocation().toURL());
+            final URI[] classpathLocations = location.getClasspathLocations();
+            for (URI uri : classpathLocations) {
+                newRealm.addConstituent(uri.toURL());
+            }
+
         } catch (DuplicateRealmException e) {
             // Happens for #classpath realms ...
         } catch (MalformedURLException e) {

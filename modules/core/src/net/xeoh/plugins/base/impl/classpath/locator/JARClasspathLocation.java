@@ -123,10 +123,30 @@ public class JARClasspathLocation extends AbstractClassPathLocation {
      */
     @Override
     public Collection<String> listAllEntries() {
+        return listAllEntriesFor(this.location);
+    }
+
+    /* (non-Javadoc)
+     * @see net.xeoh.plugins.base.impl.classpath.locator.AbstractClassPathLocation#listToplevelClassNames()
+     */
+    @Override
+    public Collection<String> listToplevelClassNames() {
+        final Collection<String> rval = listToplevelClassNamesForURI(this.location);
+        if (this.cacheEntry != null) this.cacheEntry.classesValid = true;
+        return rval;
+    }
+
+    /**
+     * Lists all entries for the given JAR.
+     * 
+     * @param uri
+     * @return .
+     */
+    public static Collection<String> listAllEntriesFor(URI uri) {
         final Collection<String> rval = new ArrayList<String>();
 
         try {
-            final JarURLConnection connection = (JarURLConnection) new URI("jar:" + this.location + "!/").toURL().openConnection();
+            final JarURLConnection connection = (JarURLConnection) new URI("jar:" + uri + "!/").toURL().openConnection();
             final JarFile jarFile = connection.getJarFile();
 
             final Enumeration<JarEntry> entries = jarFile.entries();
@@ -151,22 +171,24 @@ public class JARClasspathLocation extends AbstractClassPathLocation {
         return rval;
     }
 
-    /* (non-Javadoc)
-     * @see net.xeoh.plugins.base.impl.classpath.locator.AbstractClassPathLocation#listToplevelClassNames()
+    /**
+     * Lists all top level class entries for the given URL.
+     * 
+     * @param uri
+     * @return .
      */
-    @Override
-    public Collection<String> listToplevelClassNames() {
+    public static Collection<String> listToplevelClassNamesForURI(URI uri) {
         final Collection<String> rval = new ArrayList<String>();
 
         // Ensure we have a proper cache entry ...
-        getCacheEntry();
+        //getCacheEntry();
 
         // Disabled: Not really necessary, is it? And not storing/retrieving these items
         // makes the cache file smaller and saves several ms (~200) loading and storing it
         //if (this.cacheEntry.classesValid) { return this.cacheEntry.classes; }
 
         try {
-            final JarURLConnection connection = (JarURLConnection) new URI("jar:" + this.location + "!/").toURL().openConnection();
+            final JarURLConnection connection = (JarURLConnection) new URI("jar:" + uri + "!/").toURL().openConnection();
             final JarFile jarFile = connection.getJarFile();
 
             final Enumeration<JarEntry> entries = jarFile.entries();
@@ -201,9 +223,6 @@ public class JARClasspathLocation extends AbstractClassPathLocation {
             e.printStackTrace();
         }
 
-        if (this.cacheEntry != null) this.cacheEntry.classesValid = true;
-
         return rval;
     }
-
 }
