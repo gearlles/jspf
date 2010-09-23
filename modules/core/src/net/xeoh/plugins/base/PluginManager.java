@@ -60,12 +60,13 @@ public interface PluginManager extends Plugin {
      * The manager will search for classes having the PluginImplementation annotation and
      * evaluate this annotation. Thereafter the plugin will be instanciated.<br>
      * <br>
+     * Currently supported are classpath-folders (containing no .JAR files), plugin folders 
+     * (containing .JAR files or multiplugins), single plugins and HTTP locations.
      *   
      * @see ClassURI
      *
-     * @param url
-     *                The URL to add from. If this is "classpath://*"; the plugin manager will load all plugins within it's 
-     *                own classpath
+     * @param url The URL to add from. If this is "classpath://*"; the plugin manager will 
+     * load all plugins within it's own classpath
      * 
      * @param options 
      */
