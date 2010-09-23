@@ -59,7 +59,6 @@ public class FileLoader extends AbstractLoader {
     @Override
     public boolean handlesURI(URI uri) {
         if (uri.getScheme().equals("file")) return true;
-
         return false;
     }
 

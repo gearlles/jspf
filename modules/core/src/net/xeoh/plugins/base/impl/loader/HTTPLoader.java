@@ -89,7 +89,7 @@ public class HTTPLoader extends FileLoader {
             } catch (Exception e) {
                 e.printStackTrace();
                 this.logger.warning("Error downloading plugins from " + url);
-            } 
+            }
         }
     }
 

@@ -40,7 +40,7 @@ import net.xeoh.plugins.base.impl.classpath.cache.JARCache.JARInformation;
  * 
  * TODO: Constrict two subclasses, JARClassPathLocation and FileClassPathLocation
  * 
- * @author rb
+ * @author Ralf Biedert
  * 
  */
 public abstract class AbstractClassPathLocation {
@@ -48,7 +48,7 @@ public abstract class AbstractClassPathLocation {
      * 
      * Type of this location
      * 
-     * @author rb
+     * @author Ralf Biedert
      * 
      */
     public enum LocationType {
@@ -89,12 +89,12 @@ public abstract class AbstractClassPathLocation {
     }
 
     /**
-     * Constructs a new classpath location
+     * Constructs a new ClassPathLocation which handles all classes within.  
      * 
-     * @param cache
-     * @param realm
-     * @param location
-     * @return .
+     * @param cache The cache to lookup the entrie's content.
+     * @param realm The real name.
+     * @param location URI location of the given classpath.
+     * @return The constructed location.
      */
     public static AbstractClassPathLocation newClasspathLocation(JARCache cache,
                                                                  String realm,

@@ -35,9 +35,9 @@ import java.util.Collection;
 import net.xeoh.plugins.base.impl.classpath.cache.JARCache;
 
 /**
- * Used to find classpaths, JARs and their contents  
+ * Used to find classpaths, JARs and their contents.  
  * 
- * @author rb
+ * @author Ralf Biedert
  */
 public class ClassPathLocator {
 
@@ -58,15 +58,32 @@ public class ClassPathLocator {
     }
 
     /**
-     * Finds a list of items 
+     * Given a top level entry, finds a list of class path locations below the given 
+     * entry. The top level entry can either be a folder, or it can be a JAR directly.
      * 
-     * @param toplevel .
-     * @return .
+     * @param toplevel The top level URI to start from. 
+     * @return A list of class path locations.
      */
     public Collection<AbstractClassPathLocation> findBelow(URI toplevel) {
 
         final Collection<AbstractClassPathLocation> rval = new ArrayList<AbstractClassPathLocation>();
         final File startPoint = new File(toplevel);
+
+        /*
+        // First, check if the entry represents a multi-plugin
+        if (startPoint.getAbsolutePath().endsWith("\\.plugin")) {
+            // Let us, for the beginning, assume it is a directory based multi-plugin (in contrast to 
+            // ZIP archives)
+            final CoreString filter = $(startPoint).dir().string().filter("\\.jar$");
+            filter.print();
+            final URI[] array = filter.file().map(new F1<File, URI>() {
+                public URI f(File x) {
+                    return x.toURI();
+                }
+            }).array(URI.class);
+
+            // rval.add(AbstractClassPathLocation.newClasspathLocation(this.cache, toplevel.toString(), array));
+        }*/
 
         // Check if this is a directory or a file
         if (startPoint.isDirectory()) {

@@ -45,8 +45,9 @@ import org.codehaus.classworlds.DuplicateRealmException;
 import org.codehaus.classworlds.NoSuchRealmException;
 
 /**
- * @author rb
- *
+ * Manages all our classpaths shared by different plugins. 
+ * 
+ * @author Ralf Biedert
  */
 public class ClassPathManager {
     /** */
@@ -89,10 +90,11 @@ public class ClassPathManager {
     }
 
     /**
-     * Loads a class given its name
-     * @param location 
+     * Loads a class given its name.
      * 
+     * @param location 
      * @param name
+     * 
      * @return .
      * 
      * @throws ClassNotFoundException 
