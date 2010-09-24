@@ -31,7 +31,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.logging.Logger;
 
 import net.xeoh.plugins.base.Pluggable;
@@ -113,6 +112,11 @@ public class PluginInformationImpl implements PluginInformation {
             }
             break;
 
+        case UNIQUE_ID:
+            // TODO!
+            //pluggable.getClass().getClassLoader().getResourceAsStream(pluggable.getClass().)
+            break;
+
         default:
             this.logger.info("Requested InformationItem is now known!");
             break;
@@ -155,21 +159,11 @@ public class PluginInformationImpl implements PluginInformation {
         return new String[0];
     }
 
-    /* (non-Javadoc)
-     * @see net.xeoh.plugins.base.PluginInformation#getInformation(java.lang.Class, net.xeoh.plugins.base.PluginInformation.Information, net.xeoh.plugins.base.Plugin)
-     */
-    @Override
-    public <T> T getInformation(Class<T> clazz, Information item, Plugin plugin) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     /**
-     *  ...
+     *  Better way to get information from plugins?
      */
-    @SuppressWarnings( { "unused", "unchecked" })
     public void test() {
-        String i1 = getInformation(String.class, Information.AUTHORS, this);
-        List<String> i2 = getInformation(List.class, Information.AUTHORS, this);
+        //String i1 = getInformation(String.class, Information.AUTHORS, this);
+        //List<String> i2 = getInformation(List.class, Information.AUTHORS, this);
     }
 }

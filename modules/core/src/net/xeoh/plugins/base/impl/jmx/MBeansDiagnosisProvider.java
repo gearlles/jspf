@@ -89,6 +89,7 @@ public class MBeansDiagnosisProvider implements DynamicMBean {
      * @throws NullPointerException
      * @throws InterruptedException
      */
+    @SuppressWarnings("unused")
     public static void main(String[] args) throws InstanceAlreadyExistsException,
                                           MBeanRegistrationException,
                                           NotCompliantMBeanException,

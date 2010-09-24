@@ -61,7 +61,7 @@ public class PluginManagerLoadMulti {
         props.setProperty(PluginManager.class, "cache.enabled", "true");
         props.setProperty(PluginManager.class, "cache.mode", "weak");
         props.setProperty(PluginManager.class, "cache.file", "jspf.cache");
-        props.setProperty(PluginManager.class, "logging.level", "OFF");
+        props.setProperty(PluginManager.class, "logging.level", "FINE");
 
         this.pm = PluginManagerFactory.createPluginManager(props);
     }

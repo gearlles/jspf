@@ -91,7 +91,7 @@ public abstract class AbstractLoader {
      * @param location
      * @param name
      */
-    @SuppressWarnings( { "unchecked", "boxing" })
+    @SuppressWarnings({ "unchecked", "boxing" })
     protected void tryToLoadClassAsPlugin(AbstractClassPathLocation location,
                                           final String name) {
         this.logger.finest("Trying to load " + name + " as a plugin.");
@@ -161,13 +161,13 @@ public abstract class AbstractLoader {
             if (properties != null && properties.length() > 0) {
                 final String resourcePath = name.replaceAll("\\.", "/").replaceAll(possiblePlugin.getSimpleName(), "") + properties;
                 this.logger.fine("Adding configuration from " + resourcePath + " for plugin " + name);
-                
+
                 final Properties p = new Properties();
-                
+
                 // Try to load resource by special classloader
                 try {
                     p.load(classPathManager.getResourceAsStream(location, resourcePath));
-                    
+
                     final Set<Object> keys = p.keySet();
 
                     // Add every string that is not already in the configuration.
@@ -210,7 +210,7 @@ public abstract class AbstractLoader {
     /**
      * Try to load a pending class.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected void processPending() {
 
         // Obtain shared objects

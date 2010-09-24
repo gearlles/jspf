@@ -46,12 +46,13 @@ public class PluginUtil {
     public PluginUtil(Plugin plugin) {
         this.plugin = plugin;
     }
+
     /**
      * Lists all primary interfaces
      * 
      * @return .
      */
-    @SuppressWarnings( { "unchecked" })
+    @SuppressWarnings({ "unchecked" })
     public Collection<Class<? extends Plugin>> getPrimaryInterfaces() {
         final Collection<Class<? extends Plugin>> rval = getPluginInterfaces();
         List<Class<?>> candidates = new ArrayList<Class<?>>();
@@ -70,7 +71,7 @@ public class PluginUtil {
             for (Class<?> class2 : candidates) {
                 // ... compare it with every other ...
                 boolean hasSuper = false;
-                
+
                 for (Class<?> class3 : candidates) {
                     // ... and see if it can be assigned from another one that is not the same, if that
                     // is the case, it's useless, if not, we keep it.
@@ -78,8 +79,8 @@ public class PluginUtil {
                         hasSuper = true;
                     }
                 }
-                
-                if(!hasSuper && !rval.contains(class2))
+
+                if (!hasSuper && !rval.contains(class2))
                     rval.add((Class<? extends Plugin>) class2);
             }
         } while (lastSize != rval.size());
@@ -87,13 +88,12 @@ public class PluginUtil {
         return rval;
     }
 
-
     /**
      * Lists all primary interfaces
      * 
      * @return .
      */
-    @SuppressWarnings( { "unchecked" })
+    @SuppressWarnings({ "unchecked" })
     public Collection<Class<? extends Plugin>> getPluginInterfaces() {
         final Collection<Class<? extends Plugin>> rval = new ArrayList<Class<? extends Plugin>>();
 
@@ -127,7 +127,7 @@ public class PluginUtil {
      * 
      * @return .
      */
-    @SuppressWarnings( { "unchecked" })
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public Collection<Class<? extends Plugin>> getAllPluginInterfaces() {
         final Collection<Class<? extends Plugin>> pluginInterfaces = getPluginInterfaces();
         final Collection<Class<? extends Plugin>> rval = new ArrayList<Class<? extends Plugin>>();

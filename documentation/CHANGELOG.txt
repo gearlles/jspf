@@ -9,7 +9,7 @@
 - Autodiscovery is an abomination ... redone the fast, local lookup again.
 - jCores added
 - Fixed another LipeRMI bug concerning methods of superclasses 
-
+- Added warning when getPlugin() is being misused. 
 
 TODO:
 

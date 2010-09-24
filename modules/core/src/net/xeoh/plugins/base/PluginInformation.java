@@ -41,35 +41,36 @@ public interface PluginInformation extends Plugin {
      *
      */
     public static enum Information {
-        /**
-         * The author of this plugins. A list of one (Aloo) String is returnd.
-         */
+        /** The author of this plugins. A list of one (Aloo) String is returnd. */
         AUTHORS,
+
         /**
          * Returns the self proclaimed capabilites of this plugin. A list of Strings is
          * returned. What is inside the capabilites is a matter of the individual plugin's
          * interface definition.
          */
         CAPABILITIES,
+
         /**
          * Version of this plugin. Aloo String, a direct conversion of the plugins
          * corresponding integer value.
          */
         VERSION,
 
-        /**
-         * How many times this plugins has been requested. Aloo Integer as String.
-         */
+        /** How many times this plugins has been requested. Aloo Integer as String. */
         // REQUEST_COUNT,
-        /**
-         * Date when the plugin was initialized. Aloo Long as String.
-         */
+
+        /** Date when the plugin was initialized. Aloo Long as String. */
         // INIT_DATE
 
         /**
-         * Returns a single string containing the URI to the classpath item this element came from 
+         * Returns a single string containing the URI to the classpath item this 
+         * element came from 
          */
-        CLASSPATH_ORIGIN
+        CLASSPATH_ORIGIN,
+
+        /** Returns a unique ID for a given plugin that does not change over versions */
+        UNIQUE_ID
     }
 
     /**
@@ -80,17 +81,4 @@ public interface PluginInformation extends Plugin {
      * @return .
      */
     public Collection<String> getInformation(Information item, Plugin plugin);
-
-    /**
-     * Experimental version ...
-     * 
-     * @param <T>
-     * @param clazz
-     * @param item
-     * @param plugin
-     * @return .
-     */
-    @Deprecated
-    public <T> T getInformation(Class<T> clazz, Information item, Plugin plugin);
-
 }

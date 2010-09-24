@@ -238,10 +238,19 @@ public class PluginManagerImpl implements PluginManager {
     /* (non-Javadoc)
      * @see net.xeoh.plugins.base.PluginManager#getPlugin(java.lang.Class, net.xeoh.plugins.base.option.GetPluginOption[])
      */
-    @SuppressWarnings( { "unchecked" })
+    @SuppressWarnings({ "unchecked" })
     @RecognizesOption(option = OptionPluginSelector.class)
     public <P extends Plugin> P getPlugin(final Class<P> requestedPlugin,
                                           GetPluginOption... options) {
+        // Sanity check.
+        if (!requestedPlugin.isInterface()) {
+            System.err.println("YOU MUST NOT call getPlugin() with a concrete class; only interfaces are");
+            System.err.println("supported for lookup. This means do not call getPlugin(MyPluginImpl.class),");
+            System.err.println("but rather getPlugin(MyPlugin.class)!");
+
+            this.logger.warning("YOU MUST NOT call getPlugin() with a concrete class; only interfaces are supported for lookup.");
+            return null;
+        }
 
         // Used to process the options
         final OptionUtils<GetPluginOption> ou = new OptionUtils<GetPluginOption>(options);

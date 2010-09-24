@@ -29,8 +29,8 @@ package net.xeoh.plugins.base;
 
 /**
  * 
- * A pluglet is a subservce a plugin returns. In contrast to plugins however, there can be many instances of 
- * the same pluglet class. 
+ * A pluglet is a subservce a plugin returns. In contrast to plugins however, there can be 
+ * many instances of the same pluglet class. 
  * 
  * @author Ralf Biedert
  *

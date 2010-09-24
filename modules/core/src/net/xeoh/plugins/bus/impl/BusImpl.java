@@ -57,7 +57,7 @@ public class BusImpl implements Bus {
     /**
      * List of all known listeners
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     HashMap<Class<? extends Channel>, List<ChannelListener<?>>> knownListeners;
 
     /**
@@ -98,7 +98,7 @@ public class BusImpl implements Bus {
     }
 
     /** */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     @Init
     public void init() {
         this.knownListeners = new HashMap<Class<? extends Channel>, List<ChannelListener<?>>>();
@@ -107,7 +107,7 @@ public class BusImpl implements Bus {
     /* (non-Javadoc)
      * @see net.xeoh.plugins.bus.Bus#sendOnChannel(java.lang.Class, net.xeoh.plugins.bus.messages.BusMessage)
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public <B extends BusMessage, D extends B, C extends Channel<B>> void sendOnChannel(
                                                                                         final Class<C> channel,
                                                                                         final D message) {

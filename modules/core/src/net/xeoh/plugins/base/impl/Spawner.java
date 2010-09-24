@@ -110,7 +110,7 @@ public class Spawner {
      *                Class to spawn from.
      * @return .
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public SpawnResult spawnPlugin(final Class c) {
         return spawnPluggable(c, false);
     }
@@ -123,7 +123,7 @@ public class Spawner {
      * @param lazySpawn 
      * @return .
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public SpawnResult spawnPluggable(final Class c, boolean lazySpawn) {
 
         // Used for time measurements.
@@ -419,7 +419,7 @@ public class Spawner {
                         } catch (final IllegalAccessException e) {
                             Spawner.this.logger.warning("Error invoking requested thread on plugin (2) " + spawnClass.getName());
                             Spawner.this.logger.warning(e.getMessage());
-                            e.printStackTrace();                            
+                            e.printStackTrace();
                         } catch (final InvocationTargetException e) {
                             Spawner.this.logger.warning("Error invoking requested thread on plugin (3) " + spawnClass.getName());
                             Spawner.this.logger.warning(e.getMessage());
