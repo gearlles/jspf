@@ -58,29 +58,23 @@ public class PluggableMetaInformation {
      * @author rb
      */
     public static enum PluginStatus {
-        /**
-         * No further information is available
-         */
+        /** No further information is available */
         UNDEFINED,
-        /**
-         * Plugin has been spawned 
-         */
+
+        /** Plugin has been spawned, i.e., constructed. */
         SPAWNED,
-        /**
-         * Plugin has been initialized and all threads and timers have been spawned
-         */
+
+        /** Plugin has been initialized and all threads and timers have been spawned */
         INITIALIZED,
-        /**
-         * Plugin is currently running  
-         */
+
+        /** Plugin is currently running (default state when
+         * everything is okay) */
         ACTIVE,
-        /**
-         * Plugin was shut down.
-         */
+
+        /** Plugin was shut down. */
         TERMINATED,
-        /**
-         * Plugin failed to initialize
-         */
+
+        /** Plugin failed to initialize due to own report. */
         FAILED
     }
 

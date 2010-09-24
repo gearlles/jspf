@@ -250,7 +250,7 @@ public abstract class AbstractLoader {
                     final SpawnResult p = spawner.spawnPlugin(c);
 
                     // In case we were successful ...
-                    if (p != null) {
+                    if (p != null && p.metaInformation.pluginStatus != PluginStatus.FAILED) {
 
                         // Link the parent class meta information
                         p.metaInformation.classMeta = metaInformation;

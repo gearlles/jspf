@@ -43,41 +43,30 @@ public class PluggableClassMetaInformation {
      * @author rb
      */
     public static enum PluginClassStatus {
-        /**
-         * No further information are available.
-         */
+        /** No further information are available. Should not be observed 
+         * under normal circumstances. */
         UNDEFINED,
 
-        /**
-         * Plugin has been accepted as a valid plugin
-         */
+        /** Plugin has been accepted as a valid plugin */
         ACCEPTED,
 
-        /**
-         * Disabled due to various reasons. 
-         */
+        /** Disabled due to various reasons (check logging output). */
         DISABLED,
 
-        /**
-         * Plugin contains unresolved dependencies. 
-         */
+        /** Plugin contains unresolved dependencies */
         CONTAINS_UNRESOLVED_DEPENDENCIES,
 
-        /**
-         * Plugin is ready for spawning
-         */
+        /** Plugin is ready for spawning, should happen soon. */
         SPAWNABLE,
-        /**
-         * Plugin has been lazy-spawned
-         */
+
+        /** Plugin has been lazy-spawned. ??? */
         LAZY_SPAWNED,
-        /**
-         * Plugin has been spawned
-         */
+
+        /** Plugin has been spawned. Should be accessible now 
+         * by getPlugin(). */
         SPAWNED,
-        /**
-         * If the class failed to spawn
-         */
+
+        /** If the class failed to spawn */
         FAILED,
     }
 

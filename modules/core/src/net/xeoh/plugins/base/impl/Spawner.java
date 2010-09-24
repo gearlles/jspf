@@ -206,7 +206,7 @@ public class Spawner {
             final boolean initStatus = callInitMethods(spawnedPlugin, methods);
             if (initStatus == false) {
                 spawnResult.metaInformation.pluginStatus = PluginStatus.FAILED;
-                return null;
+                return spawnResult;
             }
 
             // Initialization complete
@@ -268,17 +268,20 @@ public class Spawner {
                         if (((Boolean) invoke).booleanValue() == false) return false;
                     }
                 } catch (final IllegalArgumentException e) {
-                    this.logger.warning("Error invoking requested @Init on plugin " + spawnClass.getName());
+                    this.logger.warning("Error(IAE) invoking requested @Init on plugin " + spawnClass.getName());
                     this.logger.warning(e.toString());
                     e.printStackTrace();
+                    return false;
                 } catch (final InvocationTargetException e) {
-                    this.logger.warning("Error invoking requested @Init on plugin " + spawnClass.getName());
+                    this.logger.warning("Error(ITE) invoking requested @Init on plugin " + spawnClass.getName());
                     this.logger.warning(e.toString());
                     e.printStackTrace();
+                    return false;
                 } catch (final Exception e) {
                     this.logger.warning("Error invoking requested @Init on plugin (unknown exception): " + spawnClass.getName());
                     this.logger.warning(e.toString());
                     e.printStackTrace();
+                    return false;
                 }
             }
         }
