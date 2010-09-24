@@ -27,6 +27,8 @@
  */
 package net.xeoh.plugins.base.impl;
 
+import static net.jcores.CoreKeeper.$;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
 import java.net.URI;
@@ -65,6 +67,7 @@ import net.xeoh.plugins.base.impl.registry.PluginRegistry;
 import net.xeoh.plugins.base.options.AddPluginsFromOption;
 import net.xeoh.plugins.base.options.GetPluginOption;
 import net.xeoh.plugins.base.options.addpluginsfrom.OptionLoadAsynchronously;
+import net.xeoh.plugins.base.options.addpluginsfrom.OptionReportAfter;
 import net.xeoh.plugins.base.options.getplugin.OptionCapabilities;
 import net.xeoh.plugins.base.options.getplugin.OptionPluginSelector;
 import net.xeoh.plugins.base.options.getplugin.PluginSelector;
@@ -178,19 +181,13 @@ public class PluginManagerImpl implements PluginManager {
      * Currently this method only support loading from directories and jars (i.e. no
      * network loading)
      *
-     * TODO: Implement network loading.
-     *
-     * FIXME: Use exactly one classloader to load all files from one URL, not several !
-     *
      * @see net.xeoh.plugins.base.PluginManager#addPluginsFrom(URI, AddPluginsFromOption...)
      */
     public void addPluginsFrom(final URI url, final AddPluginsFromOption... options) {
         this.logger.fine("Adding plugins from " + url);
 
-        final OptionUtils<AddPluginsFromOption> ou = new OptionUtils<AddPluginsFromOption>(options);
-
         // Shall we call this asynchoronously?
-        if (ou.contains(OptionLoadAsynchronously.class)) {
+        if ($(options).get(OptionLoadAsynchronously.class, null) != null) {
 
             Thread t = new Thread(new Runnable() {
                 public void run() {
@@ -206,6 +203,9 @@ public class PluginManagerImpl implements PluginManager {
 
         // Just handle the call normally.
         doAddPluginsFrom(url, options);
+
+        if ($(options).get(OptionReportAfter.class, null) != null)
+            this.pluginRegistry.report();
 
         return;
     }

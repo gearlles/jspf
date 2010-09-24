@@ -27,6 +27,8 @@
  */
 package net.xeoh.plugins.base.impl.registry;
 
+import static net.jcores.CoreKeeper.$;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,7 +36,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.jcores.interfaces.functions.F1;
 import net.xeoh.plugins.base.Plugin;
+import net.xeoh.plugins.base.impl.registry.PluggableClassMetaInformation.Dependency;
 import net.xeoh.plugins.base.impl.registry.PluggableClassMetaInformation.PluginClassStatus;
 
 /**
@@ -83,8 +87,7 @@ public class PluginRegistry {
      * @param clazz
      * @return .
      */
-    public PluggableClassMetaInformation getMetaInformationFor(
-                                                               Class<? extends Plugin> clazz) {
+    public PluggableClassMetaInformation getMetaInformationFor(Class<? extends Plugin> clazz) {
         return this.pluginClassMetaInformation.get(clazz);
     }
 
@@ -116,11 +119,12 @@ public class PluginRegistry {
     }
 
     /**
+     * Returns all classes with a given status.
+     * 
      * @param status
      * @return .
      */
-    public Collection<Class<? extends Plugin>> getPluginClassesWithStatus(
-                                                                          PluginClassStatus status) {
+    public Collection<Class<? extends Plugin>> getPluginClassesWithStatus(PluginClassStatus status) {
         final List<Class<? extends Plugin>> rval = new ArrayList<Class<? extends Plugin>>();
         final Set<Class<? extends Plugin>> keySet = this.pluginClassMetaInformation.keySet();
 
@@ -133,4 +137,33 @@ public class PluginRegistry {
         return rval;
     }
 
+    /**
+     * Prints a report of this registry. 
+     */
+    public void report() {
+        System.out.println();
+        System.out.println(">>> Class Report <<<");
+        final Set<Class<? extends Plugin>> keySet = this.pluginClassMetaInformation.keySet();
+        for (Class<? extends Plugin> class1 : keySet) {
+            final PluggableClassMetaInformation meta = this.pluginClassMetaInformation.get(class1);
+            System.out.print("    " + class1.getCanonicalName() + " (status:'" + meta.pluginClassStatus);
+            System.out.print("'; dependencies:'" + $(meta.dependencies).map(new F1<PluggableClassMetaInformation.Dependency, String>() {
+                public String f(Dependency x) {
+                    return x.pluginClass.getSimpleName();
+                }
+            }).string().join(","));
+            System.out.print("'; origin:'" + meta.pluginOrigin + "';)");
+            System.out.println();
+        }
+
+        System.out.println();
+        System.out.println(">>> Object Report <<<");
+        final Set<Plugin> keySet2 = this.pluginMetaInformation.keySet();
+        for (Plugin plugin : keySet2) {
+            final PluggableMetaInformation meta = this.pluginMetaInformation.get(plugin);
+            System.out.println("    " + plugin + " (status:'" + meta.pluginStatus + "')");
+        }
+
+        System.out.println();
+    }
 }

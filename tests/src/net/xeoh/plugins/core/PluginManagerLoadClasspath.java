@@ -32,6 +32,7 @@ import java.net.URISyntaxException;
 
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
+import net.xeoh.plugins.base.options.addpluginsfrom.OptionReportAfter;
 import net.xeoh.plugins.base.util.JSPFProperties;
 import net.xeoh.plugins.remote.RemoteAPI;
 
@@ -84,7 +85,7 @@ public class PluginManagerLoadClasspath {
 
         try {
             //this.pm.addPluginsFrom(new URI("classpath://*"));
-            this.pm.addPluginsFrom(new URI("classpath://*"));
+            this.pm.addPluginsFrom(new URI("classpath://*"), new OptionReportAfter());
             //this.pm.addPluginsFrom(new URI("classpath://*"));
 
         } catch (URISyntaxException e) {
