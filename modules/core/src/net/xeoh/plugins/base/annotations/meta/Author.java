@@ -32,10 +32,22 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import net.xeoh.plugins.base.PluginInformation;
+
 /**
- * Specifies an author of the given plugin.
+ * Specifies an author of the given plugin. For example, to specify that a given 
+ * plugin was written by John Doe, write:<br/><br/>
+ * 
+ * <code>
+ * &#064;Author(name = "John Doe")<br/>
+ * &#064;PluginImplementation<br/>
+ * public class ServiceImpl implements Service { ... } 
+ * </code><br/><br/>
+ * 
+ * This information can be queried using the {@link PluginInformation} plugin. 
  * 
  * @author Ralf Biedert
+ * @see PluginInformation.Information
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

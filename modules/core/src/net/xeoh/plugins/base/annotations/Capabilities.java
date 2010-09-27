@@ -32,14 +32,31 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import net.xeoh.plugins.base.PluginManager;
+import net.xeoh.plugins.base.annotations.events.Init;
+import net.xeoh.plugins.base.options.getplugin.OptionCapabilities;
+
 /**
  * Methods marked with Capabilities are queried by PluginInformation. The method MUST be
  * public and it MUST return a String[] array. If several methods are annotated it is
- * undefined which one will be called. As soon as the Init annotation is processed the
- * capabilities function must be operational. Use this function for example to tell which
- * file extensions you can handle or the (limited number of) host you can connect to.
- * While this method can return different values on every call it is considered "bad
- * taste" if latter calls return anything less than the previous calls.
+ * undefined which one will be called. <br/><br/>
+ * 
+ * As soon as the &#064;{@link Init} annotation is processed the capabilities function must be 
+ * operational. Use this function for example to tell which file extensions you can handle 
+ * or the (limited number of) host you can connect to. While this method can return different 
+ * values on every call it is considered "bad taste" if latter calls return anything less 
+ * than the previous calls.<br/><br/>
+ * 
+ * For example, if you want a plugin to indicate that it can handle a set of languages,
+ * you could write:<br/><br/>
+ * 
+ * <code>
+ * &#064;Capabilities<br/>
+ * public String[] capabilities() { return new String[] {"language:english", "language:german"}; }
+ * </code><br/><br/>
+ * 
+ * Later on, you can use {@link OptionCapabilities} within the {@link PluginManager}'s <code>getPlugin()</code> method to 
+ * retrieve all plugins providing certain capabilities.    
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

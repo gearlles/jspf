@@ -27,14 +27,21 @@
  */
 package net.xeoh.plugins.base.options.addpluginsfrom;
 
+import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.options.AddPluginsFromOption;
 
 /**
- * Loads the specified plugins asynchronously.
+ * Loads the specified plugins asynchronously. This option instructs the {@link PluginManager} 
+ * to load the plugins from the given source in the background.  For example, make the plugin 
+ * manager load the given source in the background, write:<br/><br/>
  * 
- * Currently not in use, and probably never will be.
+ * <code>
+ * pluginManager.addPluginsFrom(uri, new OptionLoadAsynchronously());
+ * </code>
+ * 
  * 
  * @author Ralf Biedert
+ * @see PluginManager
  */
 public class OptionLoadAsynchronously implements AddPluginsFromOption {
 

@@ -27,11 +27,27 @@
  */
 package net.xeoh.plugins.base.options.getplugin;
 
+import net.xeoh.plugins.base.annotations.Capabilities;
 import net.xeoh.plugins.base.options.GetPluginOption;
 
 /**
  * Specifies the method should only consider plugins satisfying all the 
- * given capabilities. 
+ * given {@link Capabilities}. This is useful in case there are a number of plugins
+ * implementing the same interface. With this option, only plugins with the 
+ * specified capabilities are considered. For example, to get a plugin implementing
+ * the <code>Language</code> and capable of handling English, write:<br/><br/>
+ * 
+ * <code>
+ * pluginManager.getPlugin(Language.class, new OptionCapabilities("language:english"));
+ * </code><br/><br/>
+ * 
+ * If multiple capabilities are specified only plugins matching all of them are being 
+ * considered. Multiple capabilities MUST be specified within a single option, not as
+ * multiple options, i.e., write:<br/><br/>
+ * 
+ * <code>
+ * new OptionCapabilities("filetype:xml", "filetype:csv", "filetype:raw");
+ * </code><br/><br/>
  * 
  * @author Ralf Biedert
  */

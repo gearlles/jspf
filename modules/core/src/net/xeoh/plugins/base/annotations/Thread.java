@@ -33,7 +33,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Methods marked with \@Thread will be called from a newly created thread.
+ * Methods marked with &#064;Thread will be called from a newly created thread. For example,
+ * to specify that after the plugin's creation a specific method should be called from a 
+ * dedicated thread, you would write:<br/><br/>
+ * 
+ * <code>
+ * &#064;Thread<br/>
+ * public void background() { ... }
+ * </code><br/><br/>
+ * 
+ * All threads are terminated upon <code>PluginManager.shutdown()</code>. 
+ * 
  * 
  * @author Ralf Biedert
  */

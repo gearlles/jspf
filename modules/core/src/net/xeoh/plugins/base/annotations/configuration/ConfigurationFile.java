@@ -31,12 +31,24 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.prefs.Preferences;
 
 /**
  * Specifies a configuration file relative to the given plugin. Its content will be added
- * to the global configuration (@see PluginConfiguration).  
+ * to the global configuration (@see PluginConfiguration). For example, to specify that the 
+ * configuration file <code>config.properties</code> in the same package as the plugin should 
+ * be added the the configuration, write<br/><br/>
+ * 
+ * <code>
+ * &#064;PluginImplementation<br/>
+ * &#064;ConfigurationFile(file="config.properties")<br/>
+ * public class ServiceImpl implements Service { ... } 
+ * </code><br/><br/>
+ * 
+ * The configuration file is a standard Java preferences file. 
  * 
  * @author Ralf Biedert
+ * @see Preferences
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

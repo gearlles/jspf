@@ -36,6 +36,7 @@ import net.xeoh.plugins.base.PluginConfiguration;
  * interface to provide more convenience features.   
  *
  * @author Ralf Biedert
+ * @see PluginConfiguration
  */
 public class PluginConfigurationUtil {
     private final PluginConfiguration pluginConfiguration;

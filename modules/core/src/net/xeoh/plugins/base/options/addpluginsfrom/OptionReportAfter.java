@@ -27,12 +27,21 @@
  */
 package net.xeoh.plugins.base.options.addpluginsfrom;
 
+import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.options.AddPluginsFromOption;
 
 /**
- * Asks the PluginManager to print a report after this plugin addition.
+ * Asks the PluginManager to print a report after this plugin addition. See the console
+ * output for more information. This option is a useful tool for debugging plugin problems.
+ * For example, to print a report after all plugins from a given source have been loaded, 
+ * write:<br/><br/>
+ * 
+ * <code>
+ * pluginManager.addPluginsFrom(uri, new OptionReportAfter());
+ * </code>
  * 
  * @author Ralf Biedert
+ * @see PluginManager
  */
 public class OptionReportAfter implements AddPluginsFromOption {
 

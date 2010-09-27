@@ -32,13 +32,37 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import net.xeoh.plugins.base.PluginManager;
+import net.xeoh.plugins.base.annotations.Capabilities;
+
 /**
- * Inject a (random) instance of a given plugin interface. If the plugin is not available
- * at spawntime, null will be inserted.<br/> <br/>
- *
+ * Inject some instance implementing the given plugin interface. If the plugin is not available 
+ * at spawntime (and the dependency is marked as optional), null will be inserted. If the plugin
+ * was not marked as optional this plugin will not be spawned. For example,
+ * to specify that the PluginManager should be injected into the plugin, you would write:<br/><br/>
+ * 
+ * <code>
+ * &#064;InjectPlugin<br/>
+ * public PluginManager pluginManager;
+ * </code><br/><br/>
+ * 
+ * Another example. To specify that a language service for Swahili should be injected in case it 
+ * is there and null in case it is not, you could write:<br/><br/>
+ * 
+ * <code>
+ * &#064;InjectPlugin(requiredCapabilities = {"language:swahili"}, isOptional=true)<br/>
+ * public LanguageService service;
+ * </code><br/><br/>.
+ *   
+ * This ensures that the returned plugin, if it is there, is of type <code>LanguageService</code> and has the 
+ * capability (see {@link Capabilities}) of processing Swahili. If <code>isOptional</code> is <code>false</code> 
+ * or omitted then it is even ensured that this plugin will not be spawned unless the given service is available.
+ * <br/><br/>.
+ * 
  * Please note: The annotated variable has to be <b>public</b>!
  *
  * @author Ralf Biedert
+ * @see PluginManager
  *
  */
 @Target(value = { ElementType.FIELD, ElementType.METHOD })

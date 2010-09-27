@@ -31,11 +31,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import net.xeoh.plugins.base.Plugin;
+import net.xeoh.plugins.base.PluginManager;
 
 /**
- * Convenience method to load plugins from  the classpath
+ * Convenience method to load plugins from the classpath
  * 
  * @author Ralf Biedert
+ * @see PluginManager
  */
 public class ClassURI extends URIUtil {
 

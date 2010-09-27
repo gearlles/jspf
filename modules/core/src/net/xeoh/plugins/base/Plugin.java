@@ -40,27 +40,29 @@ import net.xeoh.plugins.base.util.PluginUtil;
  * <br>
  * 3. Create an impl sub-package with the plugin package, in our case this is
  * <code>com.company.plugins.imagedb.impl</code>. The <i>impl</i>-name is not 
- * required, but should be kept as a convention. In the future the might exist 
+ * required, but should be kept as a convention. In the future there might exist 
  * tools that depend on it, or work better with it. If you have multiple implementations, 
  * create several sub-packages within the impl folder. In our example case, this 
  * could be the implementations <code>impl.simple</code> (for a simple test 
- * implementation),<code>impl.distributed</code> (for our distributed image storage) 
+ * implementation), <code>impl.distributed</code> (for our distributed image storage) 
  * and <code>impl.compatiblity</code> (for the old DB API)<br>
  * <br>
- * 4. Implement your interfaces, i.e., create a class / classes implementing your 
- * interface.<br>
+ * 4. Implement your interfaces, i.e., create a class / classes inside the 
+ * respective <code>impl</code> folder.<br>
  * <br>
- * 5. Add the <code>@PluginImplementation</code> annotation to your class.<br>
+ * 5. Add the <code>@PluginImplementation</code> annotation to your implemented 
+ * class(es).<br>
  * <br>
  * 6. You're done. Technically your plugin is ready now to use. It can be compiled 
  * now (Eclipse will probably have done this for you already). You might want to 
- * have a look at the PluginManager documentation to see how you can load and retrieve 
+ * have a look at the {@link PluginManager} documentation to see how you can load and retrieve 
  * it (see <code>addPluginsFrom()</code> and <code>getPlugin()</code>).<br>
  * <br>
- * NOTE: You should <b>ensure that an implementation of such a plugin is thread 
+ * NOTE: You should <b>ensure that all implementations of your plugins are thread 
  * safe</b>! Expect your functions to be called any time in any state.
  *
  * @author Ralf Biedert
+ * @see PluginManager
  * @see PluginUtil
  */
 public interface Plugin extends Pluggable {

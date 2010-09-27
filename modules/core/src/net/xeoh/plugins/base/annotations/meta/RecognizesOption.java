@@ -38,7 +38,8 @@ import net.xeoh.plugins.base.Option;
  * Specifies the given method does accept and evaluate a given
  * parameter.<br/><br/>
  * 
- * Work in progress, annotation will change! Also, it is not being evaluated atm.
+ * Work in progress, annotation will change! Also, it is not being 
+ * evaluated at the moment.
  *  
  * 
  * @author Ralf Biedert

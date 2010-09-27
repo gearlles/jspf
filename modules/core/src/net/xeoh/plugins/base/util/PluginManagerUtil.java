@@ -40,6 +40,7 @@ import net.xeoh.plugins.base.options.getplugin.PluginSelector;
  * interface to provide more convenience features.   
  *
  * @author Ralf Biedert
+ * @see PluginManager
  */
 public class PluginManagerUtil {
 
@@ -57,10 +58,16 @@ public class PluginManagerUtil {
     /**
      * Returns all interfaces implementing the given interface, not just the first, 
      * 'random' match. Use this method if you want to list  the registed plugins (or 
-     * select from them on your own).  
+     * select from them on your own). For example, to get all plugins implementing the 
+     * <code>Chat</code> interface, write:<br/><br/>
+     * 
+     * <code>
+     * getPlugins(Chat.class);
+     * </code>
      * 
      * @param <P> Type of the requested plugin.
-     * @param plugin The interface to request. 
+     * @param plugin The interface to request.
+     * @see OptionPluginSelector 
      * @return A collection of all plugins implementing the given interface.
      */
     public <P extends Plugin> Collection<P> getPlugins(final Class<P> plugin) {
@@ -75,12 +82,13 @@ public class PluginManagerUtil {
     /**
      * Returns all interfaces implementing the given interface AND satisfying the 
      * given plugin selector. Use this method if you want to list some of the 
-     * registed plugins (or select from them on your own).  
+     * registed plugins (or select from them on your own). 
      * 
      * @param <P> Type of the requested plugin.
      * @param plugin The interface to request. 
      * @param selector The selector will be called for each available plugin. When 
-     * it returns <code>true</code> the plugin will be added to the return value.  
+     * it returns <code>true</code> the plugin will be added to the return value.
+     * @see OptionPluginSelector  
      * @return A collection of plugins for which the collector return true.
      */
     public <P extends Plugin> Collection<P> getPlugins(final Class<P> plugin,

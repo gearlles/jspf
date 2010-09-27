@@ -32,14 +32,25 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import net.xeoh.plugins.base.PluginManager;
+
 /**
- * Methods marked with this interface will be called on shutdown of the application. Plugins *must not* assume
- * anything about the status of other plugins, even if they depend on them. Everyone dies alone. Just free all 
- * resources you allocated yourself, and do it fast. 
+ * Methods marked with this interface will be called on the shutdown of the {@link PluginManager}. 
+ * Plugins *must not* assume anything about the status of other plugins, even if they depend on them; 
+ * everyone dies alone. Just free all resources you allocated yourself, and do it fast. For 
+ * example, if you want a method to be called upon the Manager's shutdown, you could 
+ * write:<br/><br/>
+ * 
+ * <code>
+ * &#064;Shutdown<br/>
+ * public void bye() { ... }
+ * </code><br/><br/>
+ * 
  *
  * Note: Methods annotated with this have to be PUBLIC, otherwise they won't be found.
  *
  * @author Ralf Biedert
+ * @see Init
  *
  */
 @Retention(RetentionPolicy.RUNTIME)

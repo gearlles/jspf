@@ -48,7 +48,7 @@ public interface PluginSupervisor extends Plugin {
 
     /**
      * 
-     * Adds a supervisors that listens to calls of every plugin (except the PluginManager itself 
+     * Adds a supervisors that listens to calls of every plugin (except the {@link PluginManager} itself 
      * and the PluginSupvervisor).
      * 
      * @param supervisor The supervisor to add for all plugins.

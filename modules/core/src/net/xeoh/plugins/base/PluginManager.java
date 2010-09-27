@@ -70,9 +70,10 @@ public interface PluginManager extends Plugin {
      * 
      * <ul>
      * <li><code>addPluginsFrom(new URI("classpath://*"))</code> (add all plugins within the current classpath).</li>
-     * <li><code>addPluginsFrom(new File("plugins/").toURI())</code> (add all plugins from the given folder, scanning for JARs and <a href="http://code.google.com/p/jspf/wiki/FAQ">multi-plugins</a>).</li>
-     * <li><code>addPluginsFrom(new File("plugin.jar").toURI())</code> (adds the given plugin directly, no scanning is being done).</li>
+     * <li><code>addPluginsFrom(new File("plugins/").toURI())</code> (all plugins from the given folder, scanning for JARs and <a href="http://code.google.com/p/jspf/wiki/FAQ">multi-plugins</a>).</li>
+     * <li><code>addPluginsFrom(new File("plugin.jar").toURI())</code> (the given plugin directly, no scanning is being done).</li>
      * <li><code>addPluginsFrom(new URI("http://sample.com/plugin.jar"))</code> (downloads and adds the given plugin, use with caution).</li>
+     * <li><code>addPluginsFrom(new ClassURI(ServiceImpl.class).toURI())</code> (adds the specific plugin implementation already present in the classpath; very uncomfortable, very fast).</li>
      * </ul>
      *   
      * @see ClassURI

@@ -29,9 +29,14 @@ package net.xeoh.plugins.base.util;
 
 import java.util.Properties;
 
+import net.xeoh.plugins.base.PluginConfiguration;
+import net.xeoh.plugins.base.impl.PluginManagerFactory;
+
 /**
- * Can be used to set properties more easily. Pass this object to <code>createPluginManager()</code> 
- * to set initial properties. 
+ * Can be used to set properties more easily. Pass this object to the {@link PluginManagerFactory}'s 
+ * <code>createPluginManager()</code> method to set initial properties.<br/><br/>
+ * 
+ * A good overview on how properties can be used is in the {@link PluginConfiguration}'s documentation.   
  * 
  * @author Ralf Biedert
  */
@@ -41,7 +46,14 @@ public class JSPFProperties extends Properties {
     private static final long serialVersionUID = -4275521676384493982L;
 
     /**
-     * Sets a property using a class as prefix.
+     * Sets a property using a class as prefix. For example, if 
+     * <code>GeoService</code> is in the package <code>com.company.plugins.geoservice</code>
+     * the following call:<br/><br/>  
+     * <code>
+     * setProperty(GeoService.class, "remote.url", "http://geo.ip/q?");
+     * </code><br/><br/>
+     * would set the configuration key <code>com.company.plugins.geoservice.GeoService.remote.url</code> 
+     * to the value <code>http://geo.ip/q?</code>.
      * 
      * @param root Root class to set an option for. 
      * @param subkey The subkey to set. 

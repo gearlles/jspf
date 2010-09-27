@@ -27,43 +27,46 @@
  */
 package net.xeoh.plugins.base;
 
+import net.xeoh.plugins.base.annotations.configuration.ConfigurationFile;
+import net.xeoh.plugins.base.impl.PluginManagerFactory;
+import net.xeoh.plugins.base.util.JSPFProperties;
 import net.xeoh.plugins.base.util.PluginConfigurationUtil;
 
 /**
- * Allows access to configuration items of plugins. The plugin-dependant
- * configuration files can be specified using the PluginImplementation
- * annotation.<br/><br/>
- * 
- * There are three ways of adding configuration: 
+ * Gives you access to configuration items of plugins. In general there are three ways 
+ * of adding configuration: 
  * <ol>
  * <li>by calling <code>setPreferences()</code></li>
- * <li>by providing a <code>JSPFPreferences</code> object to the PluginManagerFactory</li>
- * <li>by using the <code>@ConfigurationFile</code> annotation.<br/><br/></li>
+ * <li>by providing a {@link JSPFProperties} object to the {@link PluginManagerFactory}</li>
+ * <li>by using the &#064;{@link ConfigurationFile} annotation.<br/><br/></li>
  * </ol>
  * 
- * A sample query might look like this: <code>getPreferences(GeoService.class, "remote.url")</code> 
- *
  * @author Ralf Biedert
  * @see PluginConfigurationUtil
  */
 public interface PluginConfiguration extends Plugin {
     /**
      * Gets a configuration key. Root may be added for convenience and will
-     * prefix the subkey with its FQN.
+     * prefix the subkey with its fully qualified name. Thus, if there is an interface
+     * <code>GeoService</code> in the package <code>com.company.plugins.geoservice</code>
+     * the following call:<br/><br/>  
+     * <code>
+     * getConfiguration(GeoService.class, "remote.url")
+     * </code><br/><br/>
+     * would try to return the configuration key <code>com.company.plugins.geoservice.GeoService.remote.url</code>.
      *
      * @param root May also be null.
      * @param subkey If used in conjunction with root it should not be prefixed
      * with a dot (".")
      *
-     * @return The corresponding value or null if nothing was found
+     * @return The corresponding value or null if nothing was found.
      */
     public String getConfiguration(Class<?> root, String subkey);
 
     /**
      * Set the key for a value. Root may be added for convenience and will
      * prefix the subkey with its FQN. Usually the configuration is added 
-     * by providing <code>JSPFPreferences</code> object to the 
-     * <code>PluginManagerFactory</code>. 
+     * by providing JSPFProperties object to the {@link PluginManagerFactory} 
      *
      * @param root May also be null.
      * @param subkey If used in conjunction with root it should not be prefixed 

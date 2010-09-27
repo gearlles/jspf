@@ -1,5 +1,6 @@
 /**
- * The <code>PluginManagerFactory</code> is the only class of relevance, start exploring here.  
+ * The <code>PluginManagerFactory</code> is the framework's entry point and the only class of 
+ * relevance within this package, start exploring here.    
  *
  * @since 1.0
  */

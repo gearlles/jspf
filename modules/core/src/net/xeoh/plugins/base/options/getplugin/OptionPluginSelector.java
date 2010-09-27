@@ -28,14 +28,29 @@
 package net.xeoh.plugins.base.options.getplugin;
 
 import net.xeoh.plugins.base.Plugin;
+import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.options.GetPluginOption;
+import net.xeoh.plugins.base.util.PluginManagerUtil;
 
 /**
- * Passes a plugin selector as an option. The selector will be called on each considered plugin. 
- * The first plugin on which the collector returns <code>true</code> will be returned.   
+ * Passes a plugin selector as an option. The selector will be called for each considered plugin. 
+ * The first plugin on which the collector returns <code>true</code> will be returned. For example, 
+ * to select a remote service based on its protocol, write:<br/><br/>
+ * 
+ * <code>
+ * getPlugin(RemoteAPI.class, new OptionPluginSelector<RemoteAPI>(new PluginSelector<RemoteAPI>() {<br/>
+ * &nbsp;&nbsp;&nbsp;&nbsp;public boolean selectPlugin(final RemoteAPI p) {<br/>
+ * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (p.getPublishMethod() == PublishMethod.JSON) return true;<br/>
+ * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return false;<br/>
+ * }<br/>
+ *  }));<br/>
+ * </code><br/><br/>
+ * 
+ * The plugin selector is especially useful to iterate over all plugins, {@link PluginManagerUtil} 
+ * already does that for you.
  * 
  * @author Ralf Biedert
- * 
+ * @see PluginManager
  * @param <P> Type of the plugin.
  */
 public final class OptionPluginSelector<P extends Plugin> implements GetPluginOption {

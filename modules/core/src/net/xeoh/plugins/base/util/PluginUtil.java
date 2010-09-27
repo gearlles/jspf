@@ -53,7 +53,7 @@ public class PluginUtil {
     }
 
     /**
-     * Lists all primary interfaces
+     * Lists all primary interfaces.
      * 
      * @return A list of primary interfaces.>
      */

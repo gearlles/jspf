@@ -3,7 +3,7 @@ package net.xeoh.plugins.base.util;
 import net.xeoh.plugins.base.Option;
 
 /**
- * Handle options
+ * Handles options. Only used internally.
  * 
  * @author Ralf Biedert
  * 

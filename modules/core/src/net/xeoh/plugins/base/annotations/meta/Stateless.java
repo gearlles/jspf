@@ -36,11 +36,11 @@ import java.lang.annotation.Target;
  * Marker interface to signal that JSPF may hot swap the component behind the scenes 
  * without causing trouble to existing components.<br/><br/>
  * 
- * Not functioning right now!<br/><br/>
+ * Not functional right now!<br/><br/>
  * 
- * TODO: Does it make really sense / do we *really* want such a functionality? It complicates many 
- * things and is only relevant to a small number of project (which are likely better off with
- * OSGi and the like)  
+ * TODO: Does it make really sense / do we *really* want such a functionality? It 
+ * complicates many things and is only relevant to a small number of projects (which 
+ * are likely better off with OSGi and the like)  
  * 
  * @author Ralf Biedert
  */

@@ -28,7 +28,9 @@
 package net.xeoh.plugins.base;
 
 /**
- * Not used right now, experimental.
+ * The PlugletManager allows you to spawn {@link Pluglet}s. A pluglet is intended to have 
+ * the advantages of plugins (like annotation support) while being lightweight. Experimental
+ * and not used right now. Will very likely be removed.
  * 
  * @author Ralf Biedert
  */

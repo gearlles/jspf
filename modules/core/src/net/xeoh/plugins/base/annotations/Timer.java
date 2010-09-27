@@ -33,10 +33,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Methods marked with \@Timer will called periodically from a timer. The method
- * may return a boolean value. If this value is true, the timer will be
- * canceled.
+ * Methods marked with &#064;Timer will called periodically from a timer. The method
+ * may return a boolean value. If this value is true, the timer will be canceled. For 
+ * example, to specify that after the plugin's creation a specific method should be 
+ * called from a timer, you would write:<br/><br/>
  * 
+ * <code>
+ * &#064;Timer<br/>
+ * public void ping() { ... }
+ * </code><br/><br/>
+ * 
+ * All timers are terminated upon <code>PluginManager.shutdown()</code>. 
+
  * @author Ralf Biedert
  */
 @Retention(RetentionPolicy.RUNTIME)

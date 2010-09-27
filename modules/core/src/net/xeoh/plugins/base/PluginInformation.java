@@ -29,53 +29,79 @@ package net.xeoh.plugins.base;
 
 import java.util.Collection;
 
+import net.xeoh.plugins.base.annotations.Capabilities;
+import net.xeoh.plugins.base.annotations.meta.Author;
+import net.xeoh.plugins.base.annotations.meta.Version;
+
 /**
- * Returns different information about plugins, static as well as dynamic. 
+ * Returns various information about plugins, static as well as dynamic. 
  *
  * @author Ralf Biedert
  */
 public interface PluginInformation extends Plugin {
     /**
-     * The set of information item that can be requested.
+     * The set of information item that can be requested. <b>S1</b> means a list 
+     * of strings with exactly one element is returnd, <b>S+</b> means a number of 
+     * strings will be returned. In case no information was available an empty 
+     * collection is returned. 
      * 
      * @author Ralf Biedert
      */
     public static enum Information {
-        /** The author of this plugins. A list of one (Aloo) String is returnd. */
+        /** The author of this plugins (S1). 
+         *
+         *  @see Author
+         */
         AUTHORS,
 
         /**
-         * Returns the self proclaimed capabilites of this plugin. A list of Strings is
-         * returned. What is inside the capabilites is a matter of the individual plugin's
-         * interface definition.
+         * Returns the self proclaimed capabilites of this plugin (S+). 
+         * 
+         * @see Capabilities
          */
         CAPABILITIES,
 
         /**
-         * Version of this plugin. Aloo String, a direct conversion of the plugins
-         * corresponding integer value.
+         * Version of this plugin (S1). A version number of 10304 will be 
+         * returned as 1.03.04.
+         * 
+         *  @see Version
          */
         VERSION,
 
-        /** Date when the plugin was initialized. Aloo Long as String. */
+        /** 
+         * Date when the plugin was initialized. The unix time will be returned (S1).<br/><br/>
+         * 
+         * TODO: Not implemented yet.
+         */
         INIT_DATE,
 
         /**
          * Returns a single string containing the URI to the classpath item this 
-         * element came from 
+         * element came from (S1).
          */
         CLASSPATH_ORIGIN,
 
-        /** Returns a unique ID for a given plugin that does not change over versions */
+        /** Returns a unique ID for a given plugin that does not change over versions<br/><br/>
+         * 
+         * TODO: Not implemented yet.
+         */
         UNIQUE_ID
     }
 
     /**
-     * Returns some information of a plugin
+     * Returns an {@link Information} item about a plugin. For example, to query a plugin's 
+     * classpath origin you would write:<br/><br/>
+     * 
+     * <code>
+     * getInformation(Information.CLASSPATH_ORIGIN, plugin);
+     * </code>
+     * 
      * @param item The information item to request. 
      * @param plugin The plugin for which the information is requested.
      *
-     * @return A collection of strings containing the requested information.
+     * @return A collection of strings containing the requested information. The the specific {@link Information} 
+     * item for more details. If nothing sensible was found, an empty collection is returned.
      */
     public Collection<String> getInformation(Information item, Plugin plugin);
 }

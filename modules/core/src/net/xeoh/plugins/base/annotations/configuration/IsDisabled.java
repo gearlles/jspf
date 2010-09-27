@@ -32,9 +32,21 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import net.xeoh.plugins.base.annotations.PluginImplementation;
+
 /**
  * Marks the given plugin is diabled and will not be spawned. Nor will its configuration
- * be added to the global configuration.
+ * be added to the global configuration. Use this to quickly disable a plugin for testing 
+ * purposes. For example, to specify that a plugin should be disabled, write<br/><br/>
+ * 
+ * <code>
+ * &#064;IsDisabled<br/>
+ * &#064;PluginImplementation<br/>
+ * public class ServiceImpl implements Service { ... } 
+ * </code><br/><br/>
+ * 
+ * Might be removed in the future (as removing {@link PluginImplementation} has the same 
+ * effect).
  * 
  * @author Ralf Biedert
  */
