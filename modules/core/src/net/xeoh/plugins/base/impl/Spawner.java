@@ -158,6 +158,7 @@ public class Spawner {
             // In here spawning of the plugin worked
             final SpawnResult spawnResult = new SpawnResult(spawnedPlugin, type);
             spawnResult.metaInformation.pluginStatus = PluginStatus.SPAWNED;
+            spawnResult.metaInformation.spawnTime = System.currentTimeMillis();
 
             // If we spawn lazily, this is enough for the beginning
             if (lazySpawn) return spawnResult;
@@ -348,8 +349,9 @@ public class Spawner {
 
         // Process every field
         for (final Field field : fields) {
-
-            // Try to get inject annotation
+            // Try to get inject annotation. New: also turn on extended accessibility, so 
+            // elements don't have to be public anymore. 
+            field.setAccessible(true);
             final InjectPlugin ipannotation = field.getAnnotation(InjectPlugin.class);
 
             // If there is one ..
@@ -370,7 +372,9 @@ public class Spawner {
 
         // And setter methods as well (aka Scala hack)
         for (Method method : methods) {
-
+            // Try to get inject annotation. New: also turn on extended accessibility, so 
+            // elements don't have to be public anymore. 
+            method.setAccessible(true);
             final InjectPlugin ipannotation = method.getAnnotation(InjectPlugin.class);
 
             if (ipannotation != null) {
@@ -404,8 +408,9 @@ public class Spawner {
     private void spawnThreads(final SpawnResult spawnResult, final Method[] methods) {
         final Class<? extends Pluggable> spawnClass = spawnResult.pluggable.getClass();
         for (final Method method : methods) {
-
-            // Init methods will be marked by the corresponding annotation.
+            // Init methods will be marked by the corresponding annotation.  New: 
+            // also turn on extended accessibility, so elements don't have to be public anymore.
+            method.setAccessible(true);
             final net.xeoh.plugins.base.annotations.Thread annotation = method.getAnnotation(Thread.class);
             if (annotation != null) {
 
@@ -447,7 +452,8 @@ public class Spawner {
     @SuppressWarnings("unchecked")
     private void obtainPluginLoadedMethods(SpawnResult spawnResult, Method[] methods) {
         for (final Method method : methods) {
-
+            //New: also turn on extended accessibility, so elements don't have to be public anymore.
+            method.setAccessible(true);
             final PluginLoaded annotation = method.getAnnotation(PluginLoaded.class);
             if (annotation != null) {
                 final PluginLoadedInformation pli = new PluginLoadedInformation();
@@ -474,8 +480,9 @@ public class Spawner {
     private void spawnTimer(final SpawnResult spawnResult, final Method[] methods) {
         final Class<? extends Pluggable> spawnClass = spawnResult.pluggable.getClass();
         for (final Method method : methods) {
-
-            // Init methods will be marked by the corresponding annotation.
+            // Init methods will be marked by the corresponding annotation. New: also 
+            // turn on extended accessibility, so elements don't have to be public anymore.
+            method.setAccessible(true);
             final net.xeoh.plugins.base.annotations.Timer annotation = method.getAnnotation(Timer.class);
             if (annotation != null) {
 
@@ -539,8 +546,9 @@ public class Spawner {
 
         // Process every field
         for (final Field field : fields) {
-
-            // Try to get inject annotation
+            // Try to get inject annotation. New: also turn on extended accessibility, 
+            // so elements don't have to be public anymore.
+            field.setAccessible(true);
             final InjectPlugin ipannotation = field.getAnnotation(InjectPlugin.class);
 
             // If there is one ..

@@ -37,8 +37,9 @@ import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.impl.SpawnResult.SpawnType;
 
 /**
- * @author rb
- *
+ * Meta information of the given plugin.
+ * 
+ * @author Ralf Biedert
  */
 public class PluggableMetaInformation {
 
@@ -105,5 +106,8 @@ public class PluggableMetaInformation {
 
     /** Specifies if this is a plugin or pluglet */
     public final SpawnType spawnType;
+
+    /** Time this pluggable has been spawned. */
+    public long spawnTime;
 
 }

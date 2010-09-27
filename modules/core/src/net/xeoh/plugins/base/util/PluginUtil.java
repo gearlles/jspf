@@ -35,12 +35,17 @@ import java.util.List;
 import net.xeoh.plugins.base.Plugin;
 
 /**
+ * A set of inspection methods for an existing plugin. Should only be required 
+ * and used internally. 
+ * 
  * @author Ralf Biedert
  */
 public class PluginUtil {
     final Plugin plugin;
 
     /**
+     * The plugin to wrap.
+     * 
      * @param plugin
      */
     public PluginUtil(Plugin plugin) {
@@ -50,7 +55,7 @@ public class PluginUtil {
     /**
      * Lists all primary interfaces
      * 
-     * @return .
+     * @return A list of primary interfaces.>
      */
     @SuppressWarnings({ "unchecked" })
     public Collection<Class<? extends Plugin>> getPrimaryInterfaces() {
@@ -89,9 +94,9 @@ public class PluginUtil {
     }
 
     /**
-     * Lists all primary interfaces
+     * Lists all toplevel plugin interfaces
      * 
-     * @return .
+     * @return The list of all plugin interfaces.
      */
     @SuppressWarnings({ "unchecked" })
     public Collection<Class<? extends Plugin>> getPluginInterfaces() {
@@ -123,9 +128,9 @@ public class PluginUtil {
     }
 
     /**
-     * Lists all primary interfaces
+     * Lists all plugin interfaces.
      * 
-     * @return .
+     * @return Lists all primary interfaces.
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public Collection<Class<? extends Plugin>> getAllPluginInterfaces() {

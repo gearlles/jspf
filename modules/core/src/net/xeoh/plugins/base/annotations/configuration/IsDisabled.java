@@ -33,8 +33,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author rb
- *
+ * Marks the given plugin is diabled and will not be spawned. Nor will its configuration
+ * be added to the global configuration.
+ * 
+ * @author Ralf Biedert
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

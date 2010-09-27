@@ -30,15 +30,15 @@ package net.xeoh.plugins.base;
 import java.util.Collection;
 
 /**
- * Return different information about plugins, static as well as dynamic.
+ * Returns different information about plugins, static as well as dynamic. 
  *
  * @author Ralf Biedert
- *
  */
 public interface PluginInformation extends Plugin {
     /**
-     * @author rb
-     *
+     * The set of information item that can be requested.
+     * 
+     * @author Ralf Biedert
      */
     public static enum Information {
         /** The author of this plugins. A list of one (Aloo) String is returnd. */
@@ -57,11 +57,8 @@ public interface PluginInformation extends Plugin {
          */
         VERSION,
 
-        /** How many times this plugins has been requested. Aloo Integer as String. */
-        // REQUEST_COUNT,
-
         /** Date when the plugin was initialized. Aloo Long as String. */
-        // INIT_DATE
+        INIT_DATE,
 
         /**
          * Returns a single string containing the URI to the classpath item this 
@@ -75,10 +72,10 @@ public interface PluginInformation extends Plugin {
 
     /**
      * Returns some information of a plugin
-     * @param item 
-     * @param plugin 
+     * @param item The information item to request. 
+     * @param plugin The plugin for which the information is requested.
      *
-     * @return .
+     * @return A collection of strings containing the requested information.
      */
     public Collection<String> getInformation(Information item, Plugin plugin);
 }

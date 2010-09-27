@@ -37,7 +37,7 @@ import java.lang.annotation.Target;
  * public and it MUST return a String[] array. If several methods are annotated it is
  * undefined which one will be called. As soon as the Init annotation is processed the
  * capabilities function must be operational. Use this function for example to tell which
- * file extensions you can handle or the (limited number of) host you can connecto to.
+ * file extensions you can handle or the (limited number of) host you can connect to.
  * While this method can return different values on every call it is considered "bad
  * taste" if latter calls return anything less than the previous calls.
  */

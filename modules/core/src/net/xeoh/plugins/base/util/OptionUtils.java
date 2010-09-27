@@ -33,10 +33,12 @@ import java.util.Collection;
 import net.xeoh.plugins.base.Option;
 
 /**
+ * Handles options within plugin methods. Likely to be replaced by 
+ * <a href="http://jcores.net">jCores</a>.
  * 
  * @author Ralf Biedert
  * 
- * @param <T> 
+ * @param <T> Type paramter.
  */
 public class OptionUtils<T extends Option> {
 

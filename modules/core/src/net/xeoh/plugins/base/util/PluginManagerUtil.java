@@ -36,7 +36,8 @@ import net.xeoh.plugins.base.options.getplugin.OptionPluginSelector;
 import net.xeoh.plugins.base.options.getplugin.PluginSelector;
 
 /**
- * Helper functions for a PluginManager.
+ * Helper functions for PluginManager interface. The util uses the embedded 
+ * interface to provide more convenience features.   
  *
  * @author Ralf Biedert
  */
@@ -45,16 +46,22 @@ public class PluginManagerUtil {
     private final PluginManager pluginManager;
 
     /**
-     * @param pm
+     * Creates a new util for the given interface.
+     * 
+     * @param pm The interface to create the utils for.
      */
     public PluginManagerUtil(PluginManager pm) {
         this.pluginManager = pm;
     }
 
     /**
-     * @param <P>
-     * @param plugin
-     * @return .
+     * Returns all interfaces implementing the given interface, not just the first, 
+     * 'random' match. Use this method if you want to list  the registed plugins (or 
+     * select from them on your own).  
+     * 
+     * @param <P> Type of the requested plugin.
+     * @param plugin The interface to request. 
+     * @return A collection of all plugins implementing the given interface.
      */
     public <P extends Plugin> Collection<P> getPlugins(final Class<P> plugin) {
         return getPlugins(plugin, new PluginSelector<P>() {
@@ -66,10 +73,15 @@ public class PluginManagerUtil {
     }
 
     /**
-     * @param <P>
-     * @param plugin
-     * @param selector
-     * @return .
+     * Returns all interfaces implementing the given interface AND satisfying the 
+     * given plugin selector. Use this method if you want to list some of the 
+     * registed plugins (or select from them on your own).  
+     * 
+     * @param <P> Type of the requested plugin.
+     * @param plugin The interface to request. 
+     * @param selector The selector will be called for each available plugin. When 
+     * it returns <code>true</code> the plugin will be added to the return value.  
+     * @return A collection of plugins for which the collector return true.
      */
     public <P extends Plugin> Collection<P> getPlugins(final Class<P> plugin,
                                                        final PluginSelector<P> selector) {

@@ -33,8 +33,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author rb
- *
+ * Specifies a configuration file relative to the given plugin. Its content will be added
+ * to the global configuration (@see PluginConfiguration).  
+ * 
+ * @author Ralf Biedert
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

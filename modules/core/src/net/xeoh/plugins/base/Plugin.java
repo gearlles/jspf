@@ -30,34 +30,35 @@ package net.xeoh.plugins.base;
 /**
  * The base class of all plugins. Plugin creation is fairly simple: <br>
  * <br>
- * 1. Create a new package for your plugin <br>
+ * 1. Create a new top level package for your plugin, e.g., 
+ * <code>com.company.plugins.imagedb</code> in case of an image database.<br>
  * <br>
- * 2. Create an interface within that package extending Plugin. Add all the
- * methods you like. To keep the interfaces small, you can also add several
- * ones. <br>
+ * 2. Create an interface within that package. The interface should (well, must)
+ * extend Plugin. Add all the methods you like, for example <code>listImages()</code><br> 
  * <br>
- * 3. Create an impl package. This name is not required, but should be kept as a
- * convention. <br>
+ * 3. Create an impl sub-package with the plugin package, in our case this is
+ * <code>com.company.plugins.imagedb.impl</code>. The <i>impl</i>-name is not 
+ * required, but should be kept as a convention. In the future the might exist 
+ * tools that depend on it, or work better with it. If you have multiple implementations, 
+ * create several sub-packages within the impl folder. In our example case, this 
+ * could be the implementations <code>impl.simple</code> (for a simple test 
+ * implementation),<code>impl.distributed</code> (for our distributed image storage) 
+ * and <code>impl.compatiblity</code> (for the old DB API)<br>
  * <br>
- * 4. Create a class implementing your interface. <br>
+ * 4. Implement your interfaces, i.e., create a class / classes implementing your 
+ * interface.<br>
  * <br>
- * 5. Add the PluginImplementation annotation (see its definition for detailed
- * options) <br>
+ * 5. Add the <code>@PluginImplementation</code> annotation to your class.<br>
  * <br>
- * 6. You're done. Technically your plugin is ready now to use. It can be
- * compiled now (Eclipse will probably have done this for you already). You
- * might want to have a look at the PluginManager documentation.
- *
+ * 6. You're done. Technically your plugin is ready now to use. It can be compiled 
+ * now (Eclipse will probably have done this for you already). You might want to 
+ * have a look at the PluginManager documentation to see how you can load and retrieve 
+ * it (see <code>addPluginsFrom()</code> and <code>getPlugin()</code>).<br>
  * <br>
- * <br>
- * You have to <b>ensure that an implementation of such a plugin is thradsafe in
- * every manner</b>. Expect your functions to be called every time in every
- * state, unless however, you know your application (and all your users) very,
- * very well.
- *
+ * NOTE: You should <b>ensure that an implementation of such a plugin is thread 
+ * safe</b>! Expect your functions to be called any time in any state.
  *
  * @author Ralf Biedert
- *
  */
 public interface Plugin extends Pluggable {
     // Nothing in here. All things are done by annotations.

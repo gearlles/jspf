@@ -33,8 +33,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author rb
- *
+ * Version of the given plugin.
+ * 
+ * @author Ralf Biedert
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

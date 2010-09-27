@@ -33,16 +33,18 @@ import java.net.URISyntaxException;
 import net.xeoh.plugins.base.Plugin;
 
 /**
- * Convenience method to load from classpath
+ * Convenience method to load plugins from  the classpath
  * 
- * @author rb
+ * @author Ralf Biedert
  */
 public class ClassURI extends URIUtil {
 
     private final Class<? extends Plugin> clazz;
 
     /**
-     * @param clazz
+     * Construct a new class URI for the given class.
+     * 
+     * @param clazz The class to wrap.
      */
     public ClassURI(Class<? extends Plugin> clazz) {
         if (clazz.isInterface())

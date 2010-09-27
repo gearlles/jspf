@@ -28,24 +28,26 @@
 package net.xeoh.plugins.base;
 
 /**
- *
  * Allows access to configuration items of plugins. The plugin-dependant
  * configuration files can be specified using the PluginImplementation
- * annotation.
+ * annotation.<br/><br/>
+ * 
+ * There are three ways of adding configuration: 1) By calling <code>setPreferences()</code>, 
+ * 2) by providing a <code>JSPFPreferences</code> object to the PluginManagerFactory and 3) by 
+ * using the <code>@ConfigurationFile</code> annotation.<br/><br/>  
+ * 
+ * A sample query might look like this: <code>getPreferences(GeoService.class, "remote.url")</code> 
  *
  * @author Ralf Biedert
- *
  */
 public interface PluginConfiguration extends Plugin {
     /**
      * Gets a configuration key. Root may be added for convenience and will
      * prefix the subkey with its FQN.
      *
-     * @param root
-     *            May also be null.
-     * @param subkey
-     *            If used in conjunction with root it should not be prefixed
-     *            with a dot (".")
+     * @param root May also be null.
+     * @param subkey If used in conjunction with root it should not be prefixed
+     * with a dot (".")
      *
      * @return The corresponding value or null if nothing was found
      */
@@ -53,16 +55,14 @@ public interface PluginConfiguration extends Plugin {
 
     /**
      * Set the key for a value. Root may be added for convenience and will
-     * prefix the subkey with its FQN.
+     * prefix the subkey with its FQN. Usually the configuration is added 
+     * by providing <code>JSPFPreferences</code> object to the 
+     * <code>PluginManagerFactory</code>. 
      *
-     * @param root
-     *            May also be null.
-     * @param subkey
-     *            If used in conjunction with root it should not be prefixed
-     *            with a dot (".")
-     * @param value
-     *
-     *
+     * @param root May also be null.
+     * @param subkey If used in conjunction with root it should not be prefixed 
+     * with a dot (".")
+     * @param value The value to set.
      */
     public void setConfiguration(Class<?> root, String subkey, String value);
 

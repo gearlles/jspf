@@ -30,12 +30,15 @@ package net.xeoh.plugins.base.util.uri;
 import java.net.URI;
 
 /**
- * @author rb
- *
+ * Returns an URI for something.
+ * 
+ * @author Ralf Biedert
  */
 public abstract class URIUtil {
     /** 
-     * @return . 
+     * The URI.
+     * 
+     * @return The URI. 
      */
     public abstract URI toURI();
 }

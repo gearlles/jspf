@@ -35,14 +35,14 @@ import net.xeoh.plugins.base.Plugin;
  *
  * @author Ralf Biedert
  * 
- * @param <T> 
+ * @param <T> Type of the plugin.
  */
 public interface PluginSelector<T extends Plugin> {
     /**
      * Return true if you want the specified plugin returned, false otherwise.
      *
-     * @param plugin
-     * @return .
+     * @param plugin The plugin for which you are being called.
+     * @return Return <code>true</code> if you want to select the passed plugin.
      */
     public boolean selectPlugin(T plugin);
 }

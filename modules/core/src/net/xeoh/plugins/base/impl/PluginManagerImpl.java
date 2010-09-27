@@ -402,7 +402,7 @@ public class PluginManagerImpl implements PluginManager {
     }
 
     /**
-     * Adds a plugins to the list of known plugins
+     * Adds a plugins to the list of known plugins.
      * 
      * @param p
      */

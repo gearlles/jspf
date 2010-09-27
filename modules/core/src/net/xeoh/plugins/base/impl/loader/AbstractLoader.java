@@ -140,15 +140,7 @@ public abstract class AbstractLoader {
             // Update the class information of the corresponding cache entry
             this.logger.finer("Updating cache information");
 
-            /*
-            jarInformation.lastAccess = System.currentTimeMillis();
-            jarInformation.usageCount++;
-            if (!jarInformation.contents.contains(name)) {
-                this.logger.finer("Adding " + name + " to cache of " + file);
-                jarInformation.contents.add(name);
-            }
-            */
-
+            
             // Avoid loading if annotation request it.
             if (pcu.getBoolean(possiblePlugin, "plugin.disabled", false) || possiblePlugin.getAnnotation(IsDisabled.class) != null) {
                 metaInformation.pluginClassStatus = PluginClassStatus.DISABLED;

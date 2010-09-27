@@ -34,8 +34,9 @@ import java.util.Collection;
 import net.xeoh.plugins.base.Plugin;
 
 /**
- * @author rb
- *
+ * Meta information of the given plugin class.
+ * 
+ * @author Ralf Biedert
  */
 public class PluggableClassMetaInformation {
 

@@ -34,7 +34,7 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation can be used to mark plugin instances which should be initialized at
- * runtime.
+ * runtime. If you don't annotate your plugin with this annotation, nothing will happen.
  * 
  * @author Ralf Biedert
  */

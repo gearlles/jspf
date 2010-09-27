@@ -33,7 +33,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Methods marked with \@Thread will be called from a newly created thread
+ * Methods marked with \@Thread will be called from a newly created thread.
+ * 
+ * @author Ralf Biedert
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

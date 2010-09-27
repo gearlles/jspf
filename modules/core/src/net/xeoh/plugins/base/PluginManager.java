@@ -31,21 +31,26 @@ import java.net.URI;
 
 import net.xeoh.plugins.base.options.AddPluginsFromOption;
 import net.xeoh.plugins.base.options.GetPluginOption;
+import net.xeoh.plugins.base.util.PluginManagerUtil;
 import net.xeoh.plugins.base.util.uri.ClassURI;
 
 /**
- * Functionality for the plugin manager. This is your (indirect) entry point for the
- * plugin framework. Obtain this class by a corresponding factory-method, for example the
- * one provided in the 'impl' sub-package. This should be the only time in your
- * (application) life to access a file from an impl directory directly. <br>
- * <br>
- * <center>Create this class the first time by a call to
- * <b>PluginManagerFactory.createPluginManager()</b></center> <br>
- * <br>
- *
- * TODO: Add plugin selection mechanisms <br>
- * <br>
- * TODO: Add plugin removal mechanism.<br>
+ * This is your entry point to and the heart of JSPF. The plugin manager keeps track of all 
+ * registed plugins and gives you methods to add and query them. You cannot instantiate the
+ * PluginManager directly, instead you<br/><br/>
+ * 
+ * <center>create this class the first time by a call to <b>PluginManagerFactory.createPluginManager()</b></center>
+ * 
+ * <br/><br/>
+ * Afterwards you probably want to add some of your own plugins. During the lifetime of your 
+ * application there should only be one PluginManager. The PluginManager does not have to be 
+ * passed to the inside of your plugins, instead, they can request it by the <code>@InjectPlugin</code>
+ * annotation (i.e, create a field '<code>public PluginManager manager</code>' and add the 
+ * annotation).<br/><br/>
+ * 
+ * Also have a look at <code>PluginManagerUtils</code>.<br/>
+ * 
+ * @see PluginManagerUtil
  *
  * @author Ralf Biedert
  */
@@ -54,47 +59,50 @@ public interface PluginManager extends Plugin {
      * Requests the plugin manager to add plugins from a given path. The path can be
      * either a folder-like item where existing .zip and .jar files are trying to be
      * added, as well as existing class files. The path can also be a singular .zip or
-     * .jar which is added as well.<br>
-     * <br>
+     * .jar which is added as well.<br><br>
      *
      * The manager will search for classes having the PluginImplementation annotation and
-     * evaluate this annotation. Thereafter the plugin will be instanciated.<br>
-     * <br>
+     * evaluate this annotation. Thereafter the plugin will be instanciated.<br><br>
+     * 
      * Currently supported are classpath-folders (containing no .JAR files), plugin folders 
      * (containing .JAR files or multiplugins), single plugins and HTTP locations.
      *   
      * @see ClassURI
      *
      * @param url The URL to add from. If this is "classpath://*"; the plugin manager will 
-     * load all plugins within it's own classpath
+     * load all plugins within it's own classpath. 
      * 
-     * @param options 
+     * @param options A set of options supported. Please see the individual options for more
+     * details.
      */
     public void addPluginsFrom(URI url, AddPluginsFromOption... options);
 
     /**
-     * Returns the next best plugin for the requested functionality. The plugin will be randomly
-     * chosen from all plugins that implement the requested functionality. This function
-     * is the same as the one specified below when randomly returning true.
+     * Returns the next best plugin for the requested functionality. The way the plugin is being 
+     * selected is undefined, you should assume that a random plugin implementing the requested 
+     * interface is chosen. <br><br>
+     * 
+     * This method is more powerful than it looks like on first sight, especially in conjunction
+     * with the right <code>GetPluginOptions</code>. 
+     * 
+     * @param <P> Type of the plugin / return value. 
      *
-     * @param
-     * <P>
-     *
-     *
-     * @param plugin
-     *                The interface to request. <b>Must</b> derive from Plugin.
-     * @param options 
+     * @param plugin The interface to request. The given class <b>must</b> derive from Plugin. You <b>MUST NOT</b> pass 
+     * implementation classes. Only interface classes are accepted (i.e. <code>getPlugin(Service.class)</code>
+     * is fine, while <code>getPlugin(ServiceImpl.class)</code> isn't. 
+     * @param options A set of options for the request.
      *
      * @return A randomly chosen Object that implements <code>plugin</code>.
      */
     public <P extends Plugin> P getPlugin(Class<P> plugin, GetPluginOption... options);
 
     /**
-     * Tells the plugin manager to shut down. This may be useful in cases where you want all created plugins to be destroyed 
-     * and shutdown hooks called. Normally this happens during application termination automatically, but sometimes you create a 
-     * 2nd instance in the same machine and want the first one to close properly.   
+     * Tells the plugin manager to shut down. This may be useful in cases where you want all 
+     * created plugins to be destroyed and shutdown hooks called. Normally this happens during 
+     * application termination automatically, but sometimes you create a 2nd instance in the same 
+     * machine and want the first one to close properly.   
      * 
-     * All invocations after this first on this method have no effect.
+     * All invocations after the first one have no effect.
      */
     public void shutdown();
 

@@ -31,28 +31,34 @@ import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.options.GetPluginOption;
 
 /**
- * Passes a plugin selector as an option.
+ * Passes a plugin selector as an option. The selector will be called on each considered plugin. 
+ * The first plugin on which the collector returns <code>true</code> will be returned.   
  * 
  * @author Ralf Biedert
  * 
- * @param <P> 
+ * @param <P> Type of the plugin.
  */
 public final class OptionPluginSelector<P extends Plugin> implements GetPluginOption {
 
     /** */
     private static final long serialVersionUID = 6540623006341980932L;
 
+    /** */
     private PluginSelector<P> value;
 
     /**
-     * @param ps
+     * Creates a new selectop option with the given selelector.
+     * 
+     * @param ps The plugin selector to add.
      */
     public OptionPluginSelector(PluginSelector<P> ps) {
         this.value = ps;
     }
 
     /**
-     * @return .
+     * Returns the passed selector.
+     * 
+     * @return The selector enclosed.
      */
     public PluginSelector<P> getSelector() {
         return this.value;

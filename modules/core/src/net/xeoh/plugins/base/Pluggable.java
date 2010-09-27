@@ -28,12 +28,11 @@
 package net.xeoh.plugins.base;
 
 /**
- * Something that is pluabble, either plugins or pluglets. You should never, ever have any reason to 
- * use this class directly. We only use it internally, as plugins and pluglets have some things in common
- * (like spawnability and some annotations) 
+ * Something that is pluabble, either plugins or pluglets. You should never, ever 
+ * have any reason to use this class directly. We only use it internally, as plugins 
+ * and pluglets have some things in common (like spawnability and some annotations) 
  * 
- * @author rb
- *
+ * @author Ralf Biedert
  */
 public interface Pluggable {
     //

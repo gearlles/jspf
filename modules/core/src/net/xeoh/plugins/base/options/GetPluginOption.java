@@ -28,9 +28,13 @@
 package net.xeoh.plugins.base.options;
 
 import net.xeoh.plugins.base.Option;
+import net.xeoh.plugins.base.PluginManager;
 
 /**
- * @author rb
+ * The base type for all <code>getPlugin()</code> options.
+ * 
+ * @author Ralf Biedert
+ * @see PluginManager
  */
 public interface GetPluginOption extends Option {
     //

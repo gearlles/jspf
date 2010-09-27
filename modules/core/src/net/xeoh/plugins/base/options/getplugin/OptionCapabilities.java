@@ -30,6 +30,8 @@ package net.xeoh.plugins.base.options.getplugin;
 import net.xeoh.plugins.base.options.GetPluginOption;
 
 /**
+ * Specifies the method should only consider plugins satisfying all the 
+ * given capabilities. 
  * 
  * @author Ralf Biedert
  */
@@ -38,20 +40,22 @@ public class OptionCapabilities implements GetPluginOption {
     /** */
     private static final long serialVersionUID = -7856506348748868122L;
 
+    /** */
     private String[] caps;
 
     /**
-     * Returns plugins that matches all given capabilites
+     * Returns plugins that matches all given capabilites. 
      * 
-     * @param matchingCapabilites
+     * @param matchingCapabilites The capabilities to consider.
      */
     public OptionCapabilities(String... matchingCapabilites) {
         this.caps = matchingCapabilites;
     }
 
     /**
-     * @return . 
+     * Returns the requested capabilities. 
      * 
+     * @return Array of caps. 
      */
     public String[] getCapabilities() {
         return this.caps;

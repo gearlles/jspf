@@ -36,6 +36,8 @@ import java.lang.annotation.Target;
  * Methods marked with \@Timer will called periodically from a timer. The method
  * may return a boolean value. If this value is true, the timer will be
  * canceled.
+ * 
+ * @author Ralf Biedert
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

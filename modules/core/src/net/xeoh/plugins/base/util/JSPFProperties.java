@@ -30,10 +30,10 @@ package net.xeoh.plugins.base.util;
 import java.util.Properties;
 
 /**
- * Can be used to set properties more easily.
+ * Can be used to set properties more easily. Pass this object to <code>createPluginManager()</code> 
+ * to set initial properties. 
  * 
- * @author rb
- *
+ * @author Ralf Biedert
  */
 public class JSPFProperties extends Properties {
 
@@ -43,20 +43,20 @@ public class JSPFProperties extends Properties {
     /**
      * Sets a property using a class as prefix.
      * 
-     * @param root
-     * @param subkey
-     * @param value
+     * @param root Root class to set an option for. 
+     * @param subkey The subkey to set. 
+     * @param value The value to set.
      */
     public void setProperty(final Class<?> root, final String subkey, final String value) {
         setProperty(getKey(root, subkey), value);
     }
 
     /**
-     * Assembles a key.
+     * Assembles a key, only used internally.
      * 
-     * @param root
-     * @param subkey
-     * @return .
+     * @param root Root class. 
+     * @param subkey Subkey to assemble. 
+     * @return The assembled key. 
      */
     public static String getKey(final Class<?> root, final String subkey) {
         String prefix = "";

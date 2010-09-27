@@ -7,7 +7,7 @@ import net.xeoh.plugins.base.Option;
  * 
  * @author Ralf Biedert
  * 
- * @param <T> 
+ * @param <T> Type parameter.
  */
 public interface OptionHandler<T extends Option> {
     /**

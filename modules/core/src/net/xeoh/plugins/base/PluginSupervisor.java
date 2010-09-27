@@ -30,10 +30,10 @@ package net.xeoh.plugins.base;
 import net.xeoh.plugins.base.supervision.SupervisionListener;
 
 /**
- * Manages meta access to plugins.
+ * Manages meta access to plugins. This is very beta. Expect unexpected behavior. Especially
+ * plugins deriving from other plugins and parameterized plugins are in danger of being broken. 
  *
  * @author Ralf Biedert
- *
  */
 public interface PluginSupervisor extends Plugin {
 
@@ -41,8 +41,8 @@ public interface PluginSupervisor extends Plugin {
      * Adds a supervisor for the given plugin. If any of the plugin's method is being called 
      * the supervisor is consulted before.
      * 
-     * @param plugin
-     * @param supervisor
+     * @param plugin The plugin to add a supervisor for. 
+     * @param supervisor The supervisor to add.
      */
     public void addSupervisorFor(Plugin plugin, SupervisionListener supervisor);
 
@@ -51,7 +51,7 @@ public interface PluginSupervisor extends Plugin {
      * Adds a supervisors that listens to calls of every plugin (except the PluginManager itself 
      * and the PluginSupvervisor).
      * 
-     * @param supervisor
+     * @param supervisor The supervisor to add for all plugins.
      */
     public void addGeneralSupervisor(SupervisionListener supervisor);
 

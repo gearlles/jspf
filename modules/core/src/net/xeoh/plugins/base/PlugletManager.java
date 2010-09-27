@@ -28,8 +28,9 @@
 package net.xeoh.plugins.base;
 
 /**
- * @author rb
- *
+ * Not used right now, experimental.
+ * 
+ * @author Ralf Biedert
  */
 public interface PlugletManager extends Plugin {
     /**
