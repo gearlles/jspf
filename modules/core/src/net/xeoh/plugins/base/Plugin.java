@@ -27,6 +27,7 @@
  */
 package net.xeoh.plugins.base;
 
+import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.util.PluginUtil;
 
 /**
@@ -50,7 +51,7 @@ import net.xeoh.plugins.base.util.PluginUtil;
  * 4. Implement your interfaces, i.e., create a class / classes inside the 
  * respective <code>impl</code> folder.<br>
  * <br>
- * 5. Add the <code>@PluginImplementation</code> annotation to your implemented 
+ * 5. Add the &#064;{@link PluginImplementation} annotation to your implemented 
  * class(es).<br>
  * <br>
  * 6. You're done. Technically your plugin is ready now to use. It can be compiled 

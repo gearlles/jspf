@@ -1,5 +1,5 @@
 /**
- * The <code>PluginManagerFactory</code> is the framework's entry point and the only class of 
+ * The {@link net.xeoh.plugins.base.impl.PluginManagerFactory} is the framework's entry point and the only class of 
  * relevance within this package, start exploring here.    
  *
  * @since 1.0

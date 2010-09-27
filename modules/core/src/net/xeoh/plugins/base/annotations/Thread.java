@@ -46,6 +46,7 @@ import java.lang.annotation.Target;
  * 
  * 
  * @author Ralf Biedert
+ * @see Timer
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

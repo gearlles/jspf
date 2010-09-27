@@ -52,12 +52,12 @@ import net.xeoh.plugins.base.annotations.Capabilities;
  * <code>
  * &#064;InjectPlugin(requiredCapabilities = {"language:swahili"}, isOptional=true)<br/>
  * public LanguageService service;
- * </code><br/><br/>.
+ * </code><br/><br/>
  *   
  * This ensures that the returned plugin, if it is there, is of type <code>LanguageService</code> and has the 
  * capability (see {@link Capabilities}) of processing Swahili. If <code>isOptional</code> is <code>false</code> 
  * or omitted then it is even ensured that this plugin will not be spawned unless the given service is available.
- * <br/><br/>.
+ * <br/><br/>
  * 
  * Please note: The annotated variable has to be <b>public</b>!
  *

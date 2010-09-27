@@ -46,6 +46,7 @@ import java.lang.annotation.Target;
  * All timers are terminated upon <code>PluginManager.shutdown()</code>. 
 
  * @author Ralf Biedert
+ * @see Thread
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

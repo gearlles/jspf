@@ -32,13 +32,14 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.PluginConfiguration;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.util.JSPFProperties;
 
 /**
- * Factory class to create new plugin managers. This is your entry and starting point for 
- * using JSPF. Create a new plugin manager by calling one of the enclosed methods.<br/><br/>
+ * Factory class to create new {@link PluginManager}. This is your entry and starting point for 
+ * using JSPF. Create a new manager by calling one of the enclosed methods.<br/><br/>
  *
  * There should be no need to access this class (or call any of its methods) more than once
  * during the lifetime of your application.
@@ -53,8 +54,8 @@ public class PluginManagerFactory {
     }
 
     /**
-     * Creates a new plugin manager, no user configuration is used. The plugin manager will 
-     * be (almost) empty, i.e., containing no plugins except some internal ones.<br/><br/>
+     * Creates a new {@link PluginManager}, no user configuration is used. The manager will 
+     * be (almost) empty, i.e., containing no {@link Plugin}s except some internal ones.<br/><br/>
      * 
      * The next thing you should probably do is adding your own plugins by calling 
      * <code>addPluginsFrom()</code>.
@@ -66,7 +67,7 @@ public class PluginManagerFactory {
     }
 
     /**
-     * Creates a new plugin manager with a supplied user configuration. The user configuration
+     * Creates a new {@link PluginManager} with a supplied user configuration. The user configuration
      * can be obtained by using the {@link PluginConfiguration}. <br/><br/>
      * 
      * The next thing you should probably do is adding your own plugins by calling 
@@ -78,7 +79,7 @@ public class PluginManagerFactory {
      * 
      * @param initialProperties Initial properties to use.
      * 
-     * @return A fresh plugin manager with the supplied configuration. 
+     * @return A fresh manager with the supplied configuration. 
      */
     public static PluginManager createPluginManager(final Properties initialProperties) {
 

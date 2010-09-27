@@ -29,6 +29,9 @@ package net.xeoh.plugins.base;
 
 import java.net.URI;
 
+import net.xeoh.plugins.base.annotations.PluginImplementation;
+import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
+import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import net.xeoh.plugins.base.options.AddPluginsFromOption;
 import net.xeoh.plugins.base.options.GetPluginOption;
 import net.xeoh.plugins.base.util.PluginManagerUtil;
@@ -39,16 +42,14 @@ import net.xeoh.plugins.base.util.uri.ClassURI;
  * registed plugins and gives you methods to add and query them. You cannot instantiate the
  * PluginManager directly, instead you<br/><br/>
  * 
- * <center>create this class the first time by a call to <b>PluginManagerFactory.createPluginManager()</b></center>
+ * <center>create this class the first time by a call to {@link PluginManagerFactory}<code>.createPluginManager()</code></center>
  * 
  * <br/><br/>
  * Afterwards you probably want to add some of your own plugins. During the lifetime of your 
  * application there should only be one PluginManager. The PluginManager does not have to be 
- * passed to the inside of your plugins, instead, they can request it by the <code>@InjectPlugin</code>
+ * passed to the inside of your plugins, instead, they can request it by the &#064;{@link InjectPlugin}
  * annotation (i.e, create a field '<code>public PluginManager manager</code>' and add the 
- * annotation).<br/><br/>
- * 
- * Also have a look at <code>PluginManagerUtils</code>.<br/>
+ * annotation).
  * 
  * @see PluginManagerUtil
  *
@@ -61,8 +62,8 @@ public interface PluginManager extends Plugin {
      * added, as well as existing class files. The path can also be a singular .zip or
      * .jar which is added as well.<br><br>
      *
-     * The manager will search for classes having the PluginImplementation annotation and
-     * evaluate this annotation. Thereafter the plugin will be instanciated.<br><br>
+     * The manager will search for classes having the &#064;{@link PluginImplementation} 
+     * annotation and evaluate this annotation. Thereafter the plugin will be instantiated.<br><br>
      * 
      * Currently supported are classpath-folders (containing no .JAR files), plugin folders 
      * (containing .JAR files or multiplugins), single plugins and HTTP locations. Example
@@ -92,7 +93,7 @@ public interface PluginManager extends Plugin {
      * interface is chosen. <br><br>
      * 
      * This method is more powerful than it looks like on first sight, especially in conjunction
-     * with the right <code>GetPluginOptions</code>. 
+     * with the right {@link GetPluginOption}. 
      * 
      * @param <P> Type of the plugin / return value. 
      *
