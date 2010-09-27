@@ -27,18 +27,24 @@
  */
 package net.xeoh.plugins.base;
 
+import net.xeoh.plugins.base.util.PluginConfigurationUtil;
+
 /**
  * Allows access to configuration items of plugins. The plugin-dependant
  * configuration files can be specified using the PluginImplementation
  * annotation.<br/><br/>
  * 
- * There are three ways of adding configuration: 1) By calling <code>setPreferences()</code>, 
- * 2) by providing a <code>JSPFPreferences</code> object to the PluginManagerFactory and 3) by 
- * using the <code>@ConfigurationFile</code> annotation.<br/><br/>  
+ * There are three ways of adding configuration: 
+ * <ol>
+ * <li>by calling <code>setPreferences()</code></li>
+ * <li>by providing a <code>JSPFPreferences</code> object to the PluginManagerFactory</li>
+ * <li>by using the <code>@ConfigurationFile</code> annotation.<br/><br/></li>
+ * </ol>
  * 
  * A sample query might look like this: <code>getPreferences(GeoService.class, "remote.url")</code> 
  *
  * @author Ralf Biedert
+ * @see PluginConfigurationUtil
  */
 public interface PluginConfiguration extends Plugin {
     /**

@@ -65,7 +65,15 @@ public interface PluginManager extends Plugin {
      * evaluate this annotation. Thereafter the plugin will be instanciated.<br><br>
      * 
      * Currently supported are classpath-folders (containing no .JAR files), plugin folders 
-     * (containing .JAR files or multiplugins), single plugins and HTTP locations.
+     * (containing .JAR files or multiplugins), single plugins and HTTP locations. Example
+     * calls look like this:<br/><br/>
+     * 
+     * <ul>
+     * <li><code>addPluginsFrom(new URI("classpath://*"))</code> (add all plugins within the current classpath).</li>
+     * <li><code>addPluginsFrom(new File("plugins/").toURI())</code> (add all plugins from the given folder, scanning for JARs and <a href="http://code.google.com/p/jspf/wiki/FAQ">multi-plugins</a>).</li>
+     * <li><code>addPluginsFrom(new File("plugin.jar").toURI())</code> (adds the given plugin directly, no scanning is being done).</li>
+     * <li><code>addPluginsFrom(new URI("http://sample.com/plugin.jar"))</code> (downloads and adds the given plugin, use with caution).</li>
+     * </ul>
      *   
      * @see ClassURI
      *
@@ -78,7 +86,7 @@ public interface PluginManager extends Plugin {
     public void addPluginsFrom(URI url, AddPluginsFromOption... options);
 
     /**
-     * Returns the next best plugin for the requested functionality. The way the plugin is being 
+     * Returns the next best plugin for the requested interface. The way the plugin is being 
      * selected is undefined, you should assume that a random plugin implementing the requested 
      * interface is chosen. <br><br>
      * 

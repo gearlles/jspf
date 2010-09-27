@@ -29,6 +29,8 @@ package net.xeoh.plugins.base;
 
 import java.io.Serializable;
 
+import net.xeoh.plugins.base.util.OptionUtils;
+
 /**
  * Used as optional arguments to classes. <br/><br/>
  * 
@@ -38,6 +40,7 @@ import java.io.Serializable;
  * for more infos on options.  
  * 
  * @author Ralf Biedert
+ * @see OptionUtils
  */
 public interface Option extends Serializable {
     //

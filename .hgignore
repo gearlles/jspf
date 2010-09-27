@@ -5,3 +5,5 @@ syntax: regexp
 ^jspf\.cache$
 syntax: regexp
 ^ant\.build$
+syntax: regexp
+^documentation/api$

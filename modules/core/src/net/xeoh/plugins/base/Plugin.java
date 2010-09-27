@@ -27,6 +27,8 @@
  */
 package net.xeoh.plugins.base;
 
+import net.xeoh.plugins.base.util.PluginUtil;
+
 /**
  * The base class of all plugins. Plugin creation is fairly simple: <br>
  * <br>
@@ -59,6 +61,7 @@ package net.xeoh.plugins.base;
  * safe</b>! Expect your functions to be called any time in any state.
  *
  * @author Ralf Biedert
+ * @see PluginUtil
  */
 public interface Plugin extends Pluggable {
     // Nothing in here. All things are done by annotations.
