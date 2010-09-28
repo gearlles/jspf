@@ -33,7 +33,7 @@ import net.xeoh.plugins.base.annotations.Timer;
 import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
-import net.xeoh.plugins.bus.Bus;
+import net.xeoh.plugins.informationbroker.InformationBroker;
 import net.xeoh.plugins.remote.RemoteAPI;
 import net.xeoh.plugins.testplugins.testannotations.TestAnnotations;
 
@@ -46,7 +46,7 @@ public class TestAnnotationsAbtractImpl implements TestAnnotations {
      * 
      */
     @InjectPlugin
-    public Bus bus;
+    public InformationBroker bus;
 
     String init = "INIT FAILED";
 

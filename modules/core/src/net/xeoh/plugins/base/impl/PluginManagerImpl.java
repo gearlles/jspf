@@ -74,7 +74,6 @@ import net.xeoh.plugins.base.options.getplugin.PluginSelector;
 import net.xeoh.plugins.base.util.OptionUtils;
 import net.xeoh.plugins.base.util.PluginConfigurationUtil;
 import net.xeoh.plugins.base.util.PluginManagerUtil;
-import net.xeoh.plugins.bus.impl.BusImpl;
 import net.xeoh.plugins.informationbroker.impl.InformationBrokerImpl;
 
 /**
@@ -386,7 +385,6 @@ public class PluginManagerImpl implements PluginManager {
      */
     private void loadAdditionalPlugins() {
         // Remaining core plugins
-        hookPlugin(this.spawner.spawnPlugin(BusImpl.class));
         hookPlugin(this.spawner.spawnPlugin(InformationBrokerImpl.class));
 
         // We need the information plugin in getPlugin, so we can't get it normally.
