@@ -39,12 +39,15 @@ import java.util.logging.Logger;
 
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.meta.Author;
+import net.xeoh.plugins.base.util.OptionUtils;
 import net.xeoh.plugins.informationbroker.InformationBroker;
 import net.xeoh.plugins.informationbroker.InformationItem;
 import net.xeoh.plugins.informationbroker.InformationItemIdentifier;
 import net.xeoh.plugins.informationbroker.InformationListener;
 import net.xeoh.plugins.informationbroker.options.PublishOption;
 import net.xeoh.plugins.informationbroker.options.SubscribeOption;
+import net.xeoh.plugins.informationbroker.options.publish.OptionSilentPublish;
+import net.xeoh.plugins.informationbroker.options.subscribe.OptionInstantRequest;
 
 /**
  * Nothing to see here.    
@@ -83,6 +86,10 @@ public class InformationBrokerImpl implements InformationBroker {
     public void publish(InformationItem<?> item, PublishOption... options) {
         if (item == null) return;
 
+        // Get our options
+        final OptionUtils<PublishOption> ou = new OptionUtils<PublishOption>(options);
+        final boolean silentPublish = ou.contains(OptionSilentPublish.class);
+
         final KeyEntry keyEntry = getKeyEntry(item.getIdentifier().getID());
         final InformationItem iitem = item;
 
@@ -91,17 +98,19 @@ public class InformationBrokerImpl implements InformationBroker {
             keyEntry.entryLock.lock();
             keyEntry.lastItem = item;
 
-            for (InformationListener<?> listener : keyEntry.allListeners) {
-                try {
-                    listener.update(iitem);
-                } catch (Exception e) {
-                    e.printStackTrace();
+            // Check if we should publish silently.
+            if (!silentPublish) {
+                for (InformationListener<?> listener : keyEntry.allListeners) {
+                    try {
+                        listener.update(iitem);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         } finally {
             keyEntry.entryLock.unlock();
         }
-
     }
 
     /* (non-Javadoc)
@@ -113,18 +122,25 @@ public class InformationBrokerImpl implements InformationBroker {
                               InformationListener<T> listener, SubscribeOption... options) {
         if (id == null || listener == null) return;
 
+        // Get our options
+        final OptionUtils<SubscribeOption> ou = new OptionUtils<SubscribeOption>(options);
+        final boolean instantRequest = ou.contains(OptionInstantRequest.class);
+
         final KeyEntry keyEntry = getKeyEntry(id.getID());
+
         InformationItem lastItem = null;
 
-        // Now process entry
+        // Now process and add the entry
         try {
             keyEntry.entryLock.lock();
-            keyEntry.allListeners.add(listener);
+            // Only add the item if we don't have an instant request.
+            if (!instantRequest) keyEntry.allListeners.add(listener);
             lastItem = keyEntry.lastItem;
         } finally {
             keyEntry.entryLock.unlock();
         }
 
+        // Check if we had an item
         if (lastItem != null) {
             listener.update(lastItem);
         }

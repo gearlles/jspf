@@ -27,12 +27,17 @@
  */
 package net.xeoh.plugins.informationbroker.standarditems.strings;
 
+import net.xeoh.plugins.informationbroker.InformationBroker;
 import net.xeoh.plugins.informationbroker.standarditems.vanilla.VanillaItem;
 
 /**
- * A string item for your convenience. 
+ * A string item for your convenience. You can also use this classes' 
+ * source code to see how your own items can be created.
  * 
  * @author Ralf Biedert
+ * @see StringID
+ * @see VanillaItem
+ * @see InformationBroker
  */
 public class StringItem extends VanillaItem<String> {
 

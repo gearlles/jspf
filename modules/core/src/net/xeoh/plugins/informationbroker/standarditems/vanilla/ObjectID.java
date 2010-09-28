@@ -29,7 +29,7 @@ package net.xeoh.plugins.informationbroker.standarditems.vanilla;
 
 /**
  * Reflects an unspecific object id. Direct use of this class is discouraged
- * as it detroys type safety.
+ * as it destroys type safety.
  * 
  * @author Ralf Biedert
  */

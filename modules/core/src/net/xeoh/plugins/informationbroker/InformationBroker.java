@@ -32,7 +32,10 @@ import java.util.Map;
 import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.informationbroker.options.PublishOption;
 import net.xeoh.plugins.informationbroker.options.SubscribeOption;
+import net.xeoh.plugins.informationbroker.standarditems.integer.IntegerItem;
+import net.xeoh.plugins.informationbroker.standarditems.strings.StringID;
 import net.xeoh.plugins.informationbroker.standarditems.strings.StringItem;
+import net.xeoh.plugins.informationbroker.standarditems.vanilla.VanillaID;
 import net.xeoh.plugins.informationbroker.standarditems.vanilla.VanillaItem;
 import net.xeoh.plugins.informationbroker.util.InformationBrokerUtil;
 
@@ -47,9 +50,13 @@ import net.xeoh.plugins.informationbroker.util.InformationBrokerUtil;
  * similar functionality.<br/></br/>
  * 
  * For your convenience there are a number of <i>standard items</i>, like the {@link StringItem} and 
- * the {@link VanillaItem}.
+ * the {@link IntegerItem}. To create your own items, extend the classes {@link VanillaID} and 
+ * {@link VanillaItem} (to see how it works in detail, have, for example, a look at the source 
+ * code of the {@link StringItem} and {@link StringID}). Creating your own items usually does not 
+ * take longer than one or two minutes. 
  *  
  * @author Ralf Biedert
+ * @see InformationItem
  */
 public interface InformationBroker extends Plugin {
 
@@ -81,7 +88,7 @@ public interface InformationBroker extends Plugin {
      * });
      * </code><br/><br/>
      * 
-     * Also see the {@link InformationBrokerUtil}, it contains many convenience functions. 
+     * Also see the {@link InformationBrokerUtil}, it contains many useful convenience functions. 
      * 
      * @param <T> The type of the item to wait for. 
      * @param id The ID to subscribe to

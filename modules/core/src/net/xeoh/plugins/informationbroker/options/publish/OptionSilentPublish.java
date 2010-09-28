@@ -1,5 +1,5 @@
 /*
- * StringID.java
+ * OptionDummy.java
  * 
  * Copyright (c) 2009, Ralf Biedert All rights reserved.
  * 
@@ -25,28 +25,26 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.informationbroker.standarditems.strings;
+package net.xeoh.plugins.informationbroker.options.publish;
 
 import net.xeoh.plugins.informationbroker.InformationBroker;
-import net.xeoh.plugins.informationbroker.standarditems.vanilla.VanillaID;
+import net.xeoh.plugins.informationbroker.options.PublishOption;
 
 /**
- * A string identifier for your convenience. Check out the source to see
- * how you can create your own identifier.
+ * Requests the {@link InformationBroker} to <code>publish()</code> to update
+ * the item silently, i.e., without calling any registered subscriber.<br/><br/>
+ *    
+ * For example, to update a value silently, you could write:<br/><br/>
+ * 
+ * <code>
+ * informationBroker.publish(item, new OptionSilentPublish());
+ * </code>
  * 
  * @author Ralf Biedert
- * @see VanillaID
  * @see InformationBroker
- * @see StringItem
  */
-public class StringID extends VanillaID<String, StringItem> {
+public class OptionSilentPublish implements PublishOption {
 
-    /**
-     * Constructs a new String ID.
-     * 
-     * @param id The ID to use.
-     */
-    public StringID(final String id) {
-        super(id);
-    }
+    /** */
+    private static final long serialVersionUID = -8362751446846683259L;
 }

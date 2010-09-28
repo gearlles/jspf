@@ -30,12 +30,12 @@ package net.xeoh.plugins.informationbroker;
 import java.net.URI;
 
 /**
- * Identifies an information item.
+ * Identifies an information item. The item has to return an unique URI.
  * 
  * @author Ralf Biedert
+ * 
  * @param <T> The item's type .
  * @param <I> The information item's type.
- *
  */
 public interface InformationItemIdentifier<T, I extends InformationItem<T>> {
     /**
