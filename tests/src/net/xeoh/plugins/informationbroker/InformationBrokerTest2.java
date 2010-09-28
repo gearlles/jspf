@@ -28,16 +28,11 @@
 package net.xeoh.plugins.informationbroker;
 
 import java.net.URI;
-import java.util.Collection;
 
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import net.xeoh.plugins.informationbroker.standarditems.strings.StringID;
 import net.xeoh.plugins.informationbroker.standarditems.strings.StringItem;
-import net.xeoh.plugins.informationbroker.standarditems.vanilla.ObjectID;
-import net.xeoh.plugins.informationbroker.standarditems.vanilla.ObjectItem;
-import net.xeoh.plugins.informationbroker.util.InformationBrokerUtil;
-import net.xeoh.plugins.informationbroker.util.ValueListener;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -48,7 +43,7 @@ import org.junit.Test;
  * @author rb
  *
  */
-public class InformationBrokerTest {
+public class InformationBrokerTest2 {
 
     private PluginManager pm;
 
@@ -81,59 +76,13 @@ public class InformationBrokerTest {
         Assert.assertNotNull(this.pm);
 
         final InformationBroker plugin = this.pm.getPlugin(InformationBroker.class);
-        
-        plugin.publish(new StringItem("some:id", "somevalue"));
-        final StringItem informationItem = plugin.getInformationItem(new StringID("some:id"));
 
-        Assert.assertNotNull(informationItem);
-        Assert.assertEquals(informationItem.getContent(), "somevalue");
-
-        plugin.subscribe(new InformationListener() {
-
-            public void informationUpdate(
-                                          InformationBroker broker,
-                                          Collection<InformationItemIdentifier<?, InformationItem<?>>> ids) {
-                InformationBrokerTest.this.called1 = true;
-            }
-        }, SubscriptionMode.ALL_SET, new StringID("some:id"));
-
-        plugin.subscribe(new InformationListener() {
-
-            public void informationUpdate(
-                                          InformationBroker broker,
-                                          Collection<InformationItemIdentifier<?, InformationItem<?>>> ids) {
-                InformationBrokerTest.this.called2 = true;
-            }
-
-        }, SubscriptionMode.ALL_SET, new StringID("some:other:id"), new StringID("some:id"));
-
-        plugin.publish(new ObjectItem("x:x", "abx"));
-        
-        Object c1 = plugin.getInformationItem(new ObjectID("x:x")).getContent();
-        String c2 = plugin.getInformationItem(new ObjectID("x:x")).getContent(String.class);
-
-        System.out.println(c1);
-        System.out.println(c2);
-        
-        InformationBrokerUtil ibu = new InformationBrokerUtil(plugin);
-        
-        ibu.onValue(new ObjectID("x:x"), new ValueListener<Object>() {
-            public void newValue(Object value) {
-                System.out.println(value);
+        plugin.publish(new StringItem("device:location", "Kaiserslautern, Germany"));
+        plugin.subscribe(new StringID("device:location"), new InformationListener<String>() {
+            public void update(InformationItem<String> item) {
+                System.out.println(item.getContent());
             }
         });
-
-        Thread.sleep(1000);
-
-        plugin.publish(new ObjectItem("x:x", "yoyo"));
-        
-        
-
-        Thread.sleep(100);
-        Assert.assertTrue(this.called1);
-        Assert.assertFalse(this.called2);
-        plugin.publish(new StringItem("some:other:id", "somevalue"));
-        Thread.sleep(100);
-        Assert.assertTrue(this.called2);
+        plugin.publish(new StringItem("device:location", "World's End."));
     }
 }

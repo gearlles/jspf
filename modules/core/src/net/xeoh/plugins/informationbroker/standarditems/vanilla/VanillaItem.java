@@ -27,14 +27,17 @@
  */
 package net.xeoh.plugins.informationbroker.standarditems.vanilla;
 
+import net.xeoh.plugins.informationbroker.InformationBroker;
 import net.xeoh.plugins.informationbroker.InformationItem;
 import net.xeoh.plugins.informationbroker.InformationItemIdentifier;
 
 /**
- * USE OF THIS CLASS IS DISCOURAGED.
+ * Represents a vanilla information broker item. Direct use of this class is discouraged
+ * as it detroys type safety, but feel free to derive from it as necessary.
  * 
- * @author rb
- * @param <O> 
+ * @author Ralf Biedert
+ * @param <O> Type of the item.
+ * @see InformationBroker
  */
 public class VanillaItem<O extends Object> implements InformationItem<O> {
 
@@ -43,18 +46,26 @@ public class VanillaItem<O extends Object> implements InformationItem<O> {
     VanillaID<O, VanillaItem<O>> id;
 
     /**
-     * @param id
-     * @param content
+     * Constructs a new item.
+     * 
+     * @param id The ID to use.
+     * @param content The actual content.
      */
     public VanillaItem(final String id, final O content) {
         this.id = new VanillaID<O, VanillaItem<O>>(id);
         this.content = content;
     }
 
+    /* (non-Javadoc)
+     * @see net.xeoh.plugins.informationbroker.InformationItem#getContent()
+     */
     public O getContent() {
         return this.content;
     }
 
+    /* (non-Javadoc)
+     * @see net.xeoh.plugins.informationbroker.InformationItem#getIdentifier()
+     */
     public InformationItemIdentifier<O, VanillaItem<O>> getIdentifier() {
         return this.id;
     }

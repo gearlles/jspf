@@ -30,10 +30,9 @@ package net.xeoh.plugins.bus;
 import net.xeoh.plugins.bus.messages.BusMessage;
 
 /**
- * Base class of every channel. The sole reason for creating a channel interface is that
- * it forces plugin-developers to explicitly mark their channels. <br>
- * <br>
- * So extend from this class if you want to create your own channel.
+ * Base class of every channel, extend it if you want to create your own channel.<br><br>
+ * 
+ * So 
  *
  * @author Ralf Biedert
  * @param <M> 

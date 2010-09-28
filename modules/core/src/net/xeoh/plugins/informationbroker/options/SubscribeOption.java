@@ -1,5 +1,5 @@
 /*
- * ValueListener.java
+ * GetPluginOption.java
  * 
  * Copyright (c) 2009, Ralf Biedert All rights reserved.
  * 
@@ -25,18 +25,17 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.informationbroker.util;
+package net.xeoh.plugins.informationbroker.options;
+
+import net.xeoh.plugins.base.Option;
+import net.xeoh.plugins.informationbroker.InformationBroker;
 
 /**
- * 
+ * The base type for all <code>subscribe()</code> options.
  * 
  * @author Ralf Biedert
- * 
- * @param <Value> 
+ * @see InformationBroker
  */
-public interface ValueListener<Value> {
-    /**
-     * @param value
-     */
-    public void newValue(Value value);
+public interface SubscribeOption extends Option {
+    //
 }

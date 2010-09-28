@@ -46,37 +46,25 @@ import net.xeoh.plugins.bus.messages.BusMessage;
  *
  * @author Ralf Biedert
  */
-/**
- * @author rb
- *
- */
 @Author(name = "Ralf Biedert")
 @PluginImplementation
 public class BusImpl implements Bus {
 
-    /**
-     * List of all known listeners
-     */
+    /** List of all known listeners */
     @SuppressWarnings("rawtypes")
     HashMap<Class<? extends Channel>, List<ChannelListener<?>>> knownListeners;
 
-    /**
-     * Threads may be evil
-     */
+    /** Threads may be evil */
     Lock knownListenersLock = new ReentrantLock();
 
     /* (non-Javadoc)
      * @see net.xeoh.plugins.bus.Bus#addChannelListener(java.lang.Class, net.xeoh.plugins.bus.ChannelListener)
      */
-    public <B extends BusMessage, C extends Channel<B>> void addChannelListener(
-                                                                                final Class<C> channel,
+    public <B extends BusMessage, C extends Channel<B>> void addChannelListener(final Class<C> channel,
                                                                                 final ChannelListener<B> listener) {
 
         // Check parameter
         if (channel == null || listener == null) return;
-
-        // Some assertions
-        assert this.knownListeners != null : "Lister must have been initialized!";
 
         // Return a list of all channel listeners
         this.knownListenersLock.lock();
@@ -108,8 +96,7 @@ public class BusImpl implements Bus {
      * @see net.xeoh.plugins.bus.Bus#sendOnChannel(java.lang.Class, net.xeoh.plugins.bus.messages.BusMessage)
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <B extends BusMessage, D extends B, C extends Channel<B>> void sendOnChannel(
-                                                                                        final Class<C> channel,
+    public <B extends BusMessage, D extends B, C extends Channel<B>> void sendOnChannel(final Class<C> channel,
                                                                                         final D message) {
         // Check parameter
         if (channel == null || message == null) return;

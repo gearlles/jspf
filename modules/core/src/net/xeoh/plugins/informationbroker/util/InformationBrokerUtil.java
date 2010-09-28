@@ -27,66 +27,25 @@
  */
 package net.xeoh.plugins.informationbroker.util;
 
-import java.util.Collection;
-
 import net.xeoh.plugins.informationbroker.InformationBroker;
-import net.xeoh.plugins.informationbroker.InformationItem;
-import net.xeoh.plugins.informationbroker.InformationItemIdentifier;
-import net.xeoh.plugins.informationbroker.InformationListener;
-import net.xeoh.plugins.informationbroker.SubscriptionMode;
 
 /**
+ * Helper functions for the {@link InformationBroker} interface. The util uses the embedded 
+ * interface to provide more convenience features.   
+ *
  * @author Ralf Biedert
+ * @see InformationBroker
  */
 public class InformationBrokerUtil {
     /** The information broker */
     private final InformationBroker broker;
 
     /**
+     * Creates a new information broker util.
+     * 
      * @param broker
      */
     public InformationBrokerUtil(InformationBroker broker) {
         this.broker = broker;
-    }
-
-    /**
-     * @param <Type>
-     * @param <I>
-     * @param item
-     * @param dflt 
-     * @return .
-     */
-    public <Type, I extends InformationItem<Type>> Type getItem(
-                                                                InformationItemIdentifier<Type, I> item,
-                                                                Type... dflt) {
-        I informationItem = this.broker.getInformationItem(item);
-
-        // Return the value if it is there
-        if (informationItem != null) return informationItem.getContent();
-
-        // Return the default
-        if (dflt.length > 0) return dflt[0];
-
-        // Return nothing ...
-        return null;
-    }
-
-    /**
-     * @param <Type>
-     * @param <I>
-     * @param item
-     * @param valueListener
-     */
-    public <Type, I extends InformationItem<Type>> void onValue(
-                                                                final InformationItemIdentifier<Type, I> item,
-                                                                final ValueListener<Type> valueListener) {
-        this.broker.subscribe(new InformationListener() {
-
-            public void informationUpdate(
-                                          InformationBroker brker,
-                                          Collection<InformationItemIdentifier<?, InformationItem<?>>> ids) {
-                valueListener.newValue(brker.getInformationItem(item).getContent());
-            }
-        }, SubscriptionMode.ALL_SET, item);
     }
 }

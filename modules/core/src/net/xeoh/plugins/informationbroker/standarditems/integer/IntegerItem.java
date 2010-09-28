@@ -30,12 +30,16 @@ package net.xeoh.plugins.informationbroker.standarditems.integer;
 import net.xeoh.plugins.informationbroker.standarditems.vanilla.VanillaItem;
 
 /**
- * @author rb
+ * An integer item for your convenience.
+ * 
+ * @author Ralf Biedert
  */
 public class IntegerItem extends VanillaItem<Integer> {
     /**
-     * @param id
-     * @param content
+     * Constructs an interger item.
+     * 
+     * @param id The ID to use.
+     * @param content Its content.
      */
     @SuppressWarnings("boxing")
     public IntegerItem(final String id, final int content) {
@@ -43,8 +47,10 @@ public class IntegerItem extends VanillaItem<Integer> {
     }
 
     /**
-     * @param id
-     * @param content
+     * Constructs an interger item.
+     * 
+     * @param id The ID to use.
+     * @param content Its content.
      */
     public IntegerItem(final String id, final Integer content) {
         super(id, content);

@@ -31,14 +31,17 @@ import java.net.URI;
 import java.util.Collection;
 
 /**
- * @author rb
- *
+ * The export result of the <code>exportPlugin()</code> operation.
+ * 
+ * @author Ralf Biedert
+ * @see RemoteAPI
  */
 public interface ExportResult {
     /**
-     * Returns all URIs where this plugin was exported. Every network interface to which this PC is connected can have a different URI. 
+     * Returns all URIs where this plugin was exported. Every network interface to which this PC is 
+     * connected can have a different URI. 
      * 
-     * @return .
+     * @return A collection of all exported URIs.
      */
     public Collection<URI> getExportURIs();
 }

@@ -30,14 +30,16 @@ package net.xeoh.plugins.informationbroker.standarditems.integer;
 import net.xeoh.plugins.informationbroker.standarditems.vanilla.VanillaID;
 
 /**
- * Reflects a new integer id.
+ * An integer ID for your convenience.
  * 
- * @author rb
+ * @author Ralf Biedert
  */
 public class IntegerID extends VanillaID<Integer, IntegerItem> {
 
     /**
-     * @param id
+     * Constructs a new integer ID.
+     * 
+     * @param id The ID to use.
      */
     public IntegerID(final String id) {
         super(id);

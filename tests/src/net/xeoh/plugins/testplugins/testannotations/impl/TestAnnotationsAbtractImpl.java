@@ -86,7 +86,7 @@ public class TestAnnotationsAbtractImpl implements TestAnnotations {
     public void initMeLala() {
         this.init = "INIT OK";
         System.out.println("Plugin Initialized");
-        throw new NullPointerException();
+        //throw new NullPointerException();
     }
 
     /**

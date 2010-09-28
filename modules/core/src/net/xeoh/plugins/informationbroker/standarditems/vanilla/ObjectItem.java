@@ -28,24 +28,29 @@
 package net.xeoh.plugins.informationbroker.standarditems.vanilla;
 
 /**
- * USE OF THIS CLASS IS DISCOURAGED.
+ * Represents an unspecified object item.  Direct use of this class is discouraged
+ * as it detroys type safety.
  * 
+ * @author Ralf Biedert
  */
 public class ObjectItem extends VanillaItem<Object> {
 
     /**
-     * @param id
-     * @param content
+     * Creates an object item.
+     * 
+     * @param id The ID to use.
+     * @param content The actual content.
      */
     public ObjectItem(String id, Object content) {
         super(id, content);
     }
 
-
     /**
-     * @param <T>
-     * @param clzz
-     * @return .
+     * Returns the object cast to some class.
+     * 
+     * @param <T> Type of the class.
+     * @param clzz Class to use
+     * @return The cast object.
      */
     @SuppressWarnings("unchecked")
     public <T extends Object> T getContent(Class<T> clzz) {

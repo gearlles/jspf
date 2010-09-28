@@ -30,8 +30,8 @@ package net.xeoh.plugins.bus.messages;
 import java.io.Serializable;
 
 /**
- * Basic transmittable within the application and over the net. Extend and implement this
- * interface for your own messages.
+ * Basic transmittable within the application and over the net. Extend and implement 
+ * this interface for your own messages.
  *
  * @author Ralf Biedert
  */

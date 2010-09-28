@@ -30,14 +30,16 @@ package net.xeoh.plugins.informationbroker.standarditems.strings;
 import net.xeoh.plugins.informationbroker.standarditems.vanilla.VanillaID;
 
 /**
- * Reflects a new string id.
+ * A string identifyer for your convenience. 
  * 
- * @author rb
+ * @author Ralf Biedert
  */
 public class StringID extends VanillaID<String, StringItem> {
 
     /**
-     * @param id
+     * Constructs a new String ID.
+     * 
+     * @param id The ID to use.
      */
     public StringID(final String id) {
         super(id);

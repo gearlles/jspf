@@ -33,15 +33,15 @@ import net.xeoh.plugins.bus.messages.BusMessage;
  * Listens on a channel.
  *
  * @author Ralf Biedert.
- * @param <M> 
- *
+ * @param <M> Type of the message.
+ * @see Channel
  */
 public interface ChannelListener<M extends BusMessage> {
     /**
-     * Will be called on a new message. Should return ASAP.
+     * Will be called on the arrival of a new message; the method should return as 
+     * soon as possible and should not alter the message.
      *
-     * @param message
-     *                Use for example instanceof to further distinguish the types of messages.
+     * @param message The arriving message. 
      */
     public void incomingMessage(M message);
 }

@@ -31,54 +31,71 @@ import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.bus.messages.BusMessage;
 
 /**
- * The bus should be used for optional "low profile" messages, callbacks and so on, like
- * the standard Java listener, however without the hassle of bloating your plugins with
- * add / remove / ... functions. <br>
- * <br>
+ * 
+ * The bus is a simple plugin communication facility to pass messages to a number of 
+ * listeners. The bus should be used for optional "low profile" messages.<br><br>
+ * 
  * All receivers will obtain the same message, so your message-interface and/or your
- * callees should ensure it won't be altered. <br>
- * <br>
- *
- * TODO: removeChannelListener()
+ * callees should ensure it won't be altered. <br><br>
  *
  * @author Ralf Biedert
+ * @see Channel
+ * @see BusMessage
  */
 public interface Bus extends Plugin {
     /**
      * Adds a listener to a given channel. Any object can be used to specify a channel,
      * however, using interface classes is recommended. There is no act of explicitly
      * creating a channel. As soon as as someone sends on a channel you have registered
-     * to, you will receive the message. <br>
-     * <br>
-     * As an implementation might choose to process all listener sequentially they should
-     * return quickly.
-     * @param <B> 
-     * @param <C> 
+     * to, you will receive the message. <br><br>
+     * 
+     * For example, if you defined a <code>SystemChannel</code> channel transmitting 
+     * messages of the type <code>SystemMessage</code>, you would add a listener like this:<br/><br/>
+     * 
+     * <code>
+     * bus.addChannelListener(SystemChannel.class, new ChannelListener<SystemMessage>() {<br/>
+     * &nbsp;&nbsp;&nbsp;&nbsp;public void incomingMessage(final SystemMessage m) {<br/>
+     * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...<br/>
+     * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+     * });
+     * </code><br/><br/>
+     * 
+     * 
+     * As an implementation might choose to process all listeners sequentially they should
+     * return as quickly as possible. However, the order and timing of message delivery 
+     * is undefined. 
+     * 
+     * @param <B> Type of the BusMessage
+     * @param <C> Type of the Channel
      *
-     * @param channel
-     * @param listener
+     * @param channel The channel to send the message upon.
+     * @param listener The listener to the channel.
      */
-    public <B extends BusMessage, C extends Channel<B>> void addChannelListener(
-                                                                                Class<C> channel,
+    public <B extends BusMessage, C extends Channel<B>> void addChannelListener(Class<C> channel,
                                                                                 ChannelListener<B> listener);
 
     /**
      * Sends a message on the given channel. No channel has to be created explicitly
-     * before using this function.<br>
-     * <br>
+     * before using this function, just send the message and all registered listeners
+     * will be informed.<br><br>
+     * 
+     * For example to send a message to a listener as described in <code>addChannelListener()</code>:
+     * <br/><br/>
+     * 
+     * <code>
+     * sendOnChannel(SystemChannel.class, systemMessage);
+     * </code><br/><br/>
      *
      * Credits to 'surial' from the #java-channel on freenode.net for solving a generics
      * 'feature' that required you to an anonymous BusMessage to its 'parent' bus message.
-     * @param channel 
-     * @param message 
-     * @param <B> 
-     * @param <D> 
-     * @param <C> 
+     * 
+     * @param channel The channel to send this message on. 
+     * @param message  The message to send.
+     * @param <B> Type of the bus message. 
+     * @param <D> Type to fix warnings. 
+     * @param <C> Type of the channel.
      *
      */
-    public <B extends BusMessage, D extends B, C extends Channel<B>> void sendOnChannel(
-                                                                                        Class<C> channel,
+    public <B extends BusMessage, D extends B, C extends Channel<B>> void sendOnChannel(Class<C> channel,
                                                                                         D message);
-    // public <B extends BusMessage, C extends Channel<B>> void sendOnChannel(Class<C>
-    // channel, B message);
 }

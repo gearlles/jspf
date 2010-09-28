@@ -27,21 +27,21 @@
  */
 package net.xeoh.plugins.informationbroker;
 
-import java.util.Collection;
-
 /**
+ * Listens to a give information item. It is called back whenever the information item
+ * changes.
  * 
- * @author rb
- *
+ * @author Ralf Biedert
+ * 
+ * @param <X> The type of the delivered object. 
+ * @see InformationBroker
  */
-public interface InformationListener {
+public interface InformationListener<X> {
     /**
-     * Called when the subscription requirements are met. 
+     * Called when the subscription requirements are met and a new item 
+     * has been posted. 
      * 
-     * @param broker
-     * @param ids
+     * @param item The newly posted item.
      */
-    public void informationUpdate(
-                                  InformationBroker broker,
-                                  Collection<InformationItemIdentifier<?, InformationItem<?>>> ids);
+    public void update(InformationItem<X> item);
 }

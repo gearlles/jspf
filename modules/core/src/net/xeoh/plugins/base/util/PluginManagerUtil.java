@@ -36,7 +36,7 @@ import net.xeoh.plugins.base.options.getplugin.OptionPluginSelector;
 import net.xeoh.plugins.base.options.getplugin.PluginSelector;
 
 /**
- * Helper functions for PluginManager interface. The util uses the embedded 
+ * Helper functions for {@link PluginManager} interface. The util uses the embedded 
  * interface to provide more convenience features.   
  *
  * @author Ralf Biedert

@@ -80,7 +80,6 @@ public class BusTest {
         Assert.assertNotNull(plugin);
 
         bus.addChannelListener(TestChannel.class, new ChannelListener<TestMessage>() {
-
             public void incomingMessage(final TestMessage m) {
                 BusTest.this.message = m.getContent();
             }

@@ -28,11 +28,10 @@
 package net.xeoh.plugins.informationbroker.standarditems.vanilla;
 
 /**
- * Reflects a new vanilla id.
+ * Reflects an unspecific object id. Direct use of this class is discouraged
+ * as it detroys type safety.
  * 
- * USE OF THIS CLASS IS DISCOURAGED.
- * 
- * @author rb
+ * @author Ralf Biedert
  */
 public class ObjectID extends VanillaID<Object, ObjectItem> {
 

@@ -32,50 +32,102 @@ import java.net.URI;
 import net.xeoh.plugins.base.Plugin;
 
 /**
- * Allows the network export of plugins.<br/> <br/>
+ * Allows the network export and import of plugins. The plugins will usually be made 
+ * available on the same machine and the local network. The currently preferred way 
+ * to export and import plugins is using the LipeRMI implementation, as it allows
+ * for listeners and transparent network callbacks.<br/><br/>
  *
  * Please note there may be constraints on the plugin usage depending on the remote type.
- * For example, XMLRPC might have problems with null or void types.
- * 
- * Plugins implementing the RemoteAPI should be sensitive to the following configuration 
- * subkeys:
+ * For example, XMLRPC might have problems with null or void types. Plugins implementing 
+ * the RemoteAPI should be sensitive to the following configuration subkeys:<br/><br/>
  * 
  * 'export.server'  -   When exporting and constructing the URL, use this server port and IP.
  *
  * @author Ralf Biedert
- *
  */
 public interface RemoteAPI extends Plugin {
     /**
-     * Exports a plugin over the network. The implementation decides how to do that best.
-     * An URL is returned by which, amongst others, the instance can be accessed.
+     * Exports a plugin over the network. The implementation decides how to do that. An 
+     * export result is returned containing additional information about the import. Please 
+     * keep in mind that the simpler the plugin's interface is, the more likely the export
+     * will succeed (depends on the export method; Lipe can handle pretty much, XMLRPC 
+     * doesn't).<br/><br/>
+     * 
+     * For example, if <code>plugin</code> is a local plugin and <code>remote</code> 
+     * a remote plugin, you could export your local plugin like this:
+     * <br/><br/>
+     * 
+     * <code>
+     * exportPlugin(plugin);
+     * </code><br/><br/>
+     * 
+     * Your plugin would afterwards be accessible from other VMs on the same machine and the
+     * local network. Again, you should keep in mind that some details might differ, depending
+     * on the export method you select, so don't be surprised if a specific method call
+     * fails (as a rule of thumb, the more complex a method-signature looks like, the less
+     * likely it is to work with all exporters). 
      *
-     * @param plugin
-     * @return The URL where the plugin is accessible 
+     * @param plugin The plugin to export. 
+     * @return The export result 
      */
     public ExportResult exportPlugin(Plugin plugin);
 
     /**
-     * The method by which the object / plugin is published.
+     * The method by which this remoteAPI publishes plugins with <code>exportPlugin()</code>.
+     * Can be used to select the right export method. 
      *
      * @return The method the plugin uses to export.
      */
     public PublishMethod getPublishMethod();
 
     /**
-     * Returns a proxy for the remotely exported object.
+     * Returns a proxy for the remotely exported object. This is the complement to 
+     * <code>exportPlugin()</code>. A pseudo-plugin will be return implementing all 
+     * methods of the requested interface that forwards all calls to the originally
+     * exported plugin. Depending on the export type a number of method 
+     * signatures might not work.<br/><br/>
+     * 
+     * For example, if <code>url</code> is a url contianed in the {@link ExportResult}
+     * object returned by <code>exportPlugin()</code> and <code>remote</code> 
+     * a remote plugin of the same type as the plugin (which might be of type 
+     * <code>ChatService</code> was exported with, you could import your distant plugin 
+     * like this:
+     * <br/><br/>
+     * 
+     * <code>
+     * ChatService service = getRemoteProxy(uri, ChatService.class);
+     * </code><br/><br/>
+     * 
+     * For your convenince there also exist a number of special URIs, the so called 
+     * <i>discovery URIs</i>. They enable you to detect services on the network without
+     * having any prior knowledge about its location. These are:
+     * 
+     * <ul>
+     * <li><code>discover://any</code> - discovers the next best service implementing the given interface</li>
+     * <li><code>discover://nearest</code> - the nearest (in terms of network ping) instance</li>
+     * <li><code>discover://youngest</code> - the most recently started instance</li>
+     * <li><code>discover://oldest</code> - the instance running the longest time</li>
+     * </ul>
+     * 
+     * These special URIs can dramatically change the time the method takes. For example, <code>any</code> 
+     * and <code>nearest</code> should generally be the fastest in case a local service (on the same
+     * machine) is found, while <code>youngest</code> and <code>oldest</code> always consider all
+     * available services and take longer. Also, within the first five seconds of application lifetime 
+     * the discovery passes can take up to five seconds, while the remaining passes or any discovery call
+     * after five seconds usually take only a fraction of a second.
      *
      * @param <R>
-     * @param uri
-     * @param remote
-     * @return Stub to access the plugins
+     * @param uri The URI to discover. See {@link ExportResult} and the description above.
+     * @param remote The Plugin interface to request. 
+     * @return A pseudo-plugin serving as a stub to the remote object.
      */
     public <R extends Plugin> R getRemoteProxy(URI uri, Class<R> remote);
 
     /**
-     * Stops export of a plugin.
+     * Stops the export of a plugin. 
      *
-     * @param plugin
+     * @param plugin The plugin to unexport (must have been exported previously by the same 
+     * remote service)
      */
     public void unexportPlugin(Plugin plugin);
 }

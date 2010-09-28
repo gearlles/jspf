@@ -32,8 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
@@ -44,189 +43,137 @@ import net.xeoh.plugins.informationbroker.InformationBroker;
 import net.xeoh.plugins.informationbroker.InformationItem;
 import net.xeoh.plugins.informationbroker.InformationItemIdentifier;
 import net.xeoh.plugins.informationbroker.InformationListener;
-import net.xeoh.plugins.informationbroker.SubscriptionMode;
+import net.xeoh.plugins.informationbroker.options.PublishOption;
+import net.xeoh.plugins.informationbroker.options.SubscribeOption;
 
 /**
- * @author rb
+ * Nothing to see here.    
+ * 
+ * @author Ralf Biedert
  */
 @Author(name = "Ralf Biedert")
 @PluginImplementation
 public class InformationBrokerImpl implements InformationBroker {
+    /** Stores information on a key */
+    class KeyEntry {
+        /** Locks access to this item */
+        final Lock entryLock = new ReentrantLock();
 
-    private static class Subscription {
-        @SuppressWarnings("unchecked")
-        public InformationItemIdentifier[] allToWaitFor;
-        public InformationListener l;
-        public SubscriptionMode mode;
+        /** All listeners subscribed to this item */
+        final Collection<InformationListener<?>> allListeners = new ArrayList<InformationListener<?>>();
 
-        @SuppressWarnings("unchecked")
-        public Subscription(final InformationListener l, final SubscriptionMode mode,
-                            final InformationItemIdentifier... allToWaitFor) {
-
-            this.l = l;
-            this.mode = mode;
-            this.allToWaitFor = allToWaitFor;
-        }
+        /** The last item present */
+        InformationItem<?> lastItem = null;
     }
 
-    /**
-     * Calls listeners for an item.
-     * 
-     * @param broker
-     * @param subscription
-     */
-    @SuppressWarnings("unchecked")
-    final static void callListener(final InformationBroker broker,
-                                   final Subscription subscription) {
-        // A bit mess in here.
-        final Collection<InformationItemIdentifier<?, InformationItem<?>>> cmd = new ArrayList<InformationItemIdentifier<?, InformationItem<?>>>();
-        for (final InformationItemIdentifier item : subscription.allToWaitFor) {
-            cmd.add(item);
-        }
-        subscription.l.informationUpdate(broker, cmd);
-    }
-
-    /** Manages all information items */
-    @SuppressWarnings("unchecked")
-    final Map<URI, InformationItem> items = new HashMap<URI, InformationItem>();
+    /** Manages all information regarding a key */
+    final Map<URI, KeyEntry> items = new HashMap<URI, KeyEntry>();
 
     /** Locks access to the items */
     final Lock itemsLock = new ReentrantLock();
-
-    /** All subscription. */
-    final Collection<Subscription> subscriptions = new ArrayList<Subscription>();
-
-    /** Locks access to the subs */
-    final Lock subscriptionsLock = new ReentrantLock();
 
     /** */
     final Logger logger = Logger.getLogger(this.getClass().getName());
 
     /* (non-Javadoc)
-     * @see net.xeoh.plugins.informationbroker.InformationBroker#getInformationItem(net.xeoh.plugins.informationbroker.InformationItemIdentifier)
+     * @see net.xeoh.plugins.informationbroker.InformationBroker#publish(net.xeoh.plugins.informationbroker.InformationItem, net.xeoh.plugins.informationbroker.options.PublishOption[])
      */
-    @SuppressWarnings("unchecked")
-    final public <Type, I extends InformationItem<Type>> I getInformationItem(
-                                                                              final InformationItemIdentifier<Type, I> item) {
-        return (I) _getInformationItem(item);
-    }
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Override
+    public void publish(InformationItem<?> item, PublishOption... options) {
+        if (item == null) return;
 
-    /* (non-Javadoc)
-     * @see net.xeoh.plugins.informationbroker.InformationBroker#publish(net.xeoh.plugins.informationbroker.InformationItem)
-     */
-    @SuppressWarnings("unchecked")
-    public void publish(final InformationItem<?>... newItems) {
-        //TODO: More safety checks that the elements really fit in there
-        for (final InformationItem item : newItems) {
-            this.logger.fine("Publishing item " + item.getIdentifier().getID());
-            this.itemsLock.lock();
-            try {
-                this.items.put(item.getIdentifier().getID(), item);
-            } finally {
-                this.itemsLock.unlock();
-            }
-        }
+        final KeyEntry keyEntry = getKeyEntry(item.getIdentifier().getID());
+        final InformationItem iitem = item;
 
-        // check subscriptions
-        for (final InformationItem item : newItems) {
-            checkSubscriptions(item.getIdentifier().getID());
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see net.xeoh.plugins.informationbroker.InformationBroker#subscribe(net.xeoh.plugins.informationbroker.InformationListener, net.xeoh.plugins.informationbroker.SubscriptionMode, net.xeoh.plugins.informationbroker.InformationItemIdentifier<?>[])
-     */
-    public void subscribe(InformationListener l, SubscriptionMode mode,
-                          InformationItemIdentifier<?, ?>... toWaitFor) {
-        this.subscriptionsLock.lock();
+        // Now process entry
         try {
-            this.subscriptions.add(new Subscription(l, mode, toWaitFor));
+            keyEntry.entryLock.lock();
+            keyEntry.lastItem = item;
+
+            for (InformationListener<?> listener : keyEntry.allListeners) {
+                try {
+                    listener.update(iitem);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         } finally {
-            this.subscriptionsLock.unlock();
+            keyEntry.entryLock.unlock();
         }
 
-        // we need to check subscriptions here too (preconditions might have been already met) 
-        checkSubscriptions(null);
     }
 
-    /**
-     * Asynchronously checks subscriptions 
+    /* (non-Javadoc)
+     * @see net.xeoh.plugins.informationbroker.InformationBroker#subscribe(net.xeoh.plugins.informationbroker.InformationItemIdentifier, net.xeoh.plugins.informationbroker.InformationListener, net.xeoh.plugins.informationbroker.options.SubscribeOption[])
      */
-    private void checkSubscriptions(final URI justChanged) {
-        final ExecutorService es = Executors.newCachedThreadPool();
-        es.execute(new Runnable() {
-            @SuppressWarnings("unchecked")
-            public void run() {
-                InformationBrokerImpl.this.subscriptionsLock.lock();
-                final Collection<Subscription> copy = new ArrayList<Subscription>(InformationBrokerImpl.this.subscriptions);
-                InformationBrokerImpl.this.subscriptionsLock.unlock();
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public <T> void subscribe(InformationItemIdentifier<T, ?> id,
+                              InformationListener<T> listener, SubscribeOption... options) {
+        if (id == null || listener == null) return;
 
-                for (final Subscription subscription : copy) {
+        final KeyEntry keyEntry = getKeyEntry(id.getID());
+        InformationItem lastItem = null;
 
-                    final InformationItemIdentifier[] allToWaitFor = subscription.allToWaitFor;
+        // Now process entry
+        try {
+            keyEntry.entryLock.lock();
+            keyEntry.allListeners.add(listener);
+            lastItem = keyEntry.lastItem;
+        } finally {
+            keyEntry.entryLock.unlock();
+        }
 
-                    boolean callSubscriptionListener = false;
-
-                    // Work depending on mode
-                    switch (subscription.mode) {
-                    case ALL_SET:
-                        boolean allFound = true;
-
-                        // Check if every item is found
-                        for (final InformationItemIdentifier<?, ? extends InformationItem<?>> informationItemIdentifier : allToWaitFor) {
-                            // Try to obtain the item.
-
-                            final Object informationItem = _getInformationItem(informationItemIdentifier);
-                            if (informationItem == null) {
-                                allFound = false;
-                            }
-                        }
-
-                        callSubscriptionListener = allFound;
-                        break;
-                    case SOME_CHANGED:
-                        if (justChanged == null) {
-                            break;
-                        }
-                        // Check if some items equals the just changed item.
-                        for (final InformationItemIdentifier<?, ?> informationItemIdentifier : allToWaitFor) {
-                            if (informationItemIdentifier.getID().equals(justChanged)) {
-                                callSubscriptionListener = true;
-                            }
-                        }
-                        break;
-                    }
-
-                    if (callSubscriptionListener) {
-                        callListener(InformationBrokerImpl.this, subscription);
-                    }
-
-                }
-
-                es.shutdown();
-            }
-        });
-
+        if (lastItem != null) {
+            listener.update(lastItem);
+        }
     }
 
-    /**
-     * We need this hack as otherwise the compiler (called from ant) complains ...
-     * @param item
-     * @return
+    /* (non-Javadoc)
+     * @see net.xeoh.plugins.informationbroker.InformationBroker#unsubscribe(net.xeoh.plugins.informationbroker.InformationListener)
      */
-    @SuppressWarnings("unchecked")
-    final Object _getInformationItem(final InformationItemIdentifier item) {
+    @Override
+    public void unsubscribe(InformationListener<?> listener) {
+        if (listener == null) return;
 
-        this.logger.fine("Requested information item " + item.getID());
-
-        // TODO: More casting safety checks here ...
+        // Well, not the fastest and best solution given this interface.
         this.itemsLock.lock();
         try {
-            final Object o = this.items.get(item.getID());
-            return o;
+            final Set<URI> keySet = this.items.keySet();
+            for (URI uri : keySet) {
+                final KeyEntry keyEntry = this.items.get(uri);
+                keyEntry.entryLock.lock();
+                try {
+                    keyEntry.allListeners.remove(listener);
+                } finally {
+                    keyEntry.entryLock.unlock();
+                }
+            }
         } finally {
             this.itemsLock.unlock();
         }
     }
 
+    /**
+     * Returns the key entry of a given ID.
+     * 
+     * @param id The ID to request
+     * @return The key entry.
+     */
+    private KeyEntry getKeyEntry(URI id) {
+        KeyEntry keyEntry = null;
+        this.itemsLock.lock();
+        try {
+            keyEntry = this.items.get(id);
+            if (keyEntry == null) {
+                keyEntry = new KeyEntry();
+                this.items.put(id, keyEntry);
+            }
+        } finally {
+            this.itemsLock.unlock();
+        }
+
+        return keyEntry;
+    }
 }

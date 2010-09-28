@@ -28,24 +28,26 @@
 package net.xeoh.plugins.informationbroker;
 
 /**
- * An information item.
+ * An information item. Each item consists of its unique ID (the {@link InformationItemIdentifier})
+ * and the content associated to this id.
  * 
- * @author rb
- * @param <Type> 
+ * @author Ralf Biedert
+ * @param <T> The content's type.
+ * @see InformationBroker
  */
-public interface InformationItem<Type extends Object> {
+public interface InformationItem<T> {
 
     /**
-     * Content of this item.
+     * Returns the content of this item.
      * 
-     * @return .
+     * @return The content. 
      */
-    public Type getContent();
+    public T getContent();
 
     /**
      * Returns the corresponding identifier.
      * 
      * @return Identifier of the information item.
      */
-    public InformationItemIdentifier<Type, ? extends InformationItem<Type>> getIdentifier();
+    public InformationItemIdentifier<T, ? extends InformationItem<T>> getIdentifier();
 }

@@ -28,10 +28,10 @@
 package net.xeoh.plugins.remote;
 
 /**
- * Plugin returned by the remote connection may also implement this interface to provide
- * meta handling facilities of this connection.
+ * Plugins returned by {@link RemoteAPI}.<code>getRemoteProxy()</code> may also implement this 
+ * interface to provide meta handling facilities of this connection.
  * 
- * @author rb
+ * @author Ralf Biedert
  */
 public interface RemotePluginHandler {
 

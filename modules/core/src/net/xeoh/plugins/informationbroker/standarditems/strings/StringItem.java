@@ -30,13 +30,17 @@ package net.xeoh.plugins.informationbroker.standarditems.strings;
 import net.xeoh.plugins.informationbroker.standarditems.vanilla.VanillaItem;
 
 /**
- * @author rb
+ * A string item for your convenience. 
+ * 
+ * @author Ralf Biedert
  */
 public class StringItem extends VanillaItem<String> {
 
     /**
-     * @param id
-     * @param content
+     * Creates a new string item.
+     * 
+     * @param id The ID of this item.
+     * @param content Its content.
      */
     public StringItem(final String id, final String content) {
         super(id, content);

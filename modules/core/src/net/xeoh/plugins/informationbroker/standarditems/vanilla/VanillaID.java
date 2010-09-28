@@ -29,17 +29,18 @@ package net.xeoh.plugins.informationbroker.standarditems.vanilla;
 
 import java.net.URI;
 
+import net.xeoh.plugins.informationbroker.InformationBroker;
 import net.xeoh.plugins.informationbroker.InformationItem;
 import net.xeoh.plugins.informationbroker.InformationItemIdentifier;
 
 /**
- * Reflects a new vanilla id.
+ * Reflects a new vanilla id. Direct use of this class is discouraged
+ * as it detroys type safety, but feel free to derive from it as necessary.
  * 
- * USE OF THIS CLASS IS DISCOURAGED.
- * 
- * @author rb
- * @param <O> 
- * @param <X> 
+ * @author Ralf Biedert
+ * @param <O> Type of the item.
+ * @param <X> Type of the identifyer.
+ * @see InformationBroker
  */
 public class VanillaID<O extends Object, X extends InformationItem<O>> implements
         InformationItemIdentifier<O, X> {
@@ -49,7 +50,7 @@ public class VanillaID<O extends Object, X extends InformationItem<O>> implement
     /**
      * Constructs a new id.
      * 
-     * @param id
+     * @param id The ID to use
      */
     public VanillaID(final String id) {
         this.id = URI.create(id);

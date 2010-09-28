@@ -32,17 +32,17 @@ import java.net.URI;
 /**
  * Identifies an information item.
  * 
- * @author rb
- * @param <Type> 
- * @param <InfoItem> 
+ * @author Ralf Biedert
+ * @param <T> The item's type .
+ * @param <I> The information item's type.
  *
  */
-public interface InformationItemIdentifier<Type, InfoItem extends InformationItem<Type>> {
+public interface InformationItemIdentifier<T, I extends InformationItem<T>> {
     /**
      * 
      * Returns ID of that item.
      * 
-     * @return ID. 
+     * @return The URI identifying the item. 
      */
     public URI getID();
 }

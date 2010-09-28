@@ -1,5 +1,5 @@
 /*
- * SubscriptionMode.java
+ * GetPluginOption.java
  * 
  * Copyright (c) 2009, Ralf Biedert All rights reserved.
  * 
@@ -25,22 +25,17 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.informationbroker;
+package net.xeoh.plugins.informationbroker.options;
+
+import net.xeoh.plugins.base.Option;
+import net.xeoh.plugins.informationbroker.InformationBroker;
 
 /**
- * How the subscription should be handled.
+ * The base type for all <code>publish()</code> options.
  * 
- * @author rb
+ * @author Ralf Biedert
+ * @see InformationBroker
  */
-public enum SubscriptionMode {
-    /**
-     * Calls subscribed elements as soon as all requested IDs are set.
-     */
-    ALL_SET,
-
-    /**
-     * Calls subscribed elements if some the given elements changed. Currently this won't trigger if 
-     * the variable was already set before and the listener is new (this is a bug, we will change this).
-     */
-    SOME_CHANGED
+public interface PublishOption extends Option {
+    //
 }

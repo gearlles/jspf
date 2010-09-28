@@ -37,8 +37,9 @@ import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.util.PluginUtil;
 
 /**
- * @author rb
- *
+ * Some utils for exporting plugins. Only used internally.
+ * 
+ * @author Ralf Biedert
  */
 public class PluginExport {
     /**

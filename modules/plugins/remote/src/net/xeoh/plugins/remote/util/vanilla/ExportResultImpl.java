@@ -35,8 +35,9 @@ import java.util.List;
 import net.xeoh.plugins.remote.ExportResult;
 
 /**
- * @author rb
- *
+ * Only used internally.
+ * 
+ * @author Ralf Biedert
  */
 public class ExportResultImpl implements ExportResult {
 

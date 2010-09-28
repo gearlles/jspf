@@ -27,47 +27,42 @@
  */
 package net.xeoh.plugins.remote;
 
+import net.xeoh.plugins.base.annotations.Capabilities;
+
 /**
  * How an implementation publishes something. As this enum is only hardly extensible from
- * outside, we have to list here all possible methdos beforehand, so other might implement
+ * outside, we have to list here all possible methods beforehand, so other might implement
  * the plugins and use a value from in here. Currently, we only have XMLRPC.
  *
- * Note: All Remote plugins also should use the Capabilities to tell their functionality.
+ * Note: All Remote plugins also should use the &#064;{@link Capabilities} annotation to tell their 
+ * functionality.
  *
  * @author Ralf Biedert
- *
+ * @see RemoteAPI
  */
 public enum PublishMethod {
-    /**
-     * Essential RMI
-     */
+    /** <a href="http://code.google.com/p/essence-rmi/">Essence RMI</a> plugin. */
     ERMI,
-    /**
-     * In case you implemented a method not specified here. Use Capabilities then.
-     */
+
+    /** In case you implemented a method not specified here. Use Capabilities then. */
     OTHER,
-    /**
-     * Use XMLRPC for communication. Might have problems with void or null.
-     */
+    /** Use <a href="http://en.wikipedia.org/wiki/XML-RPC">XMLRPC</a> for communication. Might have problems with void or null. */
     XMLRPC,
-    
-    /**
-     * DFKI's XMLRPC Delight service
-     */
+
+    /** DFKI's <a href="http://delight.opendfki.de/">XMLRPC Delight</a> service */
     XMLRPCDELIGHT,
-   
-    /**
-     * Make plugins accessible by JavaScript
-     */
+
+    /** Make plugins accessible by JavaScript (currently defunct) */
     JAVASCRIPT,
-    /**
-     * Make plugins accessible by JavaScript through Jabsorb (JSON)
-     */
+
+    /** Make plugins accessible by JavaScript through <a href="http://jabsorb.org/">Jabsorb (JSON)</a>. Note that browser
+     * restrictions might prevent you from using the plugin properly. */
     JSON,
 
     /**
-     * Lipe RMI appears to be the first sensible RMI provider that supports callbacks. This version however was hacked a bit to support
-     * automatic exports of interfaces.
+     * <a href="http://lipermi.sourceforge.net/">Lipe RMI</a> appears to be the first sensible RMI provider that supports 
+     * callbacks. The version we use however was hacked a bit to support automatic export of interfaces and contains less 
+     * bugs and deadlocks. Preferred way of exporting plugins! 
      */
     LIPE
 }
