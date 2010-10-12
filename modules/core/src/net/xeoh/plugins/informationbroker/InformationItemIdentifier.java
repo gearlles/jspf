@@ -27,6 +27,7 @@
  */
 package net.xeoh.plugins.informationbroker;
 
+import java.io.Serializable;
 import java.net.URI;
 
 /**
@@ -37,7 +38,7 @@ import java.net.URI;
  * @param <T> The item's type .
  * @param <I> The information item's type.
  */
-public interface InformationItemIdentifier<T, I extends InformationItem<T>> {
+public interface InformationItemIdentifier<T, I extends InformationItem<T>> extends Serializable {
     /**
      * 
      * Returns ID of that item.

@@ -27,6 +27,8 @@
  */
 package net.xeoh.plugins.informationbroker;
 
+import java.io.Serializable;
+
 /**
  * An information item. Each item consists of its unique ID (the {@link InformationItemIdentifier})
  * and the content associated to this id.
@@ -35,7 +37,7 @@ package net.xeoh.plugins.informationbroker;
  * @param <T> The content's type.
  * @see InformationBroker
  */
-public interface InformationItem<T> {
+public interface InformationItem<T> extends Serializable {
 
     /**
      * Returns the content of this item.

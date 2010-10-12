@@ -5,7 +5,7 @@
     
     <!-- Define different global variables -->
     <property name="prefix" value="jspf"/>
-    <property name="version" value="0.9.2"/>
+    <property name="version" value="1.0.0"/>
     
     
     <!-- Define different roots -->
