@@ -52,6 +52,7 @@ import net.xeoh.plugins.base.annotations.meta.Author;
 import net.xeoh.plugins.remote.ExportResult;
 import net.xeoh.plugins.remote.PublishMethod;
 import net.xeoh.plugins.remote.RemoteAPI;
+import net.xeoh.plugins.remote.RemoteAPIJSON;
 import net.xeoh.plugins.remote.util.internal.PluginExport;
 import net.xeoh.plugins.remote.util.vanilla.ExportResultImpl;
 import net.xeoh.plugins.remotediscovery.RemoteDiscovery;
@@ -77,7 +78,7 @@ import org.mortbay.jetty.servlet.ServletHolder;
  */
 @Author(name = "Thomas Lottermann")
 @PluginImplementation
-public class RemoteAPIImpl implements RemoteAPI {
+public class RemoteAPIImpl implements RemoteAPIJSON {
 
     /** Log events */
     final Logger logger = Logger.getLogger(this.getClass().getName());

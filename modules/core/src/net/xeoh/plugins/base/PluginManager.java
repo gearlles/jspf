@@ -36,6 +36,7 @@ import net.xeoh.plugins.base.options.AddPluginsFromOption;
 import net.xeoh.plugins.base.options.GetPluginOption;
 import net.xeoh.plugins.base.util.PluginManagerUtil;
 import net.xeoh.plugins.base.util.uri.ClassURI;
+import net.xeoh.plugins.informationbroker.InformationBroker;
 
 /**
  * This is your entry point to and the heart of JSPF. The plugin manager keeps track of all 
@@ -49,7 +50,19 @@ import net.xeoh.plugins.base.util.uri.ClassURI;
  * application there should only be one PluginManager. The PluginManager does not have to be 
  * passed to the inside of your plugins, instead, they can request it by the &#064;{@link InjectPlugin}
  * annotation (i.e, create a field '<code>public PluginManager manager</code>' and add the 
- * annotation).
+ * annotation).<br/><br/>
+ * 
+ * There are also a number of default plugins you can retrieve right away (without calling 
+ * <code>addPluginsFrom()</code> explicitly.). These are:<br/><br/>
+ *  
+ *  <ul>
+ *  <li>{@link PluginConfiguration} - enables you to get and set config options</li>
+ *  <li>{@link PluginInformation} - provides meta information about plugins</li>
+ *  <li>{@link InformationBroker} - supports information exchange between plugins while keeping them decoupled</li>
+ *  </ul><br/>
+ *  
+ * In addition (and after loading the specific plugin) you can also retrieve a RemoteAPI.   
+ * <br/>
  * 
  * @see PluginManagerUtil
  *

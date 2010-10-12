@@ -25,12 +25,12 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package net.xeoh.plugins.remote.impl;
+package net.xeoh.plugins.remote;
 
 import java.net.URI;
 
-import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.remote.RemoteAPI;
+import net.xeoh.plugins.remote.options.ExportVanillaObjectOption;
 
 /**
  * Allows the network export of plugins.<br/> <br/>
@@ -38,16 +38,14 @@ import net.xeoh.plugins.remote.RemoteAPI;
  * Please note there may be constraints on the plugin usage depending on the remote type.
  * For example, XMLRPC might have problems with null or void types.
  *
- * @author Ralf Biedert
+ * @author Ralf Biedert, Andreas Lauer, Christian Reuschling
  *
  */
-public interface RemoteAPIXMLRPC extends RemoteAPI {
+public interface RemoteAPIXMLRPCDelight extends RemoteAPI {
     /**
-     * Exports a plugin over the network at a given port.
-     *
-     * @param plugin
-     * @param port 
-     * @return The URL where the plugin is accessible 
+     * @param toExport
+     * @param option
+     * @return .
      */
-    public URI exportPlugin(Plugin plugin, int port);
+    public URI exportVanillaObject(Object toExport, ExportVanillaObjectOption... option);
 }

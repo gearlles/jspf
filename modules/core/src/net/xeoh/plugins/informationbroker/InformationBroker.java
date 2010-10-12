@@ -40,14 +40,14 @@ import net.xeoh.plugins.informationbroker.standarditems.vanilla.VanillaItem;
 import net.xeoh.plugins.informationbroker.util.InformationBrokerUtil;
 
 /**
- * Think of the information broker as a large, shared and type-safe hybrid between a {@link Map}. 
+ * Think of the information broker as a large, shared and type-safe hybrid between a {@link Map} 
  * and a Bus. It enables you to exchange information between a number of plugins by well known 
- * keys. In contrast to a common Bus, the exchanged items are stored and can be retrieved 
- * by their key at any. Like the bus, however, listeners can register for updates to certain 
- * keys to be able to react on changes to them.<br/></br/>
+ * keys. In contrast to a Bus, the exchanged items are stored and can be retrieved 
+ * by their key any time. Like the bus, however, listeners can register for updates to certain 
+ * keys to be able to react on changes to them.<br></br>
  * 
- * The new InformationBroker interface supersedes the old Bus present in JSPF, as it provides
- * similar functionality.<br/></br/>
+ * The new InformationBroker interface supersedes the old Bus (previously present in JSPF), as it 
+ * provides similar functionality.<br></br>
  * 
  * For your convenience there are a number of <i>standard items</i>, like the {@link StringItem} and 
  * the {@link IntegerItem}. To create your own items, extend the classes {@link VanillaID} and 
@@ -56,6 +56,7 @@ import net.xeoh.plugins.informationbroker.util.InformationBrokerUtil;
  * take longer than one or two minutes. 
  *  
  * @author Ralf Biedert
+ * 
  * @see InformationItem
  */
 public interface InformationBroker extends Plugin {

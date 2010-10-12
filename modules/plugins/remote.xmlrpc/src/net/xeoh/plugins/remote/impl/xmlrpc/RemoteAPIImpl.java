@@ -49,7 +49,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import net.xeoh.plugins.base.annotations.meta.Author;
 import net.xeoh.plugins.remote.ExportResult;
 import net.xeoh.plugins.remote.PublishMethod;
-import net.xeoh.plugins.remote.impl.RemoteAPIXMLRPC;
+import net.xeoh.plugins.remote.RemoteAPIXMLRPC;
 import net.xeoh.plugins.remote.util.internal.PluginExport;
 import net.xeoh.plugins.remote.util.vanilla.ExportResultImpl;
 import net.xeoh.plugins.remotediscovery.RemoteDiscovery;

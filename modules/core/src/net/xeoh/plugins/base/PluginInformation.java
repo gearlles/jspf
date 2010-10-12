@@ -48,7 +48,8 @@ public interface PluginInformation extends Plugin {
      * @author Ralf Biedert
      */
     public static enum Information {
-        /** The author of this plugins (S1). 
+        /** 
+         * The author of this plugins (S1). 
          *
          *  @see Author
          */
@@ -82,7 +83,7 @@ public interface PluginInformation extends Plugin {
          */
         CLASSPATH_ORIGIN,
 
-        /** Returns a unique ID for a given plugin that does not change over versions<br/><br/>
+        /** Returns a unique ID for a given plugin that does not change over versions (S1).<br/><br/>
          * 
          * TODO: Not implemented yet.
          */

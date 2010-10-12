@@ -45,7 +45,7 @@ import net.xeoh.plugins.base.annotations.meta.Author;
 import net.xeoh.plugins.base.util.OptionUtils;
 import net.xeoh.plugins.remote.ExportResult;
 import net.xeoh.plugins.remote.PublishMethod;
-import net.xeoh.plugins.remote.impl.RemoteAPIXMLRPCDelight;
+import net.xeoh.plugins.remote.RemoteAPIXMLRPCDelight;
 import net.xeoh.plugins.remote.options.ExportVanillaObjectOption;
 import net.xeoh.plugins.remote.options.exportvanillaobject.OptionExportName;
 import net.xeoh.plugins.remote.util.internal.PluginExport;

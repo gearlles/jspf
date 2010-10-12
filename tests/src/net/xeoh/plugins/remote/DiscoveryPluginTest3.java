@@ -37,7 +37,6 @@ import net.xeoh.plugins.base.PluginSupervisor;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import net.xeoh.plugins.base.util.JSPFProperties;
 import net.xeoh.plugins.base.util.supervision.TimingSupervisor;
-import net.xeoh.plugins.remote.impl.RemoteAPIXMLRPC;
 import net.xeoh.plugins.remotediscovery.DiscoveredPlugin;
 import net.xeoh.plugins.remotediscovery.RemoteDiscovery;
 import net.xeoh.plugins.remotediscovery.options.discover.OptionCallback;

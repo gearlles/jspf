@@ -1,7 +1,7 @@
 /*
- * RemoteAPI.java
+ * RemoteAPIJSON
  *
- * Copyright (c) 2008, Ralf Biedert All rights reserved.
+ * Copyright (c) 2010, Ralf Biedert All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -25,27 +25,14 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package net.xeoh.plugins.remote.impl;
-
-import java.net.URI;
-
-import net.xeoh.plugins.remote.RemoteAPI;
-import net.xeoh.plugins.remote.options.ExportVanillaObjectOption;
+package net.xeoh.plugins.remote;
 
 /**
  * Allows the network export of plugins.<br/> <br/>
  *
- * Please note there may be constraints on the plugin usage depending on the remote type.
- * For example, XMLRPC might have problems with null or void types.
- *
- * @author Ralf Biedert, Andreas Lauer, Christian Reuschling
+ * @author Ralf Biedert
  *
  */
-public interface RemoteAPIXMLRPCDelight extends RemoteAPI {
-    /**
-     * @param toExport
-     * @param option
-     * @return .
-     */
-    public URI exportVanillaObject(Object toExport, ExportVanillaObjectOption... option);
+public interface RemoteAPIJSON extends RemoteAPI {
+    //
 }
