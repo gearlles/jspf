@@ -36,6 +36,9 @@ import net.xeoh.plugins.informationbroker.standarditems.vanilla.VanillaID;
  */
 public class IntegerID extends VanillaID<Integer, IntegerItem> {
 
+    /** */
+    private static final long serialVersionUID = 4531464175910298151L;
+
     /**
      * Constructs a new integer ID.
      * 

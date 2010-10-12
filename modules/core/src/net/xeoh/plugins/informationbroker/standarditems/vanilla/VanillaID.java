@@ -45,6 +45,9 @@ import net.xeoh.plugins.informationbroker.InformationItemIdentifier;
 public class VanillaID<O extends Object, X extends InformationItem<O>> implements
         InformationItemIdentifier<O, X> {
 
+    /** */
+    private static final long serialVersionUID = 967534788049552856L;
+
     private final URI id;
 
     /**

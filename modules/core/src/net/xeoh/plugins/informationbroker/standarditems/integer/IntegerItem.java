@@ -35,6 +35,9 @@ import net.xeoh.plugins.informationbroker.standarditems.vanilla.VanillaItem;
  * @author Ralf Biedert
  */
 public class IntegerItem extends VanillaItem<Integer> {
+    /** */
+    private static final long serialVersionUID = 8925513906420345730L;
+
     /**
      * Constructs an interger item.
      * 

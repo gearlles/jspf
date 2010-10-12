@@ -35,6 +35,9 @@ package net.xeoh.plugins.informationbroker.standarditems.vanilla;
  */
 public class ObjectItem extends VanillaItem<Object> {
 
+    /** */
+    private static final long serialVersionUID = -7884872264489278697L;
+
     /**
      * Creates an object item.
      * 

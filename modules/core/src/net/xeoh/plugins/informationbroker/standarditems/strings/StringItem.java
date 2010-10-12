@@ -41,6 +41,9 @@ import net.xeoh.plugins.informationbroker.standarditems.vanilla.VanillaItem;
  */
 public class StringItem extends VanillaItem<String> {
 
+    /** */
+    private static final long serialVersionUID = -5607335180438563326L;
+
     /**
      * Creates a new string item.
      * 

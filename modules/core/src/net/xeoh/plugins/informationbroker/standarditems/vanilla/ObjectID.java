@@ -34,6 +34,8 @@ package net.xeoh.plugins.informationbroker.standarditems.vanilla;
  * @author Ralf Biedert
  */
 public class ObjectID extends VanillaID<Object, ObjectItem> {
+    /** */
+    private static final long serialVersionUID = 7911496506595699603L;
 
     /**
      * @param id

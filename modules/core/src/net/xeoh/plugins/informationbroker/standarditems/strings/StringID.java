@@ -41,6 +41,9 @@ import net.xeoh.plugins.informationbroker.standarditems.vanilla.VanillaID;
  */
 public class StringID extends VanillaID<String, StringItem> {
 
+    /** */
+    private static final long serialVersionUID = 220406948087341309L;
+
     /**
      * Constructs a new String ID.
      * 
