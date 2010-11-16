@@ -51,7 +51,6 @@ import net.xeoh.plugins.base.impl.classpath.cache.JARCache;
  * loader and have an external dependency folder. 
  * 
  * @author Ralf Biedert
- *
  */
 public class MultiPluginClasspathLocation extends AbstractClassPathLocation {
 

@@ -37,8 +37,9 @@ import net.xeoh.plugins.base.impl.classpath.locator.AbstractClassPathLocation;
 import net.xeoh.plugins.base.impl.classpath.locator.ClassPathLocator;
 
 /**
- * @author rb
- *
+ * A loader to handle classpath://* URIs.
+ * 
+ * @author Ralf Biedert
  */
 public class InternalClasspathLoader extends AbstractLoader {
 

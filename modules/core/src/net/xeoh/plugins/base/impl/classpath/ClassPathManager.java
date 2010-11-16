@@ -46,18 +46,21 @@ import org.codehaus.classworlds.DuplicateRealmException;
 import org.codehaus.classworlds.NoSuchRealmException;
 
 /**
- * Manages all our classpaths shared by different plugins. 
+ * Manages all our classpaths shared by different plugins.
  * 
  * @author Ralf Biedert
  */
 public class ClassPathManager {
-    /** */
+    /** Console and file logging */
     final Logger logger = Logger.getLogger(this.getClass().getName());
 
-    /** */
+    /** Manages classpaths from URLs */
     ClassWorld classWorld;
 
-    /** */
+    /**
+     * Indicates if we're initialized properly (application mode) or if we had sandbox
+     * problems (applet mode).
+     */
     boolean initializedProperly = false;
 
     /** */
@@ -76,7 +79,8 @@ public class ClassPathManager {
     }
 
     /**
-     * Perform a proper initialization
+     * Perform a proper initialization. This may fail (flagging
+     * <code>initializedProperly</code> to <code>false</code> when we are in applet mode).
      */
     void properInit() {
         this.classWorld = new ClassWorld();
@@ -91,14 +95,15 @@ public class ClassPathManager {
     }
 
     /**
-     * Loads a class given its name.
+     * Loads a class given its name and class path location.
      * 
-     * @param location 
-     * @param name
+     * @param location Specifies where this plugins should be obtained from, or
+     * <code>null</code> if we should use our own classloader.
+     * @param name The name of the class to load.
      * 
-     * @return .
+     * @return The requested class.
      * 
-     * @throws ClassNotFoundException 
+     * @throws ClassNotFoundException
      */
     public Class<?> loadClass(AbstractClassPathLocation location, String name)
                                                                               throws ClassNotFoundException {
@@ -116,17 +121,17 @@ public class ClassPathManager {
             e.printStackTrace();
         }
 
-        // And again, this time we run this code if we have not been inititalized properly 
+        // And again, this time we run this code if we have not been inititalized properly
         return getClass().getClassLoader().loadClass(name);
     }
 
     /**
      * Finds all subclasses for the given superclass.
      * 
-     * @param location 
-     * @param superclass
+     * @param location The location to search for.
+     * @param superclass The superclass to obtain subclasses for.
      * 
-     * @return .
+     * @return A list of plugin names extending <code>superclass</code>.
      */
     public Collection<String> findSubclassesFor(AbstractClassPathLocation location,
                                                 Class<?> superclass) {
@@ -165,7 +170,7 @@ public class ClassPathManager {
                 } catch (ClassNotFoundException e) {
                     this.logger.fine("ClassNotFoundException. Unable to inspect class " + name + " although it appears to be one.");
 
-                    // Print all causes,  helpful for debugging
+                    // Print all causes, helpful for debugging
                     Throwable cause = e.getCause();
                     while (cause != null) {
                         this.logger.fine("Reason " + cause.getMessage());
@@ -174,7 +179,7 @@ public class ClassPathManager {
                 } catch (final NoClassDefFoundError e) {
                     this.logger.finer("Ignored class " + name + " due to unresolved dependencies");
 
-                    // Print all causes,  helpful for debugging
+                    // Print all causes, helpful for debugging
                     Throwable cause = e.getCause();
                     while (cause != null) {
                         this.logger.fine("Reason " + cause.getMessage());
@@ -183,7 +188,7 @@ public class ClassPathManager {
                 } catch (SecurityException e) {
                     this.logger.fine("SecurityException while trying to find subclasses. Cause of trouble: " + name + ". This does not neccessarily mean problems however.");
 
-                    // Print all causes,  helpful for debugging
+                    // Print all causes, helpful for debugging
                     Throwable cause = e.getCause();
                     while (cause != null) {
                         this.logger.fine("Reason " + cause.getMessage());
@@ -204,7 +209,7 @@ public class ClassPathManager {
     }
 
     /**
-     * Adds a classpath location
+     * Adds a classpath location to this manager.
      * 
      * @param location
      */
@@ -226,11 +231,12 @@ public class ClassPathManager {
     }
 
     /**
-     * Returns a resource as an input stream
-     * @param location 
+     * Returns a resource as an input stream for a given location.
      * 
-     * @param name
-     * @return .
+     * @param location The location to use.
+     * @param name The requested resource.
+     * @return The input stream for the requested resource or <code>null</code> if none
+     * was found.
      */
     public InputStream getResourceAsStream(AbstractClassPathLocation location, String name) {
         // In case no location is supplied ...

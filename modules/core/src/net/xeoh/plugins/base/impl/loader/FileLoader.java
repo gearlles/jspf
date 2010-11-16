@@ -42,7 +42,7 @@ import net.xeoh.plugins.base.impl.classpath.locator.JARClasspathLocation;
 
 /**
  * @author rb
- *
+ * 
  */
 public class FileLoader extends AbstractLoader {
 
@@ -53,7 +53,9 @@ public class FileLoader extends AbstractLoader {
         super(pluginManager);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see net.xeoh.plugins.base.impl.loader.AbstractLoader#handlesURI(java.net.URI)
      */
     @Override
@@ -62,12 +64,14 @@ public class FileLoader extends AbstractLoader {
         return false;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see net.xeoh.plugins.base.impl.loader.AbstractLoader#loadFrom(java.net.URI)
      */
     @Override
     public void loadFrom(URI url) {
-        // If not caught by the previous handler, handle files normally. 
+        // If not caught by the previous handler, handle files normally.
         if (url.getScheme().equals("file")) {
 
             String file = url.getPath();
@@ -99,6 +103,12 @@ public class FileLoader extends AbstractLoader {
         }
     }
 
+    /**
+     * Given a top level directory, we locate all classpath locations and load all plugins
+     * we find.
+     * 
+     * @param root The top level to start from.
+     */
     void locateAllPluginsAt(File root) {
         final ClassPathManager manager = this.pluginManager.getClassPathManager();
         final ClassPathLocator locator = this.pluginManager.getClassPathLocator();

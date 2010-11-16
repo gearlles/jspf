@@ -54,19 +54,20 @@ import net.xeoh.plugins.base.options.getplugin.OptionCapabilities;
 import net.xeoh.plugins.base.util.PluginConfigurationUtil;
 
 /**
+ * The abstract base class of all loaders, provides methods for spawning classes.
  * 
- * @author rb
+ * @author Ralf Biedert
  */
 public abstract class AbstractLoader {
 
     /** */
     protected final Logger logger = Logger.getLogger(this.getClass().getName());
 
-    /** Holds access to various shared variables. */
+    /** Grants access to various shared variables. */
     protected final PluginManagerImpl pluginManager;
 
     /**
-     * @param pluginManager  
+     * @param pluginManager
      */
     public AbstractLoader(PluginManagerImpl pluginManager) {
         this.pluginManager = pluginManager;
@@ -86,8 +87,9 @@ public abstract class AbstractLoader {
     public abstract void loadFrom(URI uri);
 
     /**
-     * Tries to load a class from a given source. If it is a plugin, it will be registered.
-     *
+     * Tries to load a class from a given source. If it is a plugin, it will be
+     * registered.
+     * 
      * @param location
      * @param name
      */
@@ -97,15 +99,15 @@ public abstract class AbstractLoader {
         this.logger.finest("Trying to load " + name + " as a plugin.");
 
         // Obtain some shared objects
-        //final JARCache jarCache = this.pluginManager.getJARCache();
+        // final JARCache jarCache = this.pluginManager.getJARCache();
         final ClassPathManager classPathManager = this.pluginManager.getClassPathManager();
         final PluginRegistry pluginRegistry = this.pluginManager.getPluginRegistry();
         final PluginConfigurationUtil pcu = new PluginConfigurationUtil(this.pluginManager.getPluginConfiguration());
         final Spawner spawner = this.pluginManager.getSpawner();
 
         // Obtain information
-        //final JARInformation jarInformation = jarCache.getJARInformation(name);
-        //final String file = jarCache.classTofile(name);
+        // final JARInformation jarInformation = jarCache.getJARInformation(name);
+        // final String file = jarCache.classTofile(name);
 
         try {
             // Get class of the candidate
@@ -140,7 +142,6 @@ public abstract class AbstractLoader {
             // Update the class information of the corresponding cache entry
             this.logger.finer("Updating cache information");
 
-            
             // Avoid loading if annotation request it.
             if (pcu.getBoolean(possiblePlugin, "plugin.disabled", false) || possiblePlugin.getAnnotation(IsDisabled.class) != null) {
                 metaInformation.pluginClassStatus = PluginClassStatus.DISABLED;
@@ -148,7 +149,8 @@ public abstract class AbstractLoader {
                 return;
             }
 
-            // Up from here we know we will (eventually) use the plugin. So load its configuration.            
+            // Up from here we know we will (eventually) use the plugin. So load its
+            // configuration.
             final String properties = (possiblePlugin.getAnnotation(ConfigurationFile.class) != null) ? possiblePlugin.getAnnotation(ConfigurationFile.class).file() : null;
             if (properties != null && properties.length() > 0) {
                 final String resourcePath = name.replaceAll("\\.", "/").replaceAll(possiblePlugin.getSimpleName(), "") + properties;
@@ -236,9 +238,9 @@ public abstract class AbstractLoader {
                 if (metaInformation.pluginClassStatus == PluginClassStatus.SPAWNABLE) {
                     this.logger.fine("Class found as SPAWNABLE. Trying to spawn it now " + c);
 
-                    // 
+                    //
                     // The magic line: spawn it.
-                    // 
+                    //
                     final SpawnResult p = spawner.spawnPlugin(c);
 
                     // In case we were successful ...

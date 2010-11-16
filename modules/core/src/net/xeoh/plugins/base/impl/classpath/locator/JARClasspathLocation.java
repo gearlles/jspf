@@ -43,8 +43,9 @@ import net.xeoh.plugins.base.impl.classpath.cache.JARCache;
 import net.xeoh.plugins.base.impl.classpath.cache.JARCache.JARInformation;
 
 /**
- * @author rb
- *
+ * Tries to load plugins from a JAR class path location.
+ * 
+ * @author Ralf Biedert
  */
 public class JARClasspathLocation extends AbstractClassPathLocation {
 

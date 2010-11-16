@@ -54,12 +54,6 @@ public class ClassPathLocator {
     }
 
     /**
-     */
-    public ClassPathLocator() {
-        this(null);
-    }
-
-    /**
      * Given a top level entry, finds a list of class path locations below the given 
      * entry. The top level entry can either be a folder, or it can be a JAR directly.
      * 

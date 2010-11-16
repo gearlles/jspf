@@ -47,6 +47,7 @@ import net.xeoh.plugins.base.PluginInformation;
 import net.xeoh.plugins.base.PluginInformation.Information;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
+import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 import net.xeoh.plugins.base.annotations.meta.Author;
 import net.xeoh.plugins.base.annotations.meta.RecognizesOption;
 import net.xeoh.plugins.base.annotations.meta.Version;
@@ -82,7 +83,7 @@ import net.xeoh.plugins.informationbroker.impl.InformationBrokerImpl;
  * TODO: Use logging more extensively. <br>
  * <br>
  * TODO: Make it use only a single classloader.
- *
+ * 
  * @author Ralf Biedert
  */
 @PluginImplementation
@@ -101,10 +102,10 @@ public class PluginManagerImpl implements PluginManager {
     /** Used for observing access to methods and so on ... */
     private final PluginSupervisorImpl pluginSupervisor;
 
-    /** */
+    /** Blocks access to the list of plugins in case of multiple threads. */
     private final Lock pluginListLock = new ReentrantLock();
 
-    /** */
+    /** Blocks access to ??? */
     private final Lock addPluginLock = new ReentrantLock();
 
     /** Backreference to ourself */
@@ -117,10 +118,10 @@ public class PluginManagerImpl implements PluginManager {
     private final Collection<AbstractLoader> pluginLoader = new ArrayList<AbstractLoader>();
 
     /** Manages content cache of jar files */
-    //private final OldJARCache jarCache = new OldJARCache();
+    // private final OldJARCache jarCache = new OldJARCache();
     private final JARCache jarCache = new JARCache();
 
-    /** */
+    /** The main container for plugins and plugin information */
     private final PluginRegistry pluginRegistry = new PluginRegistry();
 
     /** Manages the creation of plugins */
@@ -140,12 +141,13 @@ public class PluginManagerImpl implements PluginManager {
 
     /**
      * Construct new properties.
-     *
+     * 
      * @param initialProperties
      */
     protected PluginManagerImpl(final Properties initialProperties) {
 
-        // TODO: Is getClass().getClassLoader() okay? ... at least the applet seems to need it, 
+        // TODO: Is getClass().getClassLoader() okay? ... at least the applet seems to
+        // need it,
         // but will other apps have problems otherwise?
         this.classPathLocator = new ClassPathLocator(this.jarCache);
         this.classPathManager = new ClassPathManager();
@@ -176,16 +178,16 @@ public class PluginManagerImpl implements PluginManager {
         applyConfig();
     }
 
-    /**
-     * Currently this method only support loading from directories and jars (i.e. no
-     * network loading)
-     *
-     * @see net.xeoh.plugins.base.PluginManager#addPluginsFrom(URI, AddPluginsFromOption...)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.xeoh.plugins.base.PluginManager#addPluginsFrom(java.net.URI,
+     * net.xeoh.plugins.base.options.AddPluginsFromOption[])
      */
     public void addPluginsFrom(final URI url, final AddPluginsFromOption... options) {
         this.logger.fine("Adding plugins from " + url);
 
-        // Shall we call this asynchoronously?
+        // Shall we call this asynchronously? TODO: Is this needed?
         if ($(options).get(OptionLoadAsynchronously.class, null) != null) {
 
             Thread t = new Thread(new Runnable() {
@@ -203,6 +205,7 @@ public class PluginManagerImpl implements PluginManager {
         // Just handle the call normally.
         doAddPluginsFrom(url, options);
 
+        // Check if we should print a report?
         if ($(options).get(OptionReportAfter.class, null) != null)
             this.pluginRegistry.report();
 
@@ -210,8 +213,10 @@ public class PluginManagerImpl implements PluginManager {
     }
 
     /**
-     * @param url
-     * @param options
+     * Actually adds plugins from a given URL.
+     * 
+     * @param url The url to load plugins from.
+     * @param options Additional options.
      */
     void doAddPluginsFrom(final URI url, AddPluginsFromOption... options) {
         this.addPluginLock.lock();
@@ -234,8 +239,11 @@ public class PluginManagerImpl implements PluginManager {
         this.logger.severe("Unable to add elements, as method is unimplemented for that target : " + url);
     }
 
-    /* (non-Javadoc)
-     * @see net.xeoh.plugins.base.PluginManager#getPlugin(java.lang.Class, net.xeoh.plugins.base.option.GetPluginOption[])
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.xeoh.plugins.base.PluginManager#getPlugin(java.lang.Class,
+     * net.xeoh.plugins.base.option.GetPluginOption[])
      */
     @SuppressWarnings({ "unchecked" })
     @RecognizesOption(option = OptionPluginSelector.class)
@@ -271,7 +279,8 @@ public class PluginManagerImpl implements PluginManager {
             pluginSelector = new PluginSelector<P>() {
                 public boolean selectPlugin(final Plugin plugin) {
 
-                    // In case we have caps do special handling and don't return the next best plugin
+                    // In case we have caps do special handling and don't return the next
+                    // best plugin
                     if (caps.size() > 0) {
                         Collection<String> pcaps = PluginManagerImpl.this.information.getInformation(Information.CAPABILITIES, plugin);
 
@@ -292,10 +301,10 @@ public class PluginManagerImpl implements PluginManager {
     }
 
     /**
-     * This implementation simply parses the  collection and, when the
-     * current plugin match the given interface, send it to the selector to check who it
-     * can be handled. Notice the first instance is always returned
-     *
+     * This implementation simply processes the collection and, when the
+     * current plugin match the given interface, send it to the selector to check if it
+     * is what the selector is looking for.
+     * 
      * @see net.xeoh.plugins.base.PluginManager#getPlugin(java.lang.Class)
      */
     @SuppressWarnings("unchecked")
@@ -321,7 +330,9 @@ public class PluginManagerImpl implements PluginManager {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see net.xeoh.plugins.base.PluginManager#shutdown()
      */
     public void shutdown() {
@@ -335,6 +346,7 @@ public class PluginManagerImpl implements PluginManager {
             this.logger.fine("Error generating shutdown strack trace");
         }
 
+        // TODO: This looks ugly (the whole code below)
         boolean lockA = false;
         boolean lockB = false;
 
@@ -364,7 +376,7 @@ public class PluginManagerImpl implements PluginManager {
     }
 
     /**
-     * Apply things from the config
+     * Apply things from the config.
      */
     @SuppressWarnings("boxing")
     private void applyConfig() {
@@ -381,7 +393,7 @@ public class PluginManagerImpl implements PluginManager {
     }
 
     /**
-     * Load some additionnal and useful plugins
+     * Load some additional plugins.
      */
     private void loadAdditionalPlugins() {
         // Remaining core plugins
@@ -400,9 +412,10 @@ public class PluginManagerImpl implements PluginManager {
     }
 
     /**
-     * Adds a plugins to the list of known plugins.
+     * Adds a plugins to the list of known plugins and performs late initialization and
+     * processing.
      * 
-     * @param p
+     * @param p The SpawnResult to hook.
      */
     public void hookPlugin(SpawnResult p) {
         // Sanity check
@@ -413,7 +426,7 @@ public class PluginManagerImpl implements PluginManager {
         try {
             Plugin plugin = (Plugin) p.pluggable;
 
-            // Only do something if the plugins is not this
+            // Only do something if the plugins is not this PluginManager
             if (plugin != this && plugin != this.pluginSupervisor) {
                 // Wrap plugin inside meta handler, if enabled
                 if (this.wrapPluginsInMetaProxy) {
@@ -425,12 +438,15 @@ public class PluginManagerImpl implements PluginManager {
 
                     interfaces[interfaces.length - 1] = PluginWrapper.class;
 
-                    // FIXME (#14): PluginMangerDisablingPlugins gives error when using TestAnnotations at this line. Probably a problem with
+                    // FIXME (#14): PluginMangerDisablingPlugins gives error when using
+                    // TestAnnotations at this line. Probably a problem with
                     plugin = (Plugin) Proxy.newProxyInstance(plugin.getClass().getClassLoader(), interfaces, new PluginMetaHandler(this.pluginSupervisor, plugin));
                 }
             }
 
-            // 1. Process plugin loaded information
+            // 1. Process plugin @PluginLoaded annotation for this plugins. TODO: Why was
+            // this process split? Can't we just do everything in one method before or
+            // after the plugins was registered?
             processPluginLoadedAnnotationForThisPlugin(p);
 
             // Finally register it.
@@ -443,6 +459,12 @@ public class PluginManagerImpl implements PluginManager {
         }
     }
 
+    /**
+     * Processes the {@link PluginLoaded} annotation inside this for all other plugins we
+     * know.
+     * 
+     * @param spawnResult The SpawnResult containing the newly created plugin.
+     */
     private void processPluginLoadedAnnotationForThisPlugin(SpawnResult spawnResult) {
         // Sanity check
         if (spawnResult.spawnType != SpawnType.PLUGIN)
@@ -468,6 +490,11 @@ public class PluginManagerImpl implements PluginManager {
         }
     }
 
+    /**
+     * Processes the {@link PluginLoaded} annotation for other plugins for this plugin.
+     * 
+     * @param spawnResult The SpawnResult for the newly created plugin.
+     */
     private void processPluginLoadedAnnotationForOtherPlugins(SpawnResult spawnResult) {
 
         for (Plugin plugin : this.pluginRegistry.getAllPlugins()) {
@@ -495,7 +522,7 @@ public class PluginManagerImpl implements PluginManager {
     }
 
     /**
-     * Check if meta handling should be enabled
+     * Check if meta handling should be enabled.
      */
     private void setupMetaHandling() {
         final String cfg = this.configuration.getConfiguration(PluginManager.class, "supervision.enabled");
@@ -505,42 +532,54 @@ public class PluginManagerImpl implements PluginManager {
     }
 
     /**
-     * @return .
+     * Returns the JAR cache, containing plugins infos for JARs.
+     * 
+     * @return The JARCache.
      */
     public JARCache getJARCache() {
         return this.jarCache;
     }
 
     /**
-     * @return .
+     * Returns the ClassPathManger handling our plugin sources.
+     * 
+     * @return The PluginManager.
      */
     public ClassPathManager getClassPathManager() {
         return this.classPathManager;
     }
 
     /**
-     * @return .
+     * Returns the PluginRegistry, keeping track of loaded plugins.
+     * 
+     * @return The PluginRegistry.
      */
     public PluginRegistry getPluginRegistry() {
         return this.pluginRegistry;
     }
 
     /**
-     * @return .
+     * Returns the PluginConfiguration handling application setup.
+     * 
+     * @return Returns the plugin configuration.
      */
     public PluginConfiguration getPluginConfiguration() {
         return this.configuration;
     }
 
     /**
-     * @return .
+     * Returns the main spawner to instantiate plugins.
+     * 
+     * @return The Spawner.
      */
     public Spawner getSpawner() {
         return this.spawner;
     }
 
     /**
-     * @return .
+     * Returns the locator for URIs.
+     * 
+     * @return The locator.
      */
     public ClassPathLocator getClassPathLocator() {
         return this.classPathLocator;
