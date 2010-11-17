@@ -35,9 +35,7 @@ import java.util.Collection;
 import java.util.TimerTask;
 import java.util.logging.Logger;
 
-import net.xeoh.plugins.base.Pluggable;
 import net.xeoh.plugins.base.Plugin;
-import net.xeoh.plugins.base.Pluglet;
 import net.xeoh.plugins.base.annotations.Thread;
 import net.xeoh.plugins.base.annotations.Timer;
 import net.xeoh.plugins.base.annotations.events.Init;
@@ -46,9 +44,9 @@ import net.xeoh.plugins.base.annotations.events.Shutdown;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import net.xeoh.plugins.base.impl.SpawnResult.SpawnType;
 import net.xeoh.plugins.base.impl.registry.PluggableClassMetaInformation.Dependency;
-import net.xeoh.plugins.base.impl.registry.PluggableMetaInformation;
-import net.xeoh.plugins.base.impl.registry.PluggableMetaInformation.PluginLoadedInformation;
-import net.xeoh.plugins.base.impl.registry.PluggableMetaInformation.PluginStatus;
+import net.xeoh.plugins.base.impl.registry.PluginMetaInformation;
+import net.xeoh.plugins.base.impl.registry.PluginMetaInformation.PluginLoadedInformation;
+import net.xeoh.plugins.base.impl.registry.PluginMetaInformation.PluginStatus;
 import net.xeoh.plugins.base.options.getplugin.OptionCapabilities;
 
 /**
@@ -77,7 +75,7 @@ public class Spawner {
      * @param metaInformation 
      */
     public void destroyPluggable(final Plugin plugin,
-                                 final PluggableMetaInformation metaInformation) {
+                                 final PluginMetaInformation metaInformation) {
 
         // Halt all timer tasks
         for (final TimerTask timerTask : metaInformation.timerTasks) {
@@ -142,14 +140,10 @@ public class Spawner {
             timer.schedule(lateMessage, 250);
 
             // Instanciate the plugin
-            final Pluggable spawnedPlugin = (Pluggable) c.newInstance();
+            final Plugin spawnedPlugin = (Plugin) c.newInstance();
 
             // Detect type 
             SpawnType type = null;
-
-            if (Pluglet.class.isAssignableFrom(c)) {
-                type = SpawnType.PLUGLET;
-            }
 
             if (Plugin.class.isAssignableFrom(c)) {
                 type = SpawnType.PLUGIN;
@@ -192,8 +186,8 @@ public class Spawner {
      */
     public SpawnResult continueSpawn(SpawnResult spawnResult) {
 
-        final Pluggable spawnedPlugin = spawnResult.pluggable;
-        final Class<? extends Pluggable> c = spawnedPlugin.getClass();
+        final Plugin spawnedPlugin = spawnResult.plugin;
+        final Class<? extends Plugin> c = spawnedPlugin.getClass();
 
         // Finally load and register plugin
         try {
@@ -248,9 +242,9 @@ public class Spawner {
      * 
      *  
      */
-    private boolean callInitMethods(final Pluggable spawnedPlugin, final Method[] methods)
+    private boolean callInitMethods(final Plugin spawnedPlugin, final Method[] methods)
                                                                                           throws IllegalAccessException {
-        final Class<? extends Pluggable> spawnClass = spawnedPlugin.getClass();
+        final Class<? extends Plugin> spawnClass = spawnedPlugin.getClass();
 
         this.logger.finer("Doing init for " + spawnedPlugin);
 
@@ -330,7 +324,7 @@ public class Spawner {
      * @param c
      * @return
      */
-    private Method[] getMethods(final Class<? extends Pluggable> c) {
+    private Method[] getMethods(final Class<? extends Plugin> c) {
         final Method[] methods = c.getMethods();
         return methods;
     }
@@ -340,7 +334,7 @@ public class Spawner {
      * @throws IllegalAccessException
      */
     @SuppressWarnings("unchecked")
-    private void injectVariables(final Pluggable spawnedPlugin)
+    private void injectVariables(final Plugin spawnedPlugin)
                                                                throws IllegalAccessException {
 
         // All fields we have a look at
@@ -406,7 +400,7 @@ public class Spawner {
      * @param methods
      */
     private void spawnThreads(final SpawnResult spawnResult, final Method[] methods) {
-        final Class<? extends Pluggable> spawnClass = spawnResult.pluggable.getClass();
+        final Class<? extends Plugin> spawnClass = spawnResult.plugin.getClass();
         for (final Method method : methods) {
             // Init methods will be marked by the corresponding annotation.  New: 
             // also turn on extended accessibility, so elements don't have to be public anymore.
@@ -419,7 +413,7 @@ public class Spawner {
                     public void run() {
                         try {
                             // TODO: Pass kind of ThreadController as argument 1 (or any fitting argument)
-                            method.invoke(spawnResult.pluggable, new Object[0]);
+                            method.invoke(spawnResult.plugin, new Object[0]);
                         } catch (final IllegalArgumentException e) {
                             Spawner.this.logger.warning("Error starting requested thread on plugin (1)" + spawnClass.getName());
                             Spawner.this.logger.warning(e.getMessage());
@@ -478,7 +472,7 @@ public class Spawner {
      * @param methods
      */
     private void spawnTimer(final SpawnResult spawnResult, final Method[] methods) {
-        final Class<? extends Pluggable> spawnClass = spawnResult.pluggable.getClass();
+        final Class<? extends Plugin> spawnClass = spawnResult.plugin.getClass();
         for (final Method method : methods) {
             // Init methods will be marked by the corresponding annotation. New: also 
             // turn on extended accessibility, so elements don't have to be public anymore.
@@ -493,7 +487,7 @@ public class Spawner {
                     @Override
                     public void run() {
                         try {
-                            final Object invoke = method.invoke(spawnResult.pluggable, new Object[0]);
+                            final Object invoke = method.invoke(spawnResult.plugin, new Object[0]);
                             if (invoke != null && invoke instanceof Boolean) {
                                 if (((Boolean) invoke).booleanValue()) {
                                     t.cancel();

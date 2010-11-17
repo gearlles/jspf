@@ -1,7 +1,7 @@
 package net.xeoh.plugins.base.impl;
 
-import net.xeoh.plugins.base.Pluggable;
-import net.xeoh.plugins.base.impl.registry.PluggableMetaInformation;
+import net.xeoh.plugins.base.Plugin;
+import net.xeoh.plugins.base.impl.registry.PluginMetaInformation;
 
 /**
  * Spawn result, encapsulates the results of our attempt to spawn 
@@ -23,10 +23,10 @@ public class SpawnResult {
     }
 
     /** The actual pluggable spawned */
-    public final Pluggable pluggable;
+    public final Plugin plugin;
 
     /** Information on this plugin */
-    public final PluggableMetaInformation metaInformation;
+    public final PluginMetaInformation metaInformation;
 
     /** Type of this spawn */
     public final SpawnType spawnType;
@@ -37,9 +37,9 @@ public class SpawnResult {
      * @param plugin
      * @param type 
      */
-    public SpawnResult(Pluggable plugin, SpawnType type) {
-        this.pluggable = plugin;
+    public SpawnResult(Plugin plugin, SpawnType type) {
+        this.plugin = plugin;
         this.spawnType = type;
-        this.metaInformation = new PluggableMetaInformation(this.spawnType);
+        this.metaInformation = new PluginMetaInformation(this.spawnType);
     }
 }

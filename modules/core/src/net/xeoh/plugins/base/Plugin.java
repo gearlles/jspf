@@ -66,6 +66,5 @@ import net.xeoh.plugins.base.util.PluginUtil;
  * @see PluginManager
  * @see PluginUtil
  */
-public interface Plugin extends Pluggable {
-    // Nothing in here. All things are done by annotations.
+public interface Plugin {
 }

@@ -82,12 +82,6 @@ public interface PluginInformation extends Plugin {
          * element came from (S1).
          */
         CLASSPATH_ORIGIN,
-
-        /** Returns a unique ID for a given plugin that does not change over versions (S1).<br/><br/>
-         * 
-         * TODO: Not implemented yet.
-         */
-        UNIQUE_ID
     }
 
     /**

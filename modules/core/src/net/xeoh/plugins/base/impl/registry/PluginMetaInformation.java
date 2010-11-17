@@ -41,7 +41,7 @@ import net.xeoh.plugins.base.impl.SpawnResult.SpawnType;
  * 
  * @author Ralf Biedert
  */
-public class PluggableMetaInformation {
+public class PluginMetaInformation {
 
     /** Handles PluginLoaded annotations */
     public static class PluginLoadedInformation {
@@ -82,7 +82,7 @@ public class PluggableMetaInformation {
     /**
      * @param spawnType
      */
-    public PluggableMetaInformation(SpawnType spawnType) {
+    public PluginMetaInformation(SpawnType spawnType) {
         this.spawnType = spawnType;
     }
 

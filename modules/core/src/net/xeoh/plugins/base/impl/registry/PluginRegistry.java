@@ -49,7 +49,7 @@ import net.xeoh.plugins.base.impl.registry.PluggableClassMetaInformation.PluginC
 public class PluginRegistry {
 
     /** Stores meta information related to a plugin */
-    private final Map<Plugin, PluggableMetaInformation> pluginMetaInformation;
+    private final Map<Plugin, PluginMetaInformation> pluginMetaInformation;
 
     /** Stores meta information related to a plugin class */
     private final Map<Class<? extends Plugin>, PluggableClassMetaInformation> pluginClassMetaInformation;
@@ -58,7 +58,7 @@ public class PluginRegistry {
      * Creates a new registry 
      */
     public PluginRegistry() {
-        this.pluginMetaInformation = new HashMap<Plugin, PluggableMetaInformation>();
+        this.pluginMetaInformation = new HashMap<Plugin, PluginMetaInformation>();
         this.pluginClassMetaInformation = new HashMap<Class<? extends Plugin>, PluggableClassMetaInformation>();
     }
 
@@ -77,7 +77,7 @@ public class PluginRegistry {
      * @param plugin
      * @return .
      */
-    public PluggableMetaInformation getMetaInformationFor(Plugin plugin) {
+    public PluginMetaInformation getMetaInformationFor(Plugin plugin) {
         return this.pluginMetaInformation.get(plugin);
     }
 
@@ -105,7 +105,7 @@ public class PluginRegistry {
      * @param plugin
      * @param metaInformation
      */
-    public void registerPlugin(Plugin plugin, PluggableMetaInformation metaInformation) {
+    public void registerPlugin(Plugin plugin, PluginMetaInformation metaInformation) {
         this.pluginMetaInformation.put(plugin, metaInformation);
     }
 
@@ -160,7 +160,7 @@ public class PluginRegistry {
         System.out.println(">>> Object Report <<<");
         final Set<Plugin> keySet2 = this.pluginMetaInformation.keySet();
         for (Plugin plugin : keySet2) {
-            final PluggableMetaInformation meta = this.pluginMetaInformation.get(plugin);
+            final PluginMetaInformation meta = this.pluginMetaInformation.get(plugin);
             System.out.println("    " + plugin + " (status:'" + meta.pluginStatus + "')");
         }
 

@@ -30,7 +30,6 @@ package net.xeoh.plugins.base.impl;
 import static net.jcores.CoreKeeper.$;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,11 +58,9 @@ import net.xeoh.plugins.base.impl.loader.AbstractLoader;
 import net.xeoh.plugins.base.impl.loader.FileLoader;
 import net.xeoh.plugins.base.impl.loader.HTTPLoader;
 import net.xeoh.plugins.base.impl.loader.InternalClasspathLoader;
-import net.xeoh.plugins.base.impl.metahandling.PluginMetaHandler;
-import net.xeoh.plugins.base.impl.metahandling.PluginWrapper;
-import net.xeoh.plugins.base.impl.registry.PluggableMetaInformation;
-import net.xeoh.plugins.base.impl.registry.PluggableMetaInformation.PluginLoadedInformation;
-import net.xeoh.plugins.base.impl.registry.PluggableMetaInformation.PluginStatus;
+import net.xeoh.plugins.base.impl.registry.PluginMetaInformation;
+import net.xeoh.plugins.base.impl.registry.PluginMetaInformation.PluginLoadedInformation;
+import net.xeoh.plugins.base.impl.registry.PluginMetaInformation.PluginStatus;
 import net.xeoh.plugins.base.impl.registry.PluginRegistry;
 import net.xeoh.plugins.base.options.AddPluginsFromOption;
 import net.xeoh.plugins.base.options.GetPluginOption;
@@ -99,9 +96,6 @@ public class PluginManagerImpl implements PluginManager {
     /** User properties for plugin configuration */
     private final PluginConfiguration configuration;
 
-    /** Used for observing access to methods and so on ... */
-    private final PluginSupervisorImpl pluginSupervisor;
-
     /** Blocks access to the list of plugins in case of multiple threads. */
     private final Lock pluginListLock = new ReentrantLock();
 
@@ -136,9 +130,6 @@ public class PluginManagerImpl implements PluginManager {
     /** Indicates if a shutdown has already been one */
     private boolean shutdownPerformed = false;
 
-    /** If true, plugin meta supervision is enabled */
-    private boolean wrapPluginsInMetaProxy = false;
-
     /**
      * Construct new properties.
      * 
@@ -156,15 +147,10 @@ public class PluginManagerImpl implements PluginManager {
         this.spawner = new Spawner(this);
 
         this.configuration = new PluginConfigurationImpl(initialProperties);
-        this.pluginSupervisor = new PluginSupervisorImpl();
-
-        // Needs to be done as early as possible ...
-        setupMetaHandling();
 
         // Hook fundamental plugins
         hookPlugin(new SpawnResult(this, SpawnType.PLUGIN));
         hookPlugin(new SpawnResult(this.configuration, SpawnType.PLUGIN));
-        hookPlugin(new SpawnResult(this.pluginSupervisor, SpawnType.PLUGIN));
 
         // Load the cache file path
         this.cachePath = this.configuration.getConfiguration(PluginManager.class, "cache.file");
@@ -315,7 +301,7 @@ public class PluginManagerImpl implements PluginManager {
 
             for (final Plugin plugin : this.pluginRegistry.getAllPlugins()) {
                 // Check the meta information for this plugin. We only want active classes
-                final PluggableMetaInformation metaInformation = this.pluginRegistry.getMetaInformationFor(plugin);
+                final PluginMetaInformation metaInformation = this.pluginRegistry.getMetaInformationFor(plugin);
                 if (metaInformation.pluginStatus != PluginStatus.ACTIVE) continue;
 
                 // Check if the plugin can be assigned to the requested class
@@ -400,7 +386,7 @@ public class PluginManagerImpl implements PluginManager {
         hookPlugin(this.spawner.spawnPlugin(InformationBrokerImpl.class));
 
         // We need the information plugin in getPlugin, so we can't get it normally.
-        this.information = (PluginInformation) this.spawner.spawnPlugin(PluginInformationImpl.class).pluggable;
+        this.information = (PluginInformation) this.spawner.spawnPlugin(PluginInformationImpl.class).plugin;
         ((PluginInformationImpl) this.information).pluginManager = this;
         hookPlugin(new SpawnResult(this.information, SpawnType.PLUGIN));
 
@@ -424,25 +410,7 @@ public class PluginManagerImpl implements PluginManager {
 
         this.pluginListLock.lock();
         try {
-            Plugin plugin = (Plugin) p.pluggable;
-
-            // Only do something if the plugins is not this PluginManager
-            if (plugin != this && plugin != this.pluginSupervisor) {
-                // Wrap plugin inside meta handler, if enabled
-                if (this.wrapPluginsInMetaProxy) {
-
-                    final Class<?>[] internalInterfaces = plugin.getClass().getInterfaces();
-                    final Class<?>[] interfaces = new Class[internalInterfaces.length + 1];
-
-                    System.arraycopy(internalInterfaces, 0, interfaces, 0, internalInterfaces.length);
-
-                    interfaces[interfaces.length - 1] = PluginWrapper.class;
-
-                    // FIXME (#14): PluginMangerDisablingPlugins gives error when using
-                    // TestAnnotations at this line. Probably a problem with
-                    plugin = (Plugin) Proxy.newProxyInstance(plugin.getClass().getClassLoader(), interfaces, new PluginMetaHandler(this.pluginSupervisor, plugin));
-                }
-            }
+            Plugin plugin = (Plugin) p.plugin;
 
             // 1. Process plugin @PluginLoaded annotation for this plugins. TODO: Why was
             // this process split? Can't we just do everything in one method before or
@@ -476,7 +444,7 @@ public class PluginManagerImpl implements PluginManager {
 
             for (Plugin plugin : plins) {
                 try {
-                    pli.method.invoke(spawnResult.pluggable, plugin);
+                    pli.method.invoke(spawnResult.plugin, plugin);
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                 } catch (IllegalAccessException e) {
@@ -498,15 +466,15 @@ public class PluginManagerImpl implements PluginManager {
     private void processPluginLoadedAnnotationForOtherPlugins(SpawnResult spawnResult) {
 
         for (Plugin plugin : this.pluginRegistry.getAllPlugins()) {
-            final PluggableMetaInformation pmi = this.pluginRegistry.getMetaInformationFor(plugin);
+            final PluginMetaInformation pmi = this.pluginRegistry.getMetaInformationFor(plugin);
 
             for (PluginLoadedInformation pli : pmi.pluginLoadedInformation) {
                 final Collection<? extends Plugin> plins = this.pluginManagerUtil.getPlugins(pli.baseType);
 
                 // Check if the new plugin is returned upon request
-                if (plins.contains(spawnResult.pluggable)) {
+                if (plins.contains(spawnResult.plugin)) {
                     try {
-                        pli.method.invoke(plugin, spawnResult.pluggable);
+                        pli.method.invoke(plugin, spawnResult.plugin);
                     } catch (IllegalArgumentException e) {
                         e.printStackTrace();
                     } catch (IllegalAccessException e) {
@@ -515,19 +483,9 @@ public class PluginManagerImpl implements PluginManager {
                         e.printStackTrace();
                     }
 
-                    pli.calledWith.add((Plugin) spawnResult.pluggable);
+                    pli.calledWith.add((Plugin) spawnResult.plugin);
                 }
             }
-        }
-    }
-
-    /**
-     * Check if meta handling should be enabled.
-     */
-    private void setupMetaHandling() {
-        final String cfg = this.configuration.getConfiguration(PluginManager.class, "supervision.enabled");
-        if (cfg != null && cfg.equals("true")) {
-            this.wrapPluginsInMetaProxy = true;
         }
     }
 

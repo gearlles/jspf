@@ -33,10 +33,8 @@ import java.util.Collection;
 
 import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.PluginManager;
-import net.xeoh.plugins.base.PluginSupervisor;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import net.xeoh.plugins.base.util.JSPFProperties;
-import net.xeoh.plugins.base.util.supervision.TimingSupervisor;
 import net.xeoh.plugins.remotediscovery.DiscoveredPlugin;
 import net.xeoh.plugins.remotediscovery.RemoteDiscovery;
 import net.xeoh.plugins.remotediscovery.options.discover.OptionCallback;
@@ -63,7 +61,6 @@ public class DiscoveryPluginTest3 {
 
         props.setProperty(PluginManager.class, "supervision.enabled", "true");
         this.pm = PluginManagerFactory.createPluginManager(props);
-        this.pm.getPlugin(PluginSupervisor.class).addGeneralSupervisor(new TimingSupervisor());
 
         System.out.println(11);
         this.pm.addPluginsFrom(new URI("classpath://*"));

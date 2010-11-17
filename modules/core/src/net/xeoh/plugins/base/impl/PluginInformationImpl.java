@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Logger;
 
-import net.xeoh.plugins.base.Pluggable;
 import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.PluginInformation;
 import net.xeoh.plugins.base.PluginManager;
@@ -43,15 +42,14 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import net.xeoh.plugins.base.annotations.meta.Author;
 import net.xeoh.plugins.base.annotations.meta.Stateless;
 import net.xeoh.plugins.base.annotations.meta.Version;
-import net.xeoh.plugins.base.impl.metahandling.PluginWrapper;
-import net.xeoh.plugins.base.impl.registry.PluggableMetaInformation;
+import net.xeoh.plugins.base.impl.registry.PluginMetaInformation;
 import net.xeoh.plugins.base.impl.registry.PluginRegistry;
 
 /**
  * TODO: Make plugin threadsafe
- *
+ * 
  * @author Ralf Biedert
- *
+ * 
  */
 @Author(name = "Ralf Biedert")
 @Version(version = 1 * Version.UNIT_MAJOR)
@@ -65,16 +63,16 @@ public class PluginInformationImpl implements PluginInformation {
     @InjectPlugin
     public PluginManager pluginManager;
 
-    /* (non-Javadoc)
-     * @see net.xeoh.plugins.base.PluginInformation#getInformation(net.xeoh.plugins.base.PluginInformation.Information, net.xeoh.plugins.base.Plugin)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.xeoh.plugins.base.PluginInformation#getInformation(net.xeoh.plugins.base.
+     * PluginInformation.Information, net.xeoh.plugins.base.Plugin)
      */
-    public Collection<String> getInformation(final Information item, final Plugin _plugin) {
+    public Collection<String> getInformation(final Information item, final Plugin plugin) {
 
         // Needed to query some special information
         final PluginManagerImpl pmi = (PluginManagerImpl) this.pluginManager;
-
-        // To handle annotations, we need to obtain the true class
-        final Pluggable pluggable = (_plugin instanceof PluginWrapper) ? ((PluginWrapper) _plugin).getWrappedPlugin() : _plugin;
 
         // Prepare return values ...
         final Collection<String> rval = new ArrayList<String>();
@@ -83,38 +81,29 @@ public class PluginInformationImpl implements PluginInformation {
 
         case CAPABILITIES:
             // Caps are only supported for plugins currently
-            final String[] caps = getCaps(pluggable);
+            final String[] caps = getCaps(plugin);
             for (final String string : caps) {
                 rval.add(string);
             }
             break;
 
         case AUTHORS:
-            Author author = pluggable.getClass().getAnnotation(Author.class);
+            Author author = plugin.getClass().getAnnotation(Author.class);
             if (author == null) break;
             rval.add(author.name());
             break;
 
         case VERSION:
-            Version version = pluggable.getClass().getAnnotation(Version.class);
+            Version version = plugin.getClass().getAnnotation(Version.class);
             if (version == null) break;
             rval.add(Integer.toString(version.version()));
             break;
 
         case CLASSPATH_ORIGIN:
-            if (pluggable instanceof Plugin) {
-                final PluginRegistry pluginRegistry = pmi.getPluginRegistry();
-                final PluggableMetaInformation metaInformation = pluginRegistry.getMetaInformationFor((Plugin) pluggable);
-                if (metaInformation != null && metaInformation.classMeta != null && metaInformation.classMeta.pluginOrigin != null)
+            final PluginRegistry pluginRegistry = pmi.getPluginRegistry();
+            final PluginMetaInformation metaInformation = pluginRegistry.getMetaInformationFor(plugin);
+            if (metaInformation != null && metaInformation.classMeta != null && metaInformation.classMeta.pluginOrigin != null)
                     rval.add(metaInformation.classMeta.pluginOrigin.toString());
-            } else {
-                this.logger.info("CLASSPATH_ORIGIN cannot be requested for Pluglets at the moment");
-            }
-            break;
-
-        case UNIQUE_ID:
-            // TODO!
-            //pluggable.getClass().getClassLoader().getResourceAsStream(pluggable.getClass().)
             break;
 
         default:
@@ -129,8 +118,8 @@ public class PluginInformationImpl implements PluginInformation {
      * @param plugin
      * @return
      */
-    private String[] getCaps(final Pluggable plugin) {
-        final Class<? extends Pluggable> spawnClass = plugin.getClass();
+    private String[] getCaps(final Plugin plugin) {
+        final Class<? extends Plugin> spawnClass = plugin.getClass();
 
         final Method[] methods = spawnClass.getMethods();
 
@@ -157,13 +146,5 @@ public class PluginInformationImpl implements PluginInformation {
         }
 
         return new String[0];
-    }
-
-    /**
-     *  Better way to get information from plugins?
-     */
-    public void test() {
-        //String i1 = getInformation(String.class, Information.AUTHORS, this);
-        //List<String> i2 = getInformation(List.class, Information.AUTHORS, this);
     }
 }
