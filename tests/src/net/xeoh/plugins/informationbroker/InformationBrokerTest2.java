@@ -99,11 +99,12 @@ public class InformationBrokerTest2 {
 
         plugin.subscribe(TestItem.class, new InformationListener<String>() {
             @Override
-            public void update(InformationItem<String> item) {
-                item.getValue();
+            public void update(String item) {
+                System.out.println(item);
             }
         });
         plugin.publish(TestItem.class, "Hello");
+
         // plugin.publish(TestItem.class, new Object());
     }
 }

@@ -27,7 +27,6 @@
  */
 package net.xeoh.plugins.informationbroker;
 
-
 /**
  * Represents an information item that can be acquired using the
  * information broker. You must create a subclass for each item you
@@ -37,34 +36,4 @@ package net.xeoh.plugins.informationbroker;
  * @param <T> The content's type.
  * @see InformationBroker
  */
-public abstract class InformationItem<T> {
-
-    /** For serialization */
-    private static final long serialVersionUID = -6303390351859991873L;
-
-    /** The value associated with this item */
-    private T item;
-
-    /** Creates an empty version of this channel. */
-    public InformationItem() {
-        //
-    }
-
-    /**
-     * Returns the item associated with this channel message.
-     * 
-     * @return The item enclosed.
-     */
-    public T getValue() {
-        return this.item;
-    }
-
-    /**
-     * Sets the current item. You must not call this function.
-     * 
-     * @param item The item to set.
-     */
-    public void setValue(T item) {
-        this.item = item;
-    }
-}
+public interface InformationItem<T> {}

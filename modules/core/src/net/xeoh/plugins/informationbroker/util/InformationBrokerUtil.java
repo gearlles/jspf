@@ -47,7 +47,7 @@ public class InformationBrokerUtil {
     private final InformationBroker broker;
 
     /**
-     * Creates a new information broker util.
+     * Creates a new InformationBrokerUtil.
      * 
      * @param broker
      */
@@ -76,8 +76,8 @@ public class InformationBrokerUtil {
         final AtomicReference<T> object = new AtomicReference<T>();
         this.broker.subscribe(id, new InformationListener<T>() {
             @Override
-            public void update(InformationItem<T> channel) {
-                object.set(channel.getValue());
+            public void update(T item) {
+                object.set(item);
             }
         }, new OptionInstantRequest());
 
@@ -88,4 +88,25 @@ public class InformationBrokerUtil {
         if (rval == null && dflt.length > 0) return dflt[0];
         return rval;
     }
+
+    /**
+     * Subscribes to a number of items. The listener is called only when all items are
+     * available or when all were available and a single item changed. For example, to
+     * subscribe to two items you could write:<br/>
+     * <br/>
+     * <code>
+     * subscribeAll(listener, ItemA.class, ItemB.class);
+     * </code><br/>
+     * <br/>
+     * 
+     * Use <code>get()</code> from inside the listener to obtain the specific items.
+     * 
+     * @param listener The listener called when all prerequisites are met.
+     * @param all All IDs we should subscribe to.
+     */
+    public void subscribeAll(InformationListener<Object> listener, Class<?>... all) {
+        // TODO: Also check if all elements from all are actually valid classes.
+        throw new IllegalArgumentException();
+    }
+
 }

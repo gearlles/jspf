@@ -27,5 +27,5 @@
  */
 package net.xeoh.plugins.informationbroker;
 
-public class TestItem extends InformationItem<String> {
+public class TestItem implements InformationItem<String> {
 }

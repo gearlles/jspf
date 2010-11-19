@@ -64,7 +64,7 @@ public class InformationBrokerImpl implements InformationBroker {
         final Collection<InformationListener<?>> allListeners = new ArrayList<InformationListener<?>>();
 
         /** The current channel holder */
-        InformationItem<?> channel = null;
+        Object lastItem = null;
     }
 
     /** Manages all information regarding a key */
@@ -98,13 +98,13 @@ public class InformationBrokerImpl implements InformationBroker {
         // Now process entry
         try {
             keyEntry.entryLock.lock();
-            ((InformationItem<Object>) keyEntry.channel).setValue(item);
+            keyEntry.lastItem = item;
 
             // Check if we should publish silently.
             if (!silentPublish) {
                 for (InformationListener<?> listener : keyEntry.allListeners) {
                     try {
-                        ((InformationListener<T>) listener).update((InformationItem<T>) keyEntry.channel);
+                        ((InformationListener<T>) listener).update(item);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -144,8 +144,8 @@ public class InformationBrokerImpl implements InformationBroker {
             if (!instantRequest) keyEntry.allListeners.add(listener);
 
             // If there has been a channel established, use that one
-            if (keyEntry.channel != null) {
-                ((InformationListener<T>) listener).update((InformationItem<T>) keyEntry.channel);
+            if (keyEntry.lastItem != null) {
+                ((InformationListener<Object>) listener).update(keyEntry.lastItem);
             }
 
         } finally {
@@ -196,13 +196,8 @@ public class InformationBrokerImpl implements InformationBroker {
             keyEntry = this.items.get(id);
             if (keyEntry == null) {
                 keyEntry = new KeyEntry();
-                keyEntry.channel = id.newInstance();
                 this.items.put(id, keyEntry);
             }
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
         } finally {
             this.itemsLock.unlock();
         }
