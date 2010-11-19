@@ -31,14 +31,14 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import net.xeoh.plugins.informationbroker.InformationBroker;
 import net.xeoh.plugins.informationbroker.InformationItem;
-import net.xeoh.plugins.informationbroker.InformationItemIdentifier;
 import net.xeoh.plugins.informationbroker.InformationListener;
 import net.xeoh.plugins.informationbroker.options.subscribe.OptionInstantRequest;
 
 /**
- * Helper functions for the {@link InformationBroker} interface. The util uses the embedded 
- * interface to provide more convenience features.   
- *
+ * Helper functions for the {@link InformationBroker} interface. The util uses the
+ * embedded
+ * interface to provide more convenience features.
+ * 
  * @author Ralf Biedert
  * @see InformationBroker
  */
@@ -56,46 +56,36 @@ public class InformationBrokerUtil {
     }
 
     /**
-     * Returns the value for the given id or <code>dflt</code> if neither the key 
-     * nor the default was present. For example, to retrieve the current user name 
-     * and to get "unknown" if none was present, you could write:<br/><br/>
+     * Returns the value for the given id or <code>dflt</code> if neither the key
+     * nor the default was present. For example, to retrieve the current user name
+     * and to get "unknown" if none was present, you could write:<br/>
+     * <br/>
      * 
      * <code>
      * get(new StringID("user:name"), "unknown");
-     * </code><br/><br/>
+     * </code><br/>
+     * <br/>
      * 
      * @param <T> The type of the return value.
-     * @param id The ID to request. 
+     * @param id The ID to request.
      * @param dflt The default value to return if no item was found.
-     * @return Returns the requested item, a default if the item was not present or null 
+     * @return Returns the requested item, a default if the item was not present or null
      * in case neither was found.
      */
-    public <T> T get(InformationItemIdentifier<T, ?> id, T... dflt) {
+    public <T> T get(Class<? extends InformationItem<T>> id, T... dflt) {
         final AtomicReference<T> object = new AtomicReference<T>();
         this.broker.subscribe(id, new InformationListener<T>() {
             @Override
-            public void update(InformationItem<T> item) {
-                object.set(item.getContent());
+            public void update(InformationItem<T> channel) {
+                object.set(channel.getValue());
             }
         }, new OptionInstantRequest());
 
         final T rval = object.get();
 
-        // Now check if we have a sensible return value or not, and return the default 
+        // Now check if we have a sensible return value or not, and return the default
         // if we must
         if (rval == null && dflt.length > 0) return dflt[0];
         return rval;
-    }
-
-    /**
-     * Publishes a number of items. This method works exactly as calling 
-     * {@link InformationBroker}.<code>publish()</code> several times. 
-     * 
-     * @param items The items to publish.
-     */
-    public void publish(InformationItem<?>... items) {
-        for (InformationItem<?> informationItem : items) {
-            this.broker.publish(informationItem);
-        }
     }
 }

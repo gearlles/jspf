@@ -31,9 +31,6 @@ import java.net.URI;
 
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
-import net.xeoh.plugins.informationbroker.standarditems.strings.StringID;
-import net.xeoh.plugins.informationbroker.standarditems.strings.StringItem;
-import net.xeoh.plugins.informationbroker.util.InformationBrokerUtil;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -42,7 +39,7 @@ import org.junit.Test;
 
 /**
  * @author rb
- *
+ * 
  */
 public class InformationBrokerTest2 {
 
@@ -72,22 +69,41 @@ public class InformationBrokerTest2 {
     /**
      * @throws InterruptedException
      */
+    /*
+     * @Test
+     * public void testBroker() throws InterruptedException {
+     * Assert.assertNotNull(this.pm);
+     * 
+     * final InformationBroker plugin = this.pm.getPlugin(InformationBroker.class);
+     * 
+     * plugin.publish(new StringItem("device:location", "Kaiserslautern, Germany"));
+     * plugin.subscribe(new StringID("device:location"), new InformationListener<String>()
+     * {
+     * public void update(InformationItem<String> item) {
+     * System.out.println(item.getContent());
+     * }
+     * });
+     * plugin.publish(new StringItem("device:location", "World's End."));
+     * 
+     * final InformationBrokerUtil ibu = new InformationBrokerUtil(plugin);
+     * System.out.println(ibu.get(new StringID("device:location")));
+     * 
+     * }
+     */
+
     @Test
     public void testBroker() throws InterruptedException {
         Assert.assertNotNull(this.pm);
 
         final InformationBroker plugin = this.pm.getPlugin(InformationBroker.class);
 
-        plugin.publish(new StringItem("device:location", "Kaiserslautern, Germany"));
-        plugin.subscribe(new StringID("device:location"), new InformationListener<String>() {
+        plugin.subscribe(TestItem.class, new InformationListener<String>() {
+            @Override
             public void update(InformationItem<String> item) {
-                System.out.println(item.getContent());
+                item.getValue();
             }
         });
-        plugin.publish(new StringItem("device:location", "World's End."));
-
-        final InformationBrokerUtil ibu = new InformationBrokerUtil(plugin);
-        System.out.println(ibu.get(new StringID("device:location")));
-
+        plugin.publish(TestItem.class, "Hello");
+        // plugin.publish(TestItem.class, new Object());
     }
 }

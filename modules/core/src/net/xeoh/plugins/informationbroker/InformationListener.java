@@ -33,15 +33,15 @@ package net.xeoh.plugins.informationbroker;
  * 
  * @author Ralf Biedert
  * 
- * @param <X> The type of the delivered object. 
+ * @param <X> The type of the delivered object.
  * @see InformationBroker
  */
 public interface InformationListener<X> {
     /**
-     * Called when the subscription requirements are met and a new item 
-     * has been posted. 
+     * Called when the subscription requirements are met and a new item
+     * has been posted.
      * 
-     * @param item The newly posted item.
+     * @param item The channel of the newly posted item.
      */
     public void update(InformationItem<X> item);
 }

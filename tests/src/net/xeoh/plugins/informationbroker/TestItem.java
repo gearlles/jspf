@@ -1,7 +1,7 @@
 /*
- * StringItem.java
+ * TestChannel.java
  * 
- * Copyright (c) 2009, Ralf Biedert All rights reserved.
+ * Copyright (c) 2010, Ralf Biedert All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -25,32 +25,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.informationbroker.standarditems.strings;
+package net.xeoh.plugins.informationbroker;
 
-import net.xeoh.plugins.informationbroker.InformationBroker;
-import net.xeoh.plugins.informationbroker.standarditems.vanilla.VanillaItem;
-
-/**
- * A string item for your convenience. You can also use this classes' 
- * source code to see how your own items can be created.
- * 
- * @author Ralf Biedert
- * @see StringID
- * @see VanillaItem
- * @see InformationBroker
- */
-public class StringItem extends VanillaItem<String> {
-
-    /** */
-    private static final long serialVersionUID = -5607335180438563326L;
-
-    /**
-     * Creates a new string item.
-     * 
-     * @param id The ID of this item.
-     * @param content Its content.
-     */
-    public StringItem(final String id, final String content) {
-        super(id, content);
-    }
+public class TestItem extends InformationItem<String> {
 }

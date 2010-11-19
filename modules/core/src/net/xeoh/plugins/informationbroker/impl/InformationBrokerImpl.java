@@ -27,7 +27,6 @@
  */
 package net.xeoh.plugins.informationbroker.impl;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -42,7 +41,6 @@ import net.xeoh.plugins.base.annotations.meta.Author;
 import net.xeoh.plugins.base.util.OptionUtils;
 import net.xeoh.plugins.informationbroker.InformationBroker;
 import net.xeoh.plugins.informationbroker.InformationItem;
-import net.xeoh.plugins.informationbroker.InformationItemIdentifier;
 import net.xeoh.plugins.informationbroker.InformationListener;
 import net.xeoh.plugins.informationbroker.options.PublishOption;
 import net.xeoh.plugins.informationbroker.options.SubscribeOption;
@@ -50,7 +48,7 @@ import net.xeoh.plugins.informationbroker.options.publish.OptionSilentPublish;
 import net.xeoh.plugins.informationbroker.options.subscribe.OptionInstantRequest;
 
 /**
- * Nothing to see here.    
+ * Nothing to see here.
  * 
  * @author Ralf Biedert
  */
@@ -65,12 +63,12 @@ public class InformationBrokerImpl implements InformationBroker {
         /** All listeners subscribed to this item */
         final Collection<InformationListener<?>> allListeners = new ArrayList<InformationListener<?>>();
 
-        /** The last item present */
-        InformationItem<?> lastItem = null;
+        /** The current channel holder */
+        InformationItem<?> channel = null;
     }
 
     /** Manages all information regarding a key */
-    final Map<URI, KeyEntry> items = new HashMap<URI, KeyEntry>();
+    final Map<Class<? extends InformationItem<?>>, KeyEntry> items = new HashMap<Class<? extends InformationItem<?>>, KeyEntry>();
 
     /** Locks access to the items */
     final Lock itemsLock = new ReentrantLock();
@@ -78,31 +76,35 @@ public class InformationBrokerImpl implements InformationBroker {
     /** */
     final Logger logger = Logger.getLogger(this.getClass().getName());
 
-    /* (non-Javadoc)
-     * @see net.xeoh.plugins.informationbroker.InformationBroker#publish(net.xeoh.plugins.informationbroker.InformationItem, net.xeoh.plugins.informationbroker.options.PublishOption[])
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.xeoh.plugins.informationbroker.InformationBroker#publish(net.xeoh.plugins.
+     * informationbroker.InformationItem,
+     * net.xeoh.plugins.informationbroker.options.PublishOption[])
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({ "unchecked" })
     @Override
-    public void publish(InformationItem<?> item, PublishOption... options) {
-        if (item == null) return;
+    public <T> void publish(Class<? extends InformationItem<T>> channel, T item,
+                            PublishOption... options) {
+        if (channel == null || item == null) return;
 
         // Get our options
         final OptionUtils<PublishOption> ou = new OptionUtils<PublishOption>(options);
         final boolean silentPublish = ou.contains(OptionSilentPublish.class);
 
-        final KeyEntry keyEntry = getKeyEntry(item.getIdentifier().getID());
-        final InformationItem iitem = item;
+        final KeyEntry keyEntry = getKeyEntry(channel);
 
         // Now process entry
         try {
             keyEntry.entryLock.lock();
-            keyEntry.lastItem = item;
+            ((InformationItem<Object>) keyEntry.channel).setValue(item);
 
             // Check if we should publish silently.
             if (!silentPublish) {
                 for (InformationListener<?> listener : keyEntry.allListeners) {
                     try {
-                        listener.update(iitem);
+                        ((InformationListener<T>) listener).update((InformationItem<T>) keyEntry.channel);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -113,12 +115,18 @@ public class InformationBrokerImpl implements InformationBroker {
         }
     }
 
-    /* (non-Javadoc)
-     * @see net.xeoh.plugins.informationbroker.InformationBroker#subscribe(net.xeoh.plugins.informationbroker.InformationItemIdentifier, net.xeoh.plugins.informationbroker.InformationListener, net.xeoh.plugins.informationbroker.options.SubscribeOption[])
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * net.xeoh.plugins.informationbroker.InformationBroker#subscribe(net.xeoh.plugins
+     * .informationbroker.InformationItemIdentifier,
+     * net.xeoh.plugins.informationbroker.InformationListener,
+     * net.xeoh.plugins.informationbroker.options.SubscribeOption[])
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({ "unchecked", "cast" })
     @Override
-    public <T> void subscribe(InformationItemIdentifier<T, ?> id,
+    public <T> void subscribe(Class<? extends InformationItem<T>> id,
                               InformationListener<T> listener, SubscribeOption... options) {
         if (id == null || listener == null) return;
 
@@ -126,28 +134,32 @@ public class InformationBrokerImpl implements InformationBroker {
         final OptionUtils<SubscribeOption> ou = new OptionUtils<SubscribeOption>(options);
         final boolean instantRequest = ou.contains(OptionInstantRequest.class);
 
-        final KeyEntry keyEntry = getKeyEntry(id.getID());
-
-        InformationItem lastItem = null;
+        // Get the meta information for the requested id
+        final KeyEntry keyEntry = getKeyEntry(id);
 
         // Now process and add the entry
         try {
             keyEntry.entryLock.lock();
-            // Only add the item if we don't have an instant request.
+            // Only add the listener if we don't have an instant request.
             if (!instantRequest) keyEntry.allListeners.add(listener);
-            lastItem = keyEntry.lastItem;
+
+            // If there has been a channel established, use that one
+            if (keyEntry.channel != null) {
+                ((InformationListener<T>) listener).update((InformationItem<T>) keyEntry.channel);
+            }
+
         } finally {
             keyEntry.entryLock.unlock();
         }
 
-        // Check if we had an item
-        if (lastItem != null) {
-            listener.update(lastItem);
-        }
     }
 
-    /* (non-Javadoc)
-     * @see net.xeoh.plugins.informationbroker.InformationBroker#unsubscribe(net.xeoh.plugins.informationbroker.InformationListener)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * net.xeoh.plugins.informationbroker.InformationBroker#unsubscribe(net.xeoh.plugins
+     * .informationbroker.InformationListener)
      */
     @Override
     public void unsubscribe(InformationListener<?> listener) {
@@ -156,8 +168,8 @@ public class InformationBrokerImpl implements InformationBroker {
         // Well, not the fastest and best solution given this interface.
         this.itemsLock.lock();
         try {
-            final Set<URI> keySet = this.items.keySet();
-            for (URI uri : keySet) {
+            final Set<Class<? extends InformationItem<?>>> keySet = this.items.keySet();
+            for (Class<? extends InformationItem<?>> uri : keySet) {
                 final KeyEntry keyEntry = this.items.get(uri);
                 keyEntry.entryLock.lock();
                 try {
@@ -177,15 +189,20 @@ public class InformationBrokerImpl implements InformationBroker {
      * @param id The ID to request
      * @return The key entry.
      */
-    private KeyEntry getKeyEntry(URI id) {
+    private KeyEntry getKeyEntry(Class<? extends InformationItem<?>> id) {
         KeyEntry keyEntry = null;
         this.itemsLock.lock();
         try {
             keyEntry = this.items.get(id);
             if (keyEntry == null) {
                 keyEntry = new KeyEntry();
+                keyEntry.channel = id.newInstance();
                 this.items.put(id, keyEntry);
             }
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         } finally {
             this.itemsLock.unlock();
         }

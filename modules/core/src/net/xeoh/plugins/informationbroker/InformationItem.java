@@ -27,29 +27,44 @@
  */
 package net.xeoh.plugins.informationbroker;
 
-import java.io.Serializable;
 
 /**
- * An information item. Each item consists of its unique ID (the {@link InformationItemIdentifier})
- * and the content associated to this id.
+ * Represents an information item that can be acquired using the
+ * information broker. You must create a subclass for each item you
+ * wish to trade using the broker.
  * 
  * @author Ralf Biedert
  * @param <T> The content's type.
  * @see InformationBroker
  */
-public interface InformationItem<T> extends Serializable {
+public abstract class InformationItem<T> {
+
+    /** For serialization */
+    private static final long serialVersionUID = -6303390351859991873L;
+
+    /** The value associated with this item */
+    private T item;
+
+    /** Creates an empty version of this channel. */
+    public InformationItem() {
+        //
+    }
 
     /**
-     * Returns the content of this item.
+     * Returns the item associated with this channel message.
      * 
-     * @return The content. 
+     * @return The item enclosed.
      */
-    public T getContent();
+    public T getValue() {
+        return this.item;
+    }
 
     /**
-     * Returns the corresponding identifier.
+     * Sets the current item. You must not call this function.
      * 
-     * @return Identifier of the information item.
+     * @param item The item to set.
      */
-    public InformationItemIdentifier<T, ? extends InformationItem<T>> getIdentifier();
+    public void setValue(T item) {
+        this.item = item;
+    }
 }
