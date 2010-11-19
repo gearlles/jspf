@@ -34,7 +34,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import net.xeoh.plugins.base.Plugin;
-import net.xeoh.plugins.base.impl.SpawnResult.SpawnType;
 
 /**
  * Meta information of the given plugin.
@@ -68,8 +67,10 @@ public class PluginMetaInformation {
         /** Plugin has been initialized and all threads and timers have been spawned */
         INITIALIZED,
 
-        /** Plugin is currently running (default state when
-         * everything is okay) */
+        /**
+         * Plugin is currently running (default state when
+         * everything is okay)
+         */
         ACTIVE,
 
         /** Plugin was shut down. */
@@ -79,18 +80,11 @@ public class PluginMetaInformation {
         FAILED
     }
 
-    /**
-     * @param spawnType
-     */
-    public PluginMetaInformation(SpawnType spawnType) {
-        this.spawnType = spawnType;
-    }
-
-    /** Status of the plugin  */
+    /** Status of the plugin */
     public PluginStatus pluginStatus = PluginStatus.UNDEFINED;
 
     /** Meta information of the parent class */
-    public PluggableClassMetaInformation classMeta = null;
+    public PluginClassMetaInformation classMeta = null;
 
     /** List of declared threads, managed by the Spawner */
     public final List<Thread> threads = new ArrayList<Thread>();
@@ -103,9 +97,6 @@ public class PluginMetaInformation {
 
     /** Handles plugin loaded information */
     public final List<PluginLoadedInformation> pluginLoadedInformation = new ArrayList<PluginLoadedInformation>();
-
-    /** Specifies if this is a plugin or pluglet */
-    public final SpawnType spawnType;
 
     /** Time this pluggable has been spawned. */
     public long spawnTime;

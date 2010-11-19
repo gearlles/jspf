@@ -25,7 +25,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package net.xeoh.plugins.base.impl;
+package net.xeoh.plugins.base.impl.spawning;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -42,39 +42,42 @@ import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 import net.xeoh.plugins.base.annotations.events.Shutdown;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
-import net.xeoh.plugins.base.impl.SpawnResult.SpawnType;
-import net.xeoh.plugins.base.impl.registry.PluggableClassMetaInformation.Dependency;
+import net.xeoh.plugins.base.impl.PluginManagerImpl;
+import net.xeoh.plugins.base.impl.registry.PluginClassMetaInformation.Dependency;
 import net.xeoh.plugins.base.impl.registry.PluginMetaInformation;
 import net.xeoh.plugins.base.impl.registry.PluginMetaInformation.PluginLoadedInformation;
 import net.xeoh.plugins.base.impl.registry.PluginMetaInformation.PluginStatus;
-import net.xeoh.plugins.base.options.getplugin.OptionCapabilities;
+import net.xeoh.plugins.base.impl.spawning.handler.InjectHandler;
+import net.xeoh.plugins.base.util.PluginManagerUtil;
 
 /**
- * Spawn a given class
+ * Spawn a given class.
  * 
- * @author rb
+ * @author Ralf Biedert
  */
 public class Spawner {
 
     final Logger logger = Logger.getLogger(this.getClass().getName());
 
     /** Main plugin manager */
-    private final PluginManagerImpl pluginManagerImpl;
+    private final PluginManagerImpl pluginManager;
 
     /**
+     * Creates a new spawner with the given PluginManager.
+     * 
      * @param pmi
      */
     public Spawner(final PluginManagerImpl pmi) {
-        this.pluginManagerImpl = pmi;
+        this.pluginManager = pmi;
     }
 
     /**
      * Destroys a given plugin, halt all timers and threads, calls shutdown methods.
      * 
      * @param plugin
-     * @param metaInformation 
+     * @param metaInformation
      */
-    public void destroyPluggable(final Plugin plugin,
+    public void destroyPlugin(final Plugin plugin,
                                  final PluginMetaInformation metaInformation) {
 
         // Halt all timer tasks
@@ -102,27 +105,74 @@ public class Spawner {
     }
 
     /**
-     * Spawn a plugin and process its internal annotations.
-     *
-     * @param c
-     *                Class to spawn from.
-     * @return .
+     * Destroys a given plugin, halt all timers and threads, calls shutdown methods.
+     * 
+     * @param plugin
+     * @param metaInformation
      */
-    @SuppressWarnings("rawtypes")
-    public SpawnResult spawnPlugin(final Class c) {
-        return spawnPluggable(c, false);
+    public void processThisPluginLoadedAnnotation(final Plugin plugin,
+                                                  final PluginMetaInformation metaInformation) {
+
+        // Get all our annotations.
+        for (PluginLoadedInformation pli : metaInformation.pluginLoadedInformation) {
+            final Collection<? extends Plugin> plugins = new PluginManagerUtil(this.pluginManager).getPlugins(pli.baseType);
+
+            // For each plugin we have a request, call this plugin.
+            for (Plugin p : plugins) {
+                try {
+                    pli.method.invoke(plugin, p);
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            pli.calledWith.addAll(plugins);
+        }
+    }
+
+    /**
+     * Processes the {@link PluginLoaded} annotation for other plugins for this plugin.
+     * 
+     * @param newPlugin Newly creatd pluign
+     */
+    public void processOtherPluginLoadedAnnotation(Plugin newPlugin) {
+
+        for (Plugin plugin : this.pluginManager.getPluginRegistry().getAllPlugins()) {
+            final PluginMetaInformation pmi = this.pluginManager.getPluginRegistry().getMetaInformationFor(plugin);
+
+            for (PluginLoadedInformation pli : pmi.pluginLoadedInformation) {
+                final Collection<? extends Plugin> plins = new PluginManagerUtil(this.pluginManager).getPlugins(pli.baseType);
+
+                // Check if the new plugin is returned upon request
+                if (plins.contains(newPlugin)) {
+                    try {
+                        pli.method.invoke(plugin, newPlugin);
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+
+                    pli.calledWith.add(newPlugin);
+                }
+            }
+        }
     }
 
     /**
      * Spawn a plugin and process its internal annotations.
-     *
-     * @param c
-     *                Class to spawn from.
-     * @param lazySpawn 
+     * 
+     * @param c Class to spawn from.
      * @return .
      */
-    @SuppressWarnings("rawtypes")
-    public SpawnResult spawnPluggable(final Class c, boolean lazySpawn) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public SpawnResult spawnPlugin(final Class c) {
 
         // Used for time measurements.
         final long startTime = System.nanoTime();
@@ -142,22 +192,55 @@ public class Spawner {
             // Instanciate the plugin
             final Plugin spawnedPlugin = (Plugin) c.newInstance();
 
-            // Detect type 
-            SpawnType type = null;
-
-            if (Plugin.class.isAssignableFrom(c)) {
-                type = SpawnType.PLUGIN;
-            }
-
             // In here spawning of the plugin worked
-            final SpawnResult spawnResult = new SpawnResult(spawnedPlugin, type);
+            final SpawnResult spawnResult = new SpawnResult(spawnedPlugin);
             spawnResult.metaInformation.pluginStatus = PluginStatus.SPAWNED;
             spawnResult.metaInformation.spawnTime = System.currentTimeMillis();
 
-            // If we spawn lazily, this is enough for the beginning
-            if (lazySpawn) return spawnResult;
+            // Finally load and register plugin
+            try {
+                
+                new InjectHandler(this.pluginManager).init(spawnedPlugin);
 
-            return continueSpawn(spawnResult);
+                // Obtain all methods
+                final Method[] methods = getMethods(c);
+
+                // 2. Call all init methods
+                final boolean initStatus = callInitMethods(spawnedPlugin, methods);
+                if (initStatus == false) {
+                    spawnResult.metaInformation.pluginStatus = PluginStatus.FAILED;
+                    return spawnResult;
+                }
+
+                // Initialization complete
+                spawnResult.metaInformation.pluginStatus = PluginStatus.INITIALIZED;
+
+                // 3. Spawn all threads
+                spawnThreads(spawnResult, methods);
+
+                // 4. Spawn timer
+                spawnTimer(spawnResult, methods);
+
+                // 5. Obtain PluginLoaded methods
+                obtainPluginLoadedMethods(spawnResult, methods);
+
+                // Currently running
+                spawnResult.metaInformation.pluginStatus = PluginStatus.ACTIVE;
+
+                return spawnResult;
+
+            } catch (final Throwable e) {
+                this.logger.warning("Unable to load plugin " + c.getName());
+                this.logger.warning(e.toString());
+                e.printStackTrace();
+                Throwable cause = e.getCause();
+                while (cause != null) {
+                    cause.printStackTrace();
+                    cause = cause.getCause();
+                }
+            }
+            return null;
+
         } catch (final Throwable e) {
             this.logger.warning("Unable to load plugin " + c.getName());
             this.logger.warning(e.toString());
@@ -179,68 +262,12 @@ public class Spawner {
     }
 
     /**
-     * Continues to spawn a previously halted spawn operation
      * 
-     * @param spawnResult The parameter you passed. 
-     * @return .
-     */
-    public SpawnResult continueSpawn(SpawnResult spawnResult) {
-
-        final Plugin spawnedPlugin = spawnResult.plugin;
-        final Class<? extends Plugin> c = spawnedPlugin.getClass();
-
-        // Finally load and register plugin
-        try {
-            // 1. Inject all variables
-            injectVariables(spawnedPlugin);
-
-            // Obtain all methods
-            final Method[] methods = getMethods(c);
-
-            // 2. Call all init methods
-            final boolean initStatus = callInitMethods(spawnedPlugin, methods);
-            if (initStatus == false) {
-                spawnResult.metaInformation.pluginStatus = PluginStatus.FAILED;
-                return spawnResult;
-            }
-
-            // Initialization complete
-            spawnResult.metaInformation.pluginStatus = PluginStatus.INITIALIZED;
-
-            // 3. Spawn all threads
-            spawnThreads(spawnResult, methods);
-
-            // 4. Spawn timer
-            spawnTimer(spawnResult, methods);
-
-            // 5. Obtain PluginLoaded methods
-            obtainPluginLoadedMethods(spawnResult, methods);
-
-            // Currently running
-            spawnResult.metaInformation.pluginStatus = PluginStatus.ACTIVE;
-
-            return spawnResult;
-
-        } catch (final Throwable e) {
-            this.logger.warning("Unable to load plugin " + c.getName());
-            this.logger.warning(e.toString());
-            e.printStackTrace();
-            Throwable cause = e.getCause();
-            while (cause != null) {
-                cause.printStackTrace();
-                cause = cause.getCause();
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 
-     *   @param methods 
+     * @param methods
      * @returns True if initialization was successful.
      * @throws IllegalAccessException
      * 
-     *  
+     * 
      */
     private boolean callInitMethods(final Plugin spawnedPlugin, final Method[] methods)
                                                                                           throws IllegalAccessException {
@@ -329,71 +356,6 @@ public class Spawner {
         return methods;
     }
 
-    /**
-     * @param spawnedPlugin
-     * @throws IllegalAccessException
-     */
-    @SuppressWarnings("unchecked")
-    private void injectVariables(final Plugin spawnedPlugin)
-                                                               throws IllegalAccessException {
-
-        // All fields we have a look at
-        final Field[] fields = spawnedPlugin.getClass().getFields();
-        final Method[] methods = spawnedPlugin.getClass().getMethods();
-
-        // Process every field
-        for (final Field field : fields) {
-            // Try to get inject annotation. New: also turn on extended accessibility, so 
-            // elements don't have to be public anymore. 
-            field.setAccessible(true);
-            final InjectPlugin ipannotation = field.getAnnotation(InjectPlugin.class);
-
-            // If there is one ..
-            if (ipannotation != null) {
-
-                // Obtain capabilities 
-                final String[] capabilities = ipannotation.requiredCapabilities();
-
-                // Handle the plugin-parameter part
-                // In the default case do an auto-detection ...
-                final Class<? extends Plugin> typeOfField = (Class<? extends Plugin>) field.getType();
-
-                this.logger.fine("Injecting plugin by autodetection (" + typeOfField.getName() + ") into " + spawnedPlugin.getClass().getName());
-
-                field.set(spawnedPlugin, this.pluginManagerImpl.getPlugin(typeOfField, new OptionCapabilities(capabilities)));
-            }
-        }
-
-        // And setter methods as well (aka Scala hack)
-        for (Method method : methods) {
-            // Try to get inject annotation. New: also turn on extended accessibility, so 
-            // elements don't have to be public anymore. 
-            method.setAccessible(true);
-            final InjectPlugin ipannotation = method.getAnnotation(InjectPlugin.class);
-
-            if (ipannotation != null) {
-
-                // Obtain capabilities 
-                final String[] capabilities = ipannotation.requiredCapabilities();
-
-                // Handle the plugin-parameter part
-                // In the default case do an auto-detection ...
-                final Class<? extends Plugin> typeOfMethod = (Class<? extends Plugin>) method.getParameterTypes()[0];
-
-                this.logger.fine("Injecting plugin by autodetection (" + typeOfMethod.getName() + ") into " + spawnedPlugin.getClass().getName());
-
-                try {
-                    method.invoke(spawnedPlugin, this.pluginManagerImpl.getPlugin(typeOfMethod, new OptionCapabilities(capabilities)));
-                } catch (IllegalArgumentException e) {
-                    this.logger.warning("Unable to inject plugin " + typeOfMethod + " into method " + method);
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    this.logger.warning("Unable to inject plugin " + typeOfMethod + " into method " + method);
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
 
     /**
      * @param spawnResult
@@ -402,8 +364,9 @@ public class Spawner {
     private void spawnThreads(final SpawnResult spawnResult, final Method[] methods) {
         final Class<? extends Plugin> spawnClass = spawnResult.plugin.getClass();
         for (final Method method : methods) {
-            // Init methods will be marked by the corresponding annotation.  New: 
-            // also turn on extended accessibility, so elements don't have to be public anymore.
+            // Init methods will be marked by the corresponding annotation. New:
+            // also turn on extended accessibility, so elements don't have to be public
+            // anymore.
             method.setAccessible(true);
             final net.xeoh.plugins.base.annotations.Thread annotation = method.getAnnotation(Thread.class);
             if (annotation != null) {
@@ -412,7 +375,8 @@ public class Spawner {
 
                     public void run() {
                         try {
-                            // TODO: Pass kind of ThreadController as argument 1 (or any fitting argument)
+                            // TODO: Pass kind of ThreadController as argument 1 (or any
+                            // fitting argument)
                             method.invoke(spawnResult.plugin, new Object[0]);
                         } catch (final IllegalArgumentException e) {
                             Spawner.this.logger.warning("Error starting requested thread on plugin (1)" + spawnClass.getName());
@@ -446,7 +410,8 @@ public class Spawner {
     @SuppressWarnings("unchecked")
     private void obtainPluginLoadedMethods(SpawnResult spawnResult, Method[] methods) {
         for (final Method method : methods) {
-            //New: also turn on extended accessibility, so elements don't have to be public anymore.
+            // New: also turn on extended accessibility, so elements don't have to be
+            // public anymore.
             method.setAccessible(true);
             final PluginLoaded annotation = method.getAnnotation(PluginLoaded.class);
             if (annotation != null) {
@@ -474,8 +439,9 @@ public class Spawner {
     private void spawnTimer(final SpawnResult spawnResult, final Method[] methods) {
         final Class<? extends Plugin> spawnClass = spawnResult.plugin.getClass();
         for (final Method method : methods) {
-            // Init methods will be marked by the corresponding annotation. New: also 
-            // turn on extended accessibility, so elements don't have to be public anymore.
+            // Init methods will be marked by the corresponding annotation. New: also
+            // turn on extended accessibility, so elements don't have to be public
+            // anymore.
             method.setAccessible(true);
             final net.xeoh.plugins.base.annotations.Timer annotation = method.getAnnotation(Timer.class);
             if (annotation != null) {
@@ -540,7 +506,7 @@ public class Spawner {
 
         // Process every field
         for (final Field field : fields) {
-            // Try to get inject annotation. New: also turn on extended accessibility, 
+            // Try to get inject annotation. New: also turn on extended accessibility,
             // so elements don't have to be public anymore.
             field.setAccessible(true);
             final InjectPlugin ipannotation = field.getAnnotation(InjectPlugin.class);
@@ -551,7 +517,7 @@ public class Spawner {
             // Don't recognize optional fields as dependencies.
             if (ipannotation.isOptional()) continue;
 
-            // Obtain capabilities                         
+            // Obtain capabilities
 
             final Dependency d = new Dependency();
             d.capabilites = ipannotation.requiredCapabilities();

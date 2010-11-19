@@ -25,7 +25,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.base.impl.loader;
+package net.xeoh.plugins.base.impl.classpath.loader;
 
 import java.io.IOException;
 import java.net.URI;
@@ -41,15 +41,15 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.configuration.ConfigurationFile;
 import net.xeoh.plugins.base.annotations.configuration.IsDisabled;
 import net.xeoh.plugins.base.impl.PluginManagerImpl;
-import net.xeoh.plugins.base.impl.SpawnResult;
-import net.xeoh.plugins.base.impl.Spawner;
 import net.xeoh.plugins.base.impl.classpath.ClassPathManager;
 import net.xeoh.plugins.base.impl.classpath.locator.AbstractClassPathLocation;
-import net.xeoh.plugins.base.impl.registry.PluggableClassMetaInformation;
-import net.xeoh.plugins.base.impl.registry.PluggableClassMetaInformation.Dependency;
-import net.xeoh.plugins.base.impl.registry.PluggableClassMetaInformation.PluginClassStatus;
+import net.xeoh.plugins.base.impl.registry.PluginClassMetaInformation;
+import net.xeoh.plugins.base.impl.registry.PluginClassMetaInformation.Dependency;
+import net.xeoh.plugins.base.impl.registry.PluginClassMetaInformation.PluginClassStatus;
 import net.xeoh.plugins.base.impl.registry.PluginMetaInformation.PluginStatus;
 import net.xeoh.plugins.base.impl.registry.PluginRegistry;
+import net.xeoh.plugins.base.impl.spawning.SpawnResult;
+import net.xeoh.plugins.base.impl.spawning.Spawner;
 import net.xeoh.plugins.base.options.getplugin.OptionCapabilities;
 import net.xeoh.plugins.base.util.PluginConfigurationUtil;
 
@@ -123,14 +123,14 @@ public abstract class AbstractLoader {
             if (annotation == null) { return; }
 
             // Don't load classes already loaded from this location
-            final PluggableClassMetaInformation preexistingMeta = pluginRegistry.getMetaInformationFor((Class<? extends Plugin>) possiblePlugin);
+            final PluginClassMetaInformation preexistingMeta = pluginRegistry.getMetaInformationFor((Class<? extends Plugin>) possiblePlugin);
             if (preexistingMeta != null) {
                 this.logger.info("Skipping plugin " + possiblePlugin + " because we already have it ");
                 return;
             }
 
             // Register class at registry
-            final PluggableClassMetaInformation metaInformation = new PluggableClassMetaInformation();
+            final PluginClassMetaInformation metaInformation = new PluginClassMetaInformation();
             metaInformation.pluginClassStatus = PluginClassStatus.ACCEPTED;
             if (location != null) {
                 metaInformation.pluginOrigin = location.getToplevelLocation();
@@ -232,7 +232,7 @@ public abstract class AbstractLoader {
             for (final Class c : toSpawn) {
                 this.logger.fine("Trying to load pending " + c);
 
-                final PluggableClassMetaInformation metaInformation = pluginRegistry.getMetaInformationFor(c);
+                final PluginClassMetaInformation metaInformation = pluginRegistry.getMetaInformationFor(c);
 
                 // If the class is spawnable, spawn it ...
                 if (metaInformation.pluginClassStatus == PluginClassStatus.SPAWNABLE) {

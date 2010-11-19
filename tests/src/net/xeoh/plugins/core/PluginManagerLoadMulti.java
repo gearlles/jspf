@@ -35,6 +35,7 @@ import net.xeoh.plugins.base.PluginInformation;
 import net.xeoh.plugins.base.PluginInformation.Information;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
+import net.xeoh.plugins.base.options.addpluginsfrom.OptionReportAfter;
 import net.xeoh.plugins.base.util.JSPFProperties;
 import net.xeoh.plugins.testplugins.testannotations.TestAnnotations;
 
@@ -81,7 +82,7 @@ public class PluginManagerLoadMulti {
     public void testGetPluginClassOfP() {
         Assert.assertNotNull("Pluginmanager must be there", this.pm);
 
-        this.pm.addPluginsFrom(new File("tests/plugins/").toURI());
+        this.pm.addPluginsFrom(new File("tests/plugins/").toURI(), new OptionReportAfter());
 
         final TestAnnotations p1 = this.pm.getPlugin(TestAnnotations.class);
         final PluginInformation p2 = this.pm.getPlugin(PluginInformation.class);

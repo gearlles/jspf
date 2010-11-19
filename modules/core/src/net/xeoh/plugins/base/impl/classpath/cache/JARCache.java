@@ -55,9 +55,9 @@ public class JARCache {
 
     /**
      * Information about a JAR plugin container.
-     *
+     * 
      * @author Ralf Biedert
-     *
+     * 
      */
     public static class JARInformation implements Serializable {
         /** */
@@ -95,22 +95,23 @@ public class JARCache {
     /** */
     private boolean weakMode = false;
 
+    private String cachePath;
+
     /**
      * Load cache
-     * 
-     * @param _cacheFile 
      */
     @SuppressWarnings("unchecked")
-    public void loadCache(final String _cacheFile) {
+    public void loadCache() {
         if (!this.cacheEnabled) return;
 
-        final String cacheFile = (_cacheFile == null) ? DEFAULT_CACHE_FILE : _cacheFile;
+        final String cacheFile = (this.cachePath == null) ? DEFAULT_CACHE_FILE : this.cachePath;
 
         try {
             // lock the lockfile
             final FileInputStream fis = new FileInputStream(cacheFile);
             final ObjectInputStream ois = new ObjectInputStream(fis);
-            final Object rval = ois.readObject();   // Loading caches can take very long (>250ms) for many entries 
+            final Object rval = ois.readObject(); // Loading caches can take very long
+                                                  // (>250ms) for many entries
 
             ois.close();
 
@@ -159,12 +160,11 @@ public class JARCache {
 
     /**
      * Saves the cache
-     * 
-     * @param _cacheFile
      */
-    public void saveCache(final String _cacheFile) {
+    public void saveCache() {
+
         if (!this.cacheEnabled) return;
-        String cacheFile = _cacheFile;
+        String cacheFile = this.cachePath;
         // String = this.configuration.getConfiguration(getClass(), "cacheFile");
         if (cacheFile == null) {
             cacheFile = DEFAULT_CACHE_FILE;
@@ -261,7 +261,7 @@ public class JARCache {
     }
 
     /**
-     * If the cache is enabled 
+     * If the cache is enabled
      * 
      * @param u
      */
@@ -279,5 +279,12 @@ public class JARCache {
             this.logger.fine("Weak mode for caching was enabled.");
         }
         this.weakMode = w;
+    }
+
+    /**
+     * @param cachePath
+     */
+    public void setCachePath(String cachePath) {
+        this.cachePath = cachePath;
     }
 }

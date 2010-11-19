@@ -31,18 +31,18 @@ import static net.jcores.CoreKeeper.$;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.jcores.interfaces.functions.F1;
 import net.xeoh.plugins.base.Plugin;
-import net.xeoh.plugins.base.impl.registry.PluggableClassMetaInformation.Dependency;
-import net.xeoh.plugins.base.impl.registry.PluggableClassMetaInformation.PluginClassStatus;
+import net.xeoh.plugins.base.impl.registry.PluginClassMetaInformation.Dependency;
+import net.xeoh.plugins.base.impl.registry.PluginClassMetaInformation.PluginClassStatus;
 
 /**
- * Manges plugin classes and the plugins
+ * The registry keeps track of all instantiated plugins.
  * 
  * @author Ralf Biedert
  */
@@ -52,14 +52,14 @@ public class PluginRegistry {
     private final Map<Plugin, PluginMetaInformation> pluginMetaInformation;
 
     /** Stores meta information related to a plugin class */
-    private final Map<Class<? extends Plugin>, PluggableClassMetaInformation> pluginClassMetaInformation;
+    private final Map<Class<? extends Plugin>, PluginClassMetaInformation> pluginClassMetaInformation;
 
-    /** 
-     * Creates a new registry 
+    /**
+     * Creates a new registry
      */
     public PluginRegistry() {
-        this.pluginMetaInformation = new HashMap<Plugin, PluginMetaInformation>();
-        this.pluginClassMetaInformation = new HashMap<Class<? extends Plugin>, PluggableClassMetaInformation>();
+        this.pluginMetaInformation = new ConcurrentHashMap<Plugin, PluginMetaInformation>();
+        this.pluginClassMetaInformation = new ConcurrentHashMap<Class<? extends Plugin>, PluginClassMetaInformation>();
     }
 
     /**
@@ -87,7 +87,7 @@ public class PluginRegistry {
      * @param clazz
      * @return .
      */
-    public PluggableClassMetaInformation getMetaInformationFor(Class<? extends Plugin> clazz) {
+    public PluginClassMetaInformation getMetaInformationFor(Class<? extends Plugin> clazz) {
         return this.pluginClassMetaInformation.get(clazz);
     }
 
@@ -111,10 +111,10 @@ public class PluginRegistry {
 
     /**
      * @param c
-     * @param metaInformation 
+     * @param metaInformation
      */
     public void registerPluginClass(Class<? extends Plugin> c,
-                                    PluggableClassMetaInformation metaInformation) {
+                                    PluginClassMetaInformation metaInformation) {
         this.pluginClassMetaInformation.put(c, metaInformation);
     }
 
@@ -129,7 +129,7 @@ public class PluginRegistry {
         final Set<Class<? extends Plugin>> keySet = this.pluginClassMetaInformation.keySet();
 
         for (Class<? extends Plugin> class1 : keySet) {
-            final PluggableClassMetaInformation metaInformation = this.pluginClassMetaInformation.get(class1);
+            final PluginClassMetaInformation metaInformation = this.pluginClassMetaInformation.get(class1);
 
             if (metaInformation.pluginClassStatus == status) rval.add(class1);
         }
@@ -138,16 +138,16 @@ public class PluginRegistry {
     }
 
     /**
-     * Prints a report of this registry. 
+     * Prints a report of this registry.
      */
     public void report() {
         System.out.println();
         System.out.println(">>> Class Report <<<");
         final Set<Class<? extends Plugin>> keySet = this.pluginClassMetaInformation.keySet();
         for (Class<? extends Plugin> class1 : keySet) {
-            final PluggableClassMetaInformation meta = this.pluginClassMetaInformation.get(class1);
+            final PluginClassMetaInformation meta = this.pluginClassMetaInformation.get(class1);
             System.out.print("    " + class1.getCanonicalName() + " (status:'" + meta.pluginClassStatus);
-            System.out.print("'; dependencies:'" + $(meta.dependencies).map(new F1<PluggableClassMetaInformation.Dependency, String>() {
+            System.out.print("'; dependencies:'" + $(meta.dependencies).map(new F1<PluginClassMetaInformation.Dependency, String>() {
                 public String f(Dependency x) {
                     return x.pluginClass.getSimpleName();
                 }

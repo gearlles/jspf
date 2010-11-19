@@ -34,10 +34,19 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
+import net.xeoh.plugins.base.impl.PluginManagerImpl;
+import net.xeoh.plugins.base.impl.classpath.cache.JARCache;
 import net.xeoh.plugins.base.impl.classpath.cache.JARCache.JARInformation;
+import net.xeoh.plugins.base.impl.classpath.loader.AbstractLoader;
+import net.xeoh.plugins.base.impl.classpath.loader.FileLoader;
+import net.xeoh.plugins.base.impl.classpath.loader.HTTPLoader;
+import net.xeoh.plugins.base.impl.classpath.loader.InternalClasspathLoader;
 import net.xeoh.plugins.base.impl.classpath.locator.AbstractClassPathLocation;
+import net.xeoh.plugins.base.impl.classpath.locator.ClassPathLocator;
 import net.xeoh.plugins.base.impl.classpath.locator.JARClasspathLocation;
 
 import org.codehaus.classworlds.ClassRealm;
@@ -52,7 +61,19 @@ import org.codehaus.classworlds.NoSuchRealmException;
  */
 public class ClassPathManager {
     /** Console and file logging */
-    final Logger logger = Logger.getLogger(this.getClass().getName());
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
+
+    /** Blocks access to the file cache */
+    private final Lock cacheLock = new ReentrantLock();
+
+    /** Manages content cache of jar files */
+    private final JARCache jarCache = new JARCache();
+
+    /** Locates possible classpaths */
+    private final ClassPathLocator locator;
+
+    /** Loads plugins from various urls */
+    private final Collection<AbstractLoader> pluginLoader = new ArrayList<AbstractLoader>();
 
     /** Manages classpaths from URLs */
     ClassWorld classWorld;
@@ -63,13 +84,34 @@ public class ClassPathManager {
      */
     boolean initializedProperly = false;
 
-    /** */
-    public ClassPathManager() {
-        // Initialization is a bit ugly ...
+    /**
+     * @param pluginManager
+     */
+    @SuppressWarnings("synthetic-access")
+    public ClassPathManager(PluginManagerImpl pluginManager) {
+        this.locator = new ClassPathLocator(this.jarCache);
+
+        // Register loader
+        this.pluginLoader.add(new InternalClasspathLoader(pluginManager));
+        this.pluginLoader.add(new FileLoader(pluginManager));
+        this.pluginLoader.add(new HTTPLoader(pluginManager));
+
+        // Initialization is a bit ugly, but we might be in a sandbox
         AccessController.doPrivileged(new PrivilegedAction<Object>() {
             public Object run() {
                 try {
-                    properInit();
+                    // Try to create a new ClassWorld object
+                    ClassPathManager.this.classWorld = new ClassWorld();
+
+                    // Create a core realm (for internal and classpath://* plugins)
+                    try {
+                        ClassPathManager.this.classWorld.newRealm("core", getClass().getClassLoader());
+                    } catch (DuplicateRealmException e) {
+                        e.printStackTrace();
+                    }
+
+                    // Signal that we are okay.
+                    ClassPathManager.this.initializedProperly = true;
                 } catch (SecurityException e) {
                     ClassPathManager.this.logger.warning("Proper initialization failed due to security restrictions. Only classpath://xxx URIs will work. Sorry.");
                 }
@@ -79,23 +121,33 @@ public class ClassPathManager {
     }
 
     /**
-     * Perform a proper initialization. This may fail (flagging
-     * <code>initializedProperly</code> to <code>false</code> when we are in applet mode).
+     * Locates plugins at a given source, loads them and adds them to the registry.
+     * 
+     * @param location
+     * @return .
      */
-    void properInit() {
-        this.classWorld = new ClassWorld();
-
+    public boolean addFromLocation(URI location) {
+        this.cacheLock.lock();
         try {
-            this.classWorld.newRealm("core", getClass().getClassLoader());
-        } catch (DuplicateRealmException e) {
-            e.printStackTrace();
+            // Load local cache
+            this.jarCache.loadCache();
+
+            // Handle URI
+            for (AbstractLoader loader : this.pluginLoader) {
+                if (!loader.handlesURI(location)) continue;
+                loader.loadFrom(location);
+                return true;
+            }
+        } finally {
+            this.jarCache.saveCache();
+            this.cacheLock.unlock();
         }
 
-        this.initializedProperly = true;
+        return false;
     }
 
     /**
-     * Loads a class given its name and class path location.
+     * Loads a class given its name and classpath location.
      * 
      * @param location Specifies where this plugins should be obtained from, or
      * <code>null</code> if we should use our own classloader.
@@ -156,7 +208,7 @@ public class ClassPathManager {
         try {
             final ClassLoader classLoader = this.classWorld.getRealm(location.getRealm()).getClassLoader();
             final Collection<String> listClassNames = location.listToplevelClassNames();
-            
+
             for (String name : listClassNames) {
                 try {
                     final Class<?> c = Class.forName(name, false, classLoader);
@@ -249,5 +301,23 @@ public class ClassPathManager {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * Returns our locator.
+     * 
+     * @return The locator.
+     */
+    public ClassPathLocator getLocator() {
+        return this.locator;
+    }
+
+    /**
+     * Returns the JAR cache.
+     * 
+     * @return The cache.
+     */
+    public JARCache getCache() {
+        return this.jarCache;
     }
 }

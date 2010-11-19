@@ -31,7 +31,6 @@ import java.io.File;
 
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
-import net.xeoh.plugins.base.options.addpluginsfrom.OptionLoadAsynchronously;
 import net.xeoh.test.coolplugin.CoolPlugin;
 
 import org.junit.After;
@@ -68,7 +67,7 @@ public class PluginManagerCompatibility {
      */
     @Test
     public void testGetPluginClassOfP() throws InterruptedException {
-        this.pm.addPluginsFrom(new File("tests/plugins/coolplugin.jar").toURI(), new OptionLoadAsynchronously());
+        this.pm.addPluginsFrom(new File("tests/plugins/coolplugin.jar").toURI());
 
         final CoolPlugin plugin = this.pm.getPlugin(CoolPlugin.class);
         System.out.println(plugin);

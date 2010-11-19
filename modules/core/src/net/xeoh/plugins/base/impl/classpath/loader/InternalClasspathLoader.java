@@ -25,10 +25,12 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.base.impl.loader;
+package net.xeoh.plugins.base.impl.classpath.loader;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.impl.PluginManagerImpl;
@@ -50,7 +52,9 @@ public class InternalClasspathLoader extends AbstractLoader {
         super(pluginManager);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see net.xeoh.plugins.base.impl.loader.AbstractLoader#handlesURI(java.net.URI)
      */
     @Override
@@ -60,21 +64,33 @@ public class InternalClasspathLoader extends AbstractLoader {
         return false;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see net.xeoh.plugins.base.impl.loader.AbstractLoader#loadFrom(java.net.URI)
      */
     @Override
     public void loadFrom(URI url) {
 
         // Special handler to load files from the local classpath
-        if (url.toString().equals("classpath://*")) {
-            loadAllClasspathPluginClasses();
+        if (url.toString().contains("*")) {
+            if (url.toString().equals("classpath://*")) {
+                loadAllClasspathPluginClasses(null);
+            } else {
+                String pattern = url.toString();
+                pattern = pattern.replace("**", ".+");
+                pattern = pattern.replace("*", "[^\\.]*");
+                pattern = pattern.replace("classpath://", "");
+                loadAllClasspathPluginClasses(pattern);
+            }
             return;
         }
 
         // Special handler to load files from the local classpath, specified by name.
-        // Please note that this is a very bad solution and should only be used in special cases,
-        // as when invoking from applets that don't have permission to access the classpath (is this so)
+        // Please note that this is a very bad solution and should only be used in special
+        // cases,
+        // as when invoking from applets that don't have permission to access the
+        // classpath (is this so)
         if (url.toString().startsWith("classpath://")) {
             // Obtain the fq-classname to load
             final String toLoad = url.toString().substring("classpath://".length());
@@ -83,15 +99,23 @@ public class InternalClasspathLoader extends AbstractLoader {
         }
     }
 
-    /** */
-    private void loadAllClasspathPluginClasses() {
+    /**
+     * Load all plugins from the classpath that match a given pattern.
+     * 
+     * @param pattern
+     */
+    private void loadAllClasspathPluginClasses(String pattern) {
         // Start the classpath search
         this.logger.finer("Starting classpath search ...");
 
+        // Get all classpath locations of the current classpath
         final ClassPathManager manager = this.pluginManager.getClassPathManager();
-        final ClassPathLocator locator = this.pluginManager.getClassPathLocator();
-
+        final ClassPathLocator locator = manager.getLocator();
         final Collection<AbstractClassPathLocation> locations = locator.findInCurrentClassPath();
+
+        System.out.println(pattern);
+
+        // Process all locations
         for (AbstractClassPathLocation location : locations) {
             manager.registerLocation(location);
 
@@ -99,8 +123,20 @@ public class InternalClasspathLoader extends AbstractLoader {
 
             this.logger.finer("Found " + candidates.size() + " candidates.");
 
+            // Check all candidates
             for (String string : candidates) {
-                tryToLoadClassAsPlugin(location, string);
+
+                // Either try to add them all, or only those who match a given pattern
+                if (pattern == null) tryToLoadClassAsPlugin(location, string);
+                else {
+                    final Pattern p = Pattern.compile(pattern);
+                    final Matcher m = p.matcher(string);
+
+                    System.out.println(string + " " + m.matches());
+                    if (m.matches()) {
+                        tryToLoadClassAsPlugin(location, string);
+                    }
+                }
             }
         }
 

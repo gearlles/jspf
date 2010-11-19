@@ -25,7 +25,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.base.impl.loader;
+package net.xeoh.plugins.base.impl.classpath.loader;
 
 import java.io.FileOutputStream;
 import java.io.InputStream;

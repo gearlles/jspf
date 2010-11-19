@@ -38,7 +38,7 @@ import net.xeoh.plugins.base.Plugin;
  * 
  * @author Ralf Biedert
  */
-public class PluggableClassMetaInformation {
+public class PluginClassMetaInformation {
 
     /**
      * @author rb

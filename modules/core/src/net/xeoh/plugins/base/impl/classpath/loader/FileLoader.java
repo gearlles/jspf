@@ -25,7 +25,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.base.impl.loader;
+package net.xeoh.plugins.base.impl.classpath.loader;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -85,7 +85,6 @@ public class FileLoader extends AbstractLoader {
             try {
                 file = URLDecoder.decode(file, "utf8");
             } catch (final UnsupportedEncodingException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
@@ -111,7 +110,7 @@ public class FileLoader extends AbstractLoader {
      */
     void locateAllPluginsAt(File root) {
         final ClassPathManager manager = this.pluginManager.getClassPathManager();
-        final ClassPathLocator locator = this.pluginManager.getClassPathLocator();
+        final ClassPathLocator locator = manager.getLocator();
 
         final Collection<AbstractClassPathLocation> locations = locator.findBelow(root.toURI());
         for (AbstractClassPathLocation location : locations) {

@@ -1,7 +1,7 @@
 /*
- * OptionDummy.java
+ * AbstractHandler.java
  * 
- * Copyright (c) 2009, Ralf Biedert All rights reserved.
+ * Copyright (c) 2010, Ralf Biedert All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -25,26 +25,47 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.base.options.addpluginsfrom;
+package net.xeoh.plugins.base.impl.spawning.handler;
 
+import java.util.logging.Logger;
+
+import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.PluginManager;
-import net.xeoh.plugins.base.options.AddPluginsFromOption;
 
 /**
- * Loads the specified plugins asynchronously. This option instructs the {@link PluginManager} 
- * to load the plugins from the given source in the background.  For example, make the plugin 
- * manager load the given source in the background, write:<br/><br/>
- * 
- * <code>
- * pluginManager.addPluginsFrom(uri, new OptionLoadAsynchronously());
- * </code>
- * 
+ * Handles a certain type of annotations / properties.
  * 
  * @author Ralf Biedert
- * @see PluginManager
  */
-public class OptionLoadAsynchronously implements AddPluginsFromOption {
+public abstract class AbstractHandler {
 
     /** */
-    private static final long serialVersionUID = -2456787234982947L;
+    final PluginManager pluginManager;
+
+    /** */
+    final Logger logger = Logger.getLogger(this.getClass().getName());
+
+    /**
+     * @param pluginManager
+     */
+    public AbstractHandler(PluginManager pluginManager) {
+        this.pluginManager = pluginManager;
+    }
+
+    /**
+     * Called when the plugin is initialized
+     * 
+     * @param plugin
+     * @throws Exception
+     */
+    public abstract void init(Plugin plugin) throws Exception;
+
+    /**
+     * Called when the plugin is initialized
+     * 
+     * @param plugin
+     * @throws Exception
+     */
+    public abstract void deinit(Plugin plugin) throws Exception;
+
 }
