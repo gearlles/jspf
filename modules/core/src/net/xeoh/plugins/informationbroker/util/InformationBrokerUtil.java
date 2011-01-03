@@ -27,6 +27,8 @@
  */
 package net.xeoh.plugins.informationbroker.util;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 import net.xeoh.plugins.informationbroker.InformationBroker;
@@ -101,12 +103,34 @@ public class InformationBrokerUtil {
      * 
      * Use <code>get()</code> from inside the listener to obtain the specific items.
      * 
-     * @param listener The listener called when all prerequisites are met.
+     * @param listener The listener called when all prerequisites are met. Note that the
+     * listener will be called <b>without</b> any object (i.e., <code>item</code> is
+     * <code>null</code>). You must use the broker's <code>get()</code> function.
      * @param all All IDs we should subscribe to.
      */
-    public void subscribeAll(InformationListener<Object> listener, Class<?>... all) {
-        // TODO: Also check if all elements from all are actually valid classes.
-        throw new IllegalArgumentException();
-    }
+    @SuppressWarnings("unchecked")
+    public void subscribeAll(final InformationListener<Void> listener,
+                             final Class<?>... all) {
+        if (listener == null || all == null || all.length == 0) return;
 
+        // Stores all items we received so far
+        final Map<Class<?>, AtomicReference<Object>> map = new ConcurrentHashMap<Class<?>, AtomicReference<Object>>();
+
+        for (final Class<?> c : all) {
+            final Class<? extends InformationItem<Object>> cc = (Class<? extends InformationItem<Object>>) c;
+
+            this.broker.subscribe(cc, new InformationListener<Object>() {
+                @Override
+                public void update(Object item) {
+                    // First update the map
+                    map.put(cc, new AtomicReference<Object>(item));
+
+                    // then check if we are complete
+                    if (map.keySet().size() == all.length) {
+                        listener.update(null);
+                    }
+                }
+            });
+        }
+    }
 }

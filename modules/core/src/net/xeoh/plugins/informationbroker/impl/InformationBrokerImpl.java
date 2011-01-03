@@ -124,7 +124,7 @@ public class InformationBrokerImpl implements InformationBroker {
      * net.xeoh.plugins.informationbroker.InformationListener,
      * net.xeoh.plugins.informationbroker.options.SubscribeOption[])
      */
-    @SuppressWarnings({ "unchecked", "cast" })
+    @SuppressWarnings({ "unchecked" })
     @Override
     public <T> void subscribe(Class<? extends InformationItem<T>> id,
                               InformationListener<T> listener, SubscribeOption... options) {

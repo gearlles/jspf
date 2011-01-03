@@ -31,6 +31,7 @@ import java.net.URI;
 
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
+import net.xeoh.plugins.informationbroker.util.InformationBrokerUtil;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -97,13 +98,31 @@ public class InformationBrokerTest2 {
 
         final InformationBroker plugin = this.pm.getPlugin(InformationBroker.class);
 
-        plugin.subscribe(TestItem.class, new InformationListener<String>() {
+        plugin.subscribe(TestItemA.class, new InformationListener<String>() {
             @Override
             public void update(String item) {
-                System.out.println(item);
+                System.out.println("Hello World");
             }
         });
-        plugin.publish(TestItem.class, "Hello");
+
+        final InformationBrokerUtil util = new InformationBrokerUtil(plugin);
+        util.subscribeAll(new InformationListener<Void>() {;
+            @Override
+            public void update(Void item) {
+                System.out.println("Got both");
+                System.out.println(item);
+                System.out.println(util.get(TestItemA.class));
+                System.out.println(util.get(TestItemB.class));
+                System.out.println(util.get(TestItemA.class));
+                System.out.println(util.get(TestItemB.class));
+            }
+        }, TestItemA.class, TestItemB.class);
+
+        System.out.println("1");
+        plugin.publish(TestItemA.class, "A) Hello");
+        System.out.println("2");
+        plugin.publish(TestItemB.class, "B) World");
+        System.out.println("3");
 
         // plugin.publish(TestItem.class, new Object());
     }
