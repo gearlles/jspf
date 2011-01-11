@@ -39,7 +39,7 @@ import net.xeoh.plugins.testplugins.testannotations.TestAnnotations;
 
 /**
  * @author rb
- *
+ * 
  */
 public class TestAnnotationsAbtractImpl implements TestAnnotations {
     /**
@@ -86,7 +86,7 @@ public class TestAnnotationsAbtractImpl implements TestAnnotations {
     public void initMeLala() {
         this.init = "INIT OK";
         System.out.println("Plugin Initialized");
-        //throw new NullPointerException();
+        // throw new NullPointerException();
     }
 
     /**
@@ -95,6 +95,19 @@ public class TestAnnotationsAbtractImpl implements TestAnnotations {
     @Thread
     public void threadMeLala() {
         this.thread = "THREAD OK";
+    }
+
+    /**
+     * 
+     */
+    //@Thread
+    public void bigbang() {
+        System.out.println("Testing VisualVM Big Bang Theory");
+        double d = 3.14;
+        while (true) {
+            System.getenv("" + System.currentTimeMillis());
+            d *= Math.sin(d);
+        }
     }
 
     /**
