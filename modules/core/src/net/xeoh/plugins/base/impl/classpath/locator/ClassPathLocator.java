@@ -199,9 +199,15 @@ public class ClassPathLocator {
      * @return
      */
     private boolean blacklisted(String[] blacklist, URL url) {
+        // Default sanity check
+        if (blacklist == null || blacklist.length == 0 || blacklist[0].length() == 0)
+            return false;
+
+        // Go thorugh blacklist
         for (String string : blacklist) {
             if (url.toString().contains(string)) return true;
         }
+
         return false;
     }
 }
