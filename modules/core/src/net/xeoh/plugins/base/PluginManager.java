@@ -72,7 +72,8 @@ import net.xeoh.plugins.informationbroker.InformationBroker;
  *  <li><b>cache.enabled</b> - Specifies if the known plugins should be cached. Specify either {true, false}.</li>
  *  <li><b>cache.mode</b> - If we should use strong caching (slow but more accurate) or weak (much faster). Specify either {stong, weak}. </li>
  *  <li><b>cache.file</b> - Cache file to use. Specify any relative or absolute file path, file will be created / overwritten.</li>
- *  <li><b>classpath.filter.default</b> - If Java default classpaths (e.g., jre/lib/*) should be filtered. Specify either {true, false}.</li>
+ *  <li><b>classpath.filter.default.enabled</b> - If Java default classpaths (e.g., jre/lib/*) should be filtered. Specify either {true, false}. Might not work on all platforms as expected.</li>
+ *  <li><b>classpath.filter.default.pattern</b> - Specify what to filter in addition to default classpaths. Specify a list of ';' separated tokens, e.g., "jdk/lib;jre/lib".</li>
  *  <li><b>logging.level</b> - Either {OFF, FINEST, FINER, FINE, INFO, WARNING, ALL}. Specifies what to log on the console. </li>
  *  </ul><br/>
  * @see PluginManagerUtil

@@ -30,6 +30,7 @@ package net.xeoh.plugins.base.impl.classpath.locator;
 import static net.jcores.CoreKeeper.$;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -133,16 +134,18 @@ public class ClassPathLocator {
 
         // Get our current classpath (TODO: Better get this using
         // ClassLoader.getSystemClassLoader()?)
+        final boolean filter = new PluginConfigurationUtil(this.pluginManager.getPluginConfiguration()).getBoolean(PluginManager.class, "classpath.filter.default.enabled", true);
+        final String blacklist[] = new PluginConfigurationUtil(this.pluginManager.getPluginConfiguration()).getString(PluginManager.class, "classpath.filter.default.pattern", "jre/lib").split(";");
         final String pathSep = System.getProperty("path.separator");
         final String classpath = System.getProperty("java.class.path");
         final String[] split = classpath.split(pathSep);
-        final List<String> toFilter = new ArrayList<String>();
+        final List<URL> toFilter = new ArrayList<URL>();
 
         this.logger.fine("Finding classes in current classpath (using separator '" + pathSep + "'): " + classpath);
 
-        // Check if we should filter, if yes, get topmost classloader so we know what to
-        // filter out
-        if (new PluginConfigurationUtil(this.pluginManager.getPluginConfiguration()).getBoolean(PluginManager.class, "classpath.filter.default", true)) {
+        // Check if we should filter, if yes, get topmost classloader so we know
+        // what to filter out
+        if (filter) {
             this.logger.finer("Filtering default classpaths by request.");
 
             ClassLoader loader = ClassLoader.getSystemClassLoader();
@@ -153,23 +156,52 @@ public class ClassPathLocator {
             if (loader != null && loader instanceof URLClassLoader) {
                 URL[] urls = ((URLClassLoader) loader).getURLs();
                 for (URL url : urls) {
-                    this.logger.finer("Received '" + url);
-                    this.logger.finer("Putting '" + url.getFile() + "' on our filterlist.");
-                    toFilter.add(url.getFile());
+                    this.logger.finer("Putting '" + url + "' on our filterlist.");
+                    toFilter.add(url);
                 }
+            }
+
+            // Print blacklisted elements
+            for (String item : blacklist) {
+                this.logger.finer("Blacklist entry: " + item);
             }
         }
 
+        // Process all possible locations
         for (String string : split) {
-            this.logger.fine("Trying to add '" + string + "' to our classpath location.");
-            if (toFilter.contains(string)) {
-                this.logger.fine("But it was filtered because it was in our list.");
-                continue;
-            }
+            try {
+                final URL url = new File(string).toURI().toURL();
 
-            rval.add(AbstractClassPathLocation.newClasspathLocation(this.cache, "#classpath", new File(string).toURI()));
+                this.logger.fine("Trying to add '" + string + "' to our classpath location.");
+                this.logger.fine("Converted to " + url);
+
+                // Check if the url was already contained
+                if (toFilter.contains(url) || blacklisted(blacklist, url)) {
+                    this.logger.fine("But it was filtered because it was in our list or blacklisted.");
+                    continue;
+                }
+
+                // And eventually add the location
+                rval.add(AbstractClassPathLocation.newClasspathLocation(this.cache, "#classpath", new File(string).toURI()));
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
         }
 
         return rval;
+    }
+
+    /**
+     * Checks if the given URL is blacklisted
+     * 
+     * @param blacklist
+     * @param url
+     * @return
+     */
+    private boolean blacklisted(String[] blacklist, URL url) {
+        for (String string : blacklist) {
+            if (url.toString().contains(string)) return true;
+        }
+        return false;
     }
 }
