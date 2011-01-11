@@ -135,7 +135,7 @@ public class ClassPathLocator {
         // Get our current classpath (TODO: Better get this using
         // ClassLoader.getSystemClassLoader()?)
         final boolean filter = new PluginConfigurationUtil(this.pluginManager.getPluginConfiguration()).getBoolean(PluginManager.class, "classpath.filter.default.enabled", true);
-        final String blacklist[] = new PluginConfigurationUtil(this.pluginManager.getPluginConfiguration()).getString(PluginManager.class, "classpath.filter.default.pattern", "jre/lib").split(";");
+        final String blacklist[] = new PluginConfigurationUtil(this.pluginManager.getPluginConfiguration()).getString(PluginManager.class, "classpath.filter.default.pattern", "/jre/lib/;/jdk/lib/;/lib/rt.jar").split(";");
         final String pathSep = System.getProperty("path.separator");
         final String classpath = System.getProperty("java.class.path");
         final String[] split = classpath.split(pathSep);
