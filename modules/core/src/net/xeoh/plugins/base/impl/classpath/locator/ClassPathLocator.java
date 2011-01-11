@@ -31,33 +31,48 @@ import static net.jcores.CoreKeeper.$;
 
 import java.io.File;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.logging.Logger;
 
+import net.xeoh.plugins.base.PluginManager;
+import net.xeoh.plugins.base.impl.PluginManagerImpl;
 import net.xeoh.plugins.base.impl.classpath.cache.JARCache;
+import net.xeoh.plugins.base.util.PluginConfigurationUtil;
 
 /**
- * Used to find classpaths, JARs and their contents.  
+ * Used to find classpaths, JARs and their contents.
  * 
  * @author Ralf Biedert
  */
 public class ClassPathLocator {
 
+    /** For debugging output */
+    protected final Logger logger = Logger.getLogger(this.getClass().getName());
+
     /** Cache to lookup elements */
     private final JARCache cache;
 
+    /** Mainly used to access the config. */
+    private PluginManagerImpl pluginManager;
+
     /**
+     * @param pluginManager
      * @param cache
      */
-    public ClassPathLocator(JARCache cache) {
+    public ClassPathLocator(PluginManagerImpl pluginManager, JARCache cache) {
+        this.pluginManager = pluginManager;
         this.cache = cache;
     }
 
     /**
-     * Given a top level entry, finds a list of class path locations below the given 
+     * Given a top level entry, finds a list of class path locations below the given
      * entry. The top level entry can either be a folder, or it can be a JAR directly.
      * 
-     * @param toplevel The top level URI to start from. 
+     * @param toplevel The top level URI to start from.
      * @return A list of class path locations.
      */
     public Collection<AbstractClassPathLocation> findBelow(URI toplevel) {
@@ -65,7 +80,8 @@ public class ClassPathLocator {
         final Collection<AbstractClassPathLocation> rval = new ArrayList<AbstractClassPathLocation>();
         final File startPoint = new File(toplevel);
 
-        // First, check if the entry represents a multi-plugin (in that case we don't add anything else)
+        // First, check if the entry represents a multi-plugin (in that case we don't add
+        // anything else)
         if ($(startPoint).filter(".*\\.plugin?$").get(0) != null) {
             rval.add(AbstractClassPathLocation.newClasspathLocation(this.cache, toplevel.toString(), toplevel));
             return rval;
@@ -111,14 +127,46 @@ public class ClassPathLocator {
      * 
      * @return .
      */
+    @SuppressWarnings("boxing")
     public Collection<AbstractClassPathLocation> findInCurrentClassPath() {
         final Collection<AbstractClassPathLocation> rval = new ArrayList<AbstractClassPathLocation>();
 
+        // Get our current classpath (TODO: Better get this using
+        // ClassLoader.getSystemClassLoader()?)
         final String pathSep = System.getProperty("path.separator");
         final String classpath = System.getProperty("java.class.path");
         final String[] split = classpath.split(pathSep);
+        final List<String> toFilter = new ArrayList<String>();
+
+        this.logger.fine("Finding classes in current classpath (using separator '" + pathSep + "'): " + classpath);
+
+        // Check if we should filter, if yes, get topmost classloader so we know what to
+        // filter out
+        if (new PluginConfigurationUtil(this.pluginManager.getPluginConfiguration()).getBoolean(PluginManager.class, "classpath.filter.default", true)) {
+            this.logger.finer("Filtering default classpaths by request.");
+
+            ClassLoader loader = ClassLoader.getSystemClassLoader();
+            while (loader != null && loader.getParent() != null)
+                loader = loader.getParent();
+
+            // Get 'blacklist' and add it to our filterlist
+            if (loader != null && loader instanceof URLClassLoader) {
+                URL[] urls = ((URLClassLoader) loader).getURLs();
+                for (URL url : urls) {
+                    this.logger.finer("Received '" + url);
+                    this.logger.finer("Putting '" + url.getFile() + "' on our filterlist.");
+                    toFilter.add(url.getFile());
+                }
+            }
+        }
 
         for (String string : split) {
+            this.logger.fine("Trying to add '" + string + "' to our classpath location.");
+            if (toFilter.contains(string)) {
+                this.logger.fine("But it was filtered because it was in our list.");
+                continue;
+            }
+
             rval.add(AbstractClassPathLocation.newClasspathLocation(this.cache, "#classpath", new File(string).toURI()));
         }
 

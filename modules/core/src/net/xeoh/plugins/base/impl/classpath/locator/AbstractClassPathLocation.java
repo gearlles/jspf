@@ -36,6 +36,9 @@ import java.util.logging.Logger;
 
 import net.xeoh.plugins.base.impl.classpath.cache.JARCache;
 import net.xeoh.plugins.base.impl.classpath.cache.JARCache.JARInformation;
+import net.xeoh.plugins.base.impl.classpath.locator.locations.FileClasspathLocation;
+import net.xeoh.plugins.base.impl.classpath.locator.locations.JARClasspathLocation;
+import net.xeoh.plugins.base.impl.classpath.locator.locations.MultiPluginClasspathLocation;
 
 /**
  * Location of a classpath (i.e., either a JAR file or a toplevel directory)
@@ -63,26 +66,26 @@ public abstract class AbstractClassPathLocation {
     }
 
     /** */
-    final Logger logger = Logger.getLogger(this.getClass().getName());
+    protected final Logger logger = Logger.getLogger(this.getClass().getName());
 
     /** Location of this item */
-    final URI location;
+    protected final URI location;
 
     /** ID of this entry */
-    final String realm;
+    protected final String realm;
 
     /** */
-    final JARCache cache;
+    protected final JARCache cache;
 
     /** Information for this location entry */
-    JARInformation cacheEntry = null;
+    protected JARInformation cacheEntry = null;
 
     /**
      * @param cache
      * @param realm
      * @param location
      */
-    AbstractClassPathLocation(JARCache cache, String realm, URI location) {
+    protected AbstractClassPathLocation(JARCache cache, String realm, URI location) {
         this.cache = cache;
         this.realm = realm;
         this.location = location;

@@ -38,7 +38,7 @@ import net.xeoh.plugins.base.impl.PluginManagerImpl;
 import net.xeoh.plugins.base.impl.classpath.ClassPathManager;
 import net.xeoh.plugins.base.impl.classpath.locator.AbstractClassPathLocation;
 import net.xeoh.plugins.base.impl.classpath.locator.ClassPathLocator;
-import net.xeoh.plugins.base.impl.classpath.locator.JARClasspathLocation;
+import net.xeoh.plugins.base.impl.classpath.locator.locations.JARClasspathLocation;
 
 /**
  * @author rb

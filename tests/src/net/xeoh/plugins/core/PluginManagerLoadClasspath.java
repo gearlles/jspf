@@ -58,7 +58,7 @@ public class PluginManagerLoadClasspath {
         props.setProperty(PluginManager.class, "cache.enabled", "true");
         props.setProperty(PluginManager.class, "cache.mode", "weak");
         props.setProperty(PluginManager.class, "cache.file", "jspf.cache");
-        props.setProperty(PluginManager.class, "logging.level", "INFO");
+        props.setProperty(PluginManager.class, "logging.level", "ALL");
 
         this.pm = PluginManagerFactory.createPluginManager(props);
     }

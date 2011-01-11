@@ -34,6 +34,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import net.xeoh.plugins.base.options.AddPluginsFromOption;
 import net.xeoh.plugins.base.options.GetPluginOption;
+import net.xeoh.plugins.base.util.JSPFProperties;
 import net.xeoh.plugins.base.util.PluginManagerUtil;
 import net.xeoh.plugins.base.util.uri.ClassURI;
 import net.xeoh.plugins.informationbroker.InformationBroker;
@@ -62,8 +63,18 @@ import net.xeoh.plugins.informationbroker.InformationBroker;
  *  </ul><br/>
  *  
  * In addition (and after loading the specific plugin) you can also retrieve a RemoteAPI.   
- * <br/>
+ * <br/><br/>
+ *    
+ * The following configuration sub-keys are usually known for this class (see {@link PluginConfiguration}, keys must be set 
+ * <em>before</em> createPluginManager() is being called, i.e., set in the {@link JSPFProperties} object!):<br/><br/>
  * 
+ *  <ul>
+ *  <li><b>cache.enabled</b> - Specifies if the known plugins should be cached. Specify either {true, false}.</li>
+ *  <li><b>cache.mode</b> - If we should use strong caching (slow but more accurate) or weak (much faster). Specify either {stong, weak}. </li>
+ *  <li><b>cache.file</b> - Cache file to use. Specify any relative or absolute file path, file will be created / overwritten.</li>
+ *  <li><b>classpath.filter.default</b> - If Java default classpaths (e.g., jre/lib/*) should be filtered. Specify either {true, false}.</li>
+ *  <li><b>logging.level</b> - Either {OFF, FINEST, FINER, FINE, INFO, WARNING, ALL}. Specifies what to log on the console. </li>
+ *  </ul><br/>
  * @see PluginManagerUtil
  *
  * @author Ralf Biedert
@@ -89,6 +100,7 @@ public interface PluginManager extends Plugin {
      * <li><code>addPluginsFrom(new URI("http://sample.com/plugin.jar"))</code> (downloads and adds the given plugin, use with caution).</li>
      * <li><code>addPluginsFrom(new ClassURI(ServiceImpl.class).toURI())</code> (adds the specific plugin implementation already present in the classpath; very uncomfortable, very fast).</li>
      * </ul>
+     * 
      *   
      * @see ClassURI
      *

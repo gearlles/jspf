@@ -65,7 +65,7 @@ public class ConsoleDoctor {
      * @param target
      */
     public void extractInterfaces(Collection<URI> projectClasspaths, String target) {
-        final ClassPathLocator cpl = new ClassPathLocator(null);
+        final ClassPathLocator cpl = new ClassPathLocator(null, null);
 
         final Collection<AbstractClassPathLocation> allLocations = new ArrayList<AbstractClassPathLocation>();
 

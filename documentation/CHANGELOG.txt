@@ -1,20 +1,27 @@
 
 
 
+1.0.0 (RC2) (2011/01/12)
 
-0.9.1 (2010/??)
+- Added filtering for default classpath locations
 
-- Fixed console output 
-- Changed JSON URL generation again (and it will have to be replaced once more in the future, sorry for that)
+
+
+1.0.0 (RC1) (2011/01/03)
+
+- Complete overhaul of the InformationBroker (looks good now :-)
+- Added support multiplugins (plugins consisting of several JARs sharing the same classloader)
+- jCores (see http://jcores.net) added
+- Added initial version of 'classpath://x.**' ... patterns
+- Improved debugging facilities
+- Dropped some less frequently used features (e.g., supervision, pluglets, ...)
 - Autodiscovery is an abomination ... redone the fast, local lookup again.
-- jCores added
+- Reworked plugin manager internals (still not finished)
+- Changed JSON URL generation again (and it will have to be replaced once more in the future, sorry for that)
 - Fixed another LipeRMI bug concerning methods of superclasses 
 - Added warning when getPlugin() is being misused. 
-
-TODO:
-
-- PluginInformation -> provide a way to generate unique and stable IDs for every plugin (like JSON does it)
--  
+- Fixed console output 
+- Some minor bug fixes
 
 
 

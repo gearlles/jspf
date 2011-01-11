@@ -106,14 +106,12 @@ public class InternalClasspathLoader extends AbstractLoader {
      */
     private void loadAllClasspathPluginClasses(String pattern) {
         // Start the classpath search
-        this.logger.finer("Starting classpath search ...");
+        this.logger.finer("Starting classpath search with pattern " + pattern);
 
         // Get all classpath locations of the current classpath
         final ClassPathManager manager = this.pluginManager.getClassPathManager();
         final ClassPathLocator locator = manager.getLocator();
         final Collection<AbstractClassPathLocation> locations = locator.findInCurrentClassPath();
-
-        System.out.println(pattern);
 
         // Process all locations
         for (AbstractClassPathLocation location : locations) {
@@ -132,7 +130,7 @@ public class InternalClasspathLoader extends AbstractLoader {
                     final Pattern p = Pattern.compile(pattern);
                     final Matcher m = p.matcher(string);
 
-                    System.out.println(string + " " + m.matches());
+                    this.logger.finest(string + " " + m.matches());
                     if (m.matches()) {
                         tryToLoadClassAsPlugin(location, string);
                     }
@@ -147,5 +145,4 @@ public class InternalClasspathLoader extends AbstractLoader {
         this.logger.fine("Loading " + toLoad + " directly");
         tryToLoadClassAsPlugin(null, toLoad);
     }
-
 }

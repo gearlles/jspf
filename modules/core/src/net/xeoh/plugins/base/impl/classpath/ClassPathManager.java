@@ -47,7 +47,7 @@ import net.xeoh.plugins.base.impl.classpath.loader.HTTPLoader;
 import net.xeoh.plugins.base.impl.classpath.loader.InternalClasspathLoader;
 import net.xeoh.plugins.base.impl.classpath.locator.AbstractClassPathLocation;
 import net.xeoh.plugins.base.impl.classpath.locator.ClassPathLocator;
-import net.xeoh.plugins.base.impl.classpath.locator.JARClasspathLocation;
+import net.xeoh.plugins.base.impl.classpath.locator.locations.JARClasspathLocation;
 
 import org.codehaus.classworlds.ClassRealm;
 import org.codehaus.classworlds.ClassWorld;
@@ -89,7 +89,7 @@ public class ClassPathManager {
      */
     @SuppressWarnings("synthetic-access")
     public ClassPathManager(PluginManagerImpl pluginManager) {
-        this.locator = new ClassPathLocator(this.jarCache);
+        this.locator = new ClassPathLocator(pluginManager, this.jarCache);
 
         // Register loader
         this.pluginLoader.add(new InternalClasspathLoader(pluginManager));

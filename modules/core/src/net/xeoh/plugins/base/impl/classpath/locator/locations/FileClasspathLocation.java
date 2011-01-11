@@ -25,7 +25,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.base.impl.classpath.locator;
+package net.xeoh.plugins.base.impl.classpath.locator.locations;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import net.xeoh.plugins.base.impl.classpath.cache.JARCache;
+import net.xeoh.plugins.base.impl.classpath.locator.AbstractClassPathLocation;
 
 /**
  * @author rb

@@ -36,17 +36,20 @@ import net.xeoh.plugins.base.annotations.meta.Author;
 import net.xeoh.plugins.base.annotations.meta.Version;
 
 /**
- *
- *
+ * 
+ * 
  * @author Ralf Biedert
- *
+ * 
  */
 @Author(name = "Ralf Biedert")
 @PluginImplementation
 @Version(version = Version.UNIT_MAJOR)
 public class PluginConfigurationImpl implements PluginConfiguration {
+
+    /** Actual properties object we use */
     final Properties configuration;
 
+    /** */
     final Logger logger = Logger.getLogger(this.getClass().getName());
 
     /**
@@ -56,30 +59,41 @@ public class PluginConfigurationImpl implements PluginConfiguration {
         this.configuration = initialProperties;
     }
 
-    /* (non-Javadoc)
-     * @see net.xeoh.plugins.base.PluginConfiguration#getConfiguration(java.lang.Class, java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.xeoh.plugins.base.PluginConfiguration#getConfiguration(java.lang.Class,
+     * java.lang.String)
      */
     public synchronized String getConfiguration(final Class<?> root, final String subkey) {
         final String key = getKey(root, subkey);
         final String value = this.configuration.getProperty(key);
 
         this.logger.fine("Returning '" + value + "' for " + "'" + key + "'");
-        
+
         return value;
     }
 
-    /* (non-Javadoc)
-     * @see net.xeoh.plugins.base.PluginConfiguration#setConfiguration(java.lang.Class, java.lang.String, java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.xeoh.plugins.base.PluginConfiguration#setConfiguration(java.lang.Class,
+     * java.lang.String, java.lang.String)
      */
     public synchronized void setConfiguration(final Class<?> root, final String subkey,
                                               final String value) {
-        this.configuration.setProperty(getKey(root, subkey), value);
+        final String key = getKey(root, subkey);
+        this.logger.fine("Setting '" + value + "' for " + "'" + key + "'");
+
+        this.configuration.setProperty(key, value);
     }
 
     /**
-     * @param root
-     * @param subkey
-     * @return
+     * Assemble a key for a given root class and subkey string
+     * 
+     * @param root Root (may be null)
+     * @param subkey (subkey to use)
+     * @return The fully assembled key.
      */
     private String getKey(final Class<?> root, final String subkey) {
         String prefix = "";

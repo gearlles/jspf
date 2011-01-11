@@ -25,7 +25,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.base.impl.classpath.locator;
+package net.xeoh.plugins.base.impl.classpath.locator.locations;
 
 import static net.jcores.CoreKeeper.$;
 
@@ -45,6 +45,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import net.xeoh.plugins.base.impl.classpath.cache.JARCache;
+import net.xeoh.plugins.base.impl.classpath.locator.AbstractClassPathLocation;
 
 /**
  * A multi-plugin in a meta-plugin containing several sub-plugins sharing the same class 

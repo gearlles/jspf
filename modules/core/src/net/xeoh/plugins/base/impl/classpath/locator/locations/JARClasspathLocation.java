@@ -25,7 +25,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.base.impl.classpath.locator;
+package net.xeoh.plugins.base.impl.classpath.locator.locations;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +41,7 @@ import java.util.jar.JarFile;
 
 import net.xeoh.plugins.base.impl.classpath.cache.JARCache;
 import net.xeoh.plugins.base.impl.classpath.cache.JARCache.JARInformation;
+import net.xeoh.plugins.base.impl.classpath.locator.AbstractClassPathLocation;
 
 /**
  * Tries to load plugins from a JAR class path location.
