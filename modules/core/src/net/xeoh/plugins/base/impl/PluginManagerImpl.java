@@ -118,6 +118,7 @@ public class PluginManagerImpl implements PluginManager {
      */
     public void addPluginsFrom(final URI url, final AddPluginsFromOption... options) {
         this.logger.fine("Adding plugins from " + url);
+        
 
         // Add from the given location
         if (!this.classPathManager.addFromLocation(url)) {

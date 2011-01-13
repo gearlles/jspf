@@ -25,14 +25,14 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package net.xeoh.plugins.core;
-
-import java.net.URI;
+package net.xeoh.plugins.diagnosis;
 
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import net.xeoh.plugins.base.util.JSPFProperties;
-import net.xeoh.plugins.remote.RemoteAPI;
+import net.xeoh.plugins.diagnosis.channels.TestChannel;
+import net.xeoh.plugins.diagnosis.local.Diagnosis;
+import net.xeoh.plugins.testplugins.testannotations.impl.TestAnnotationsImpl;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -43,7 +43,7 @@ import org.junit.Test;
  * @author rb
  * 
  */
-public class PluginManagerLoadClasspath {
+public class DiagnosisGeneralTest {
 
     private PluginManager pm;
 
@@ -54,12 +54,14 @@ public class PluginManagerLoadClasspath {
     public void setUp() throws Exception {
         final JSPFProperties props = new JSPFProperties();
 
-        props.setProperty(PluginManager.class, "cache.enabled", "true");
-        props.setProperty(PluginManager.class, "cache.mode", "weak");
-        props.setProperty(PluginManager.class, "cache.file", "jspf.cache");
-        // props.setProperty(PluginManager.class, "logging.level", "ALL");
-        props.setProperty(PluginManager.class, "classpath.filter.default.pattern", "");
-
+        props.setProperty(Diagnosis.class, "recording.disabled", "true");
+        props.setProperty(Diagnosis.class, "recording.file", "diagnosis.record");
+        props.setProperty(Diagnosis.class, "recording.format", "xml/simple");
+        
+        // Enable and disable plugins like this:
+        props.setProperty(TestAnnotationsImpl.class, "plugin.disabled", "false");
+        
+        
         this.pm = PluginManagerFactory.createPluginManager(props);
     }
 
@@ -74,25 +76,25 @@ public class PluginManagerLoadClasspath {
     /**
      * 
      */
+    @SuppressWarnings("boxing")
     @Test
     public void testGetPluginClassOfP() {
+        Assert.assertNotNull(this.pm);
+
+        final Diagnosis diagnosis = this.pm.getPlugin(Diagnosis.class);
+        diagnosis.status(TestChannel.class, 100);
+        diagnosis.status(TestChannel.class, 3000);
+
+        //DiagnosisCondition condition = new TestCondition();
+        //condition
+        //diagnosis.registerCondition(condition);
+        
         
 
-        Assert.assertNotNull("Pluginmanager must be there", this.pm);
-
-        RemoteAPI plugin = this.pm.getPlugin(RemoteAPI.class);
-
-        Assert.assertNull("Plugin must not be there at this point", plugin);
-
-        this.pm.addPluginsFrom(URI.create("classpath://*"));
-        // this.pm.addPluginsFrom(new File("bin/").toURI());
-        // this.pm.addPluginsFrom(new URI("classpath://net.xeoh.plugins.remote.impl.*.*"),
-        // new OptionReportAfter());
-        // this.pm.addPluginsFrom(new URI("classpath://*"));
-
-        plugin = this.pm.getPlugin(RemoteAPI.class);
-        Assert.assertNotNull("Now plugin must be there", plugin);
-        System.out.println("Fin");
+        // Q1: How does the condition access diagnosis-internal functions/variables?
+        // Q2: How do we associate conditions with messages / remedies / ...?
+        // Q3: Who fires *when* and *how* and triggers *what* when a condition is met?
+     
     }
 
 }

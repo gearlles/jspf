@@ -74,6 +74,8 @@ public class FileLoader extends AbstractLoader {
         // If not caught by the previous handler, handle files normally.
         if (url.getScheme().equals("file")) {
 
+            // Get the actual file from the given path (TODO: Why don't we do new
+            // File(url)?)
             String file = url.getPath();
 
             // FIXME: Where does this trailing slash come from ?!
@@ -88,15 +90,17 @@ public class FileLoader extends AbstractLoader {
                 e.printStackTrace();
             }
 
+            // Now load from the given file ...
             this.logger.fine("More specifically, trying to add from " + file);
-
             final File root = new File(file);
 
+            // ... if it exists ...
             if (!root.exists()) {
                 this.logger.warning("Supplied path does not exist. Unable to add plugins from there.");
                 return;
             }
 
+            // Here we go
             locateAllPluginsAt(root);
             return;
         }

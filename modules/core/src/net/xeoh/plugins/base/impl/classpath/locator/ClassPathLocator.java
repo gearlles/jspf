@@ -109,7 +109,11 @@ public class ClassPathLocator {
             // If we have JARs, we already added them
             if (hasJARs) return rval;
 
-            // If we have no JARs, this is probably a classpath
+            // If we have no JARs, this is probably a classpath, in this case warn that
+            // the method is not recommended
+            if (toplevel.toString().contains("/bin/") || toplevel.toString().contains("class")) {
+                this.logger.warning("Adding plugins in 'raw' classpaths, such as 'bin/' or 'classes/' is not recommended. Please use classpath://* instead (the video is a bit outdated in this respect).");
+            }
             rval.add(AbstractClassPathLocation.newClasspathLocation(this.cache, toplevel.toString(), toplevel));
             return rval;
         }

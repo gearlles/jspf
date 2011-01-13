@@ -94,7 +94,15 @@ public class InternalClasspathLoader extends AbstractLoader {
         if (url.toString().startsWith("classpath://")) {
             // Obtain the fq-classname to load
             final String toLoad = url.toString().substring("classpath://".length());
-            loadClassFromClasspathByName(toLoad);
+
+            // Try to load all plugins, might cause memory problems due to Issue #20.
+            try {
+                loadClassFromClasspathByName(toLoad);
+            } catch (OutOfMemoryError error) {
+                this.logger.severe("Due to a bug (Issue #20), JSPF ran low on memory. Please increase your memory by (e.g., -Xmx1024m) or specify a 'classpath.filter.default.pattern' options. We hope to fix this bux in some future release. We are sorry for the inconvenience this might cause and we can understand if you hate us now :-(.");
+                error.printStackTrace();
+            }
+
             return;
         }
     }
