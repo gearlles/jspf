@@ -1,5 +1,5 @@
 /*
- * TestChannel.java
+ * SerializationFile.java
  * 
  * Copyright (c) 2011, Ralf Biedert All rights reserved.
  * 
@@ -25,10 +25,17 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.diagnosis.channels;
+package net.xeoh.plugins.diagnosis.local.impl.serialization.java;
 
-import net.xeoh.plugins.diagnosis.local.DiagnosisChannel;
+public class LogFileReader {
 
-public interface TestChannel extends DiagnosisChannel<Integer> {
+    /**
+     * Creates a new serializer
+     * 
+     * @param file The file to write into.
+     */
+    public LogFileReader(String file) {
+
+    }
 
 }

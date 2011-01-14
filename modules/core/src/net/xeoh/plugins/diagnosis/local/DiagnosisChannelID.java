@@ -1,5 +1,5 @@
 /*
- * Diagnosis.java
+ * DiagnosisChannel.java
  * 
  * Copyright (c) 2011, Ralf Biedert All rights reserved.
  * 
@@ -28,36 +28,28 @@
 package net.xeoh.plugins.diagnosis.local;
 
 import java.io.Serializable;
-
-import net.xeoh.plugins.base.Plugin;
-import net.xeoh.plugins.diagnosis.local.options.ChannelOption;
+import java.util.Map;
 
 /**
  * @author Ralf Biedert
  * @since 1.1
+ * @param <T>
  */
-public interface Diagnosis extends Plugin {
+public abstract class DiagnosisChannelID<T extends Serializable> {
+    // Note: The ChannelID itself does not have to be Serializable, as we never write any
+    // object. We only instantiate it when we want to use some if its methods.
 
     /**
-     * Returns a given channel.
+     * Returns an end user readable string. For example, if the channel reported Floats
+     * representing temperature, you could convert a value of 30.7 to a string of
+     * "30.7°C".
      * 
-     * @param <T>
-     * @param channel
-     * @param options
-     * @return .
+     * @param t The value to convert.
+     * @param args The optional arguments passed as OptionInfo().
+     * @return The converted value.
      */
-    public <T extends Serializable> DiagnosisChannel<T> channel(Class<? extends DiagnosisChannelID<T>> channel,
-                                                                ChannelOption... options);
-
-    /**
-     * Registers a condition.
-     * 
-     * @param condition
-     * @param options
-     */
-    /*
-     * public void registerCondition(DiagnosisCondition condition,
-     * RegisterConditionOption... options);
-     */
-
+    public String toUserRepresentation(final T t, final Map<String, Serializable> args) {
+        if (t == null) return "null";
+        return t.toString();
+    }
 }

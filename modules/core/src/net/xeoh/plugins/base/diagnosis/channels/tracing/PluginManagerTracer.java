@@ -1,5 +1,5 @@
 /*
- * Diagnosis.java
+ * AddPlugins.java
  * 
  * Copyright (c) 2011, Ralf Biedert All rights reserved.
  * 
@@ -25,39 +25,20 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.diagnosis.local;
+package net.xeoh.plugins.base.diagnosis.channels.tracing;
 
 import java.io.Serializable;
+import java.util.Map;
 
-import net.xeoh.plugins.base.Plugin;
-import net.xeoh.plugins.diagnosis.local.options.ChannelOption;
+import net.xeoh.plugins.diagnosis.local.DiagnosisChannelID;
 
-/**
- * @author Ralf Biedert
- * @since 1.1
- */
-public interface Diagnosis extends Plugin {
-
-    /**
-     * Returns a given channel.
-     * 
-     * @param <T>
-     * @param channel
-     * @param options
-     * @return .
+public class PluginManagerTracer extends DiagnosisChannelID<String> {
+    /* (non-Javadoc)
+     * @see net.xeoh.plugins.diagnosis.local.DiagnosisChannelID#toUserRepresentation(java.io.Serializable, java.util.Map)
      */
-    public <T extends Serializable> DiagnosisChannel<T> channel(Class<? extends DiagnosisChannelID<T>> channel,
-                                                                ChannelOption... options);
-
-    /**
-     * Registers a condition.
-     * 
-     * @param condition
-     * @param options
-     */
-    /*
-     * public void registerCondition(DiagnosisCondition condition,
-     * RegisterConditionOption... options);
-     */
-
+    @Override
+    public String toUserRepresentation(String t, Map<String, Serializable> args) {
+        // TODO Auto-generated method stub
+        return super.toUserRepresentation(t, args);
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Diagnosis.java
+ * DiagnosisChannel.java
  * 
  * Copyright (c) 2011, Ralf Biedert All rights reserved.
  * 
@@ -25,39 +25,30 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.diagnosis.local;
+package net.xeoh.plugins.diagnosis.local.impl;
 
-import java.io.Serializable;
+import net.xeoh.plugins.diagnosis.local.DiagnosisChannel;
+import net.xeoh.plugins.diagnosis.local.DiagnosisChannelID;
+import net.xeoh.plugins.diagnosis.local.options.StatusOption;
 
-import net.xeoh.plugins.base.Plugin;
-import net.xeoh.plugins.diagnosis.local.options.ChannelOption;
-
-/**
- * @author Ralf Biedert
- * @since 1.1
- */
-public interface Diagnosis extends Plugin {
+public class DiagnosisChannelDummyImpl implements DiagnosisChannel<Object> {
 
     /**
-     * Returns a given channel.
-     * 
-     * @param <T>
+     * @param diagnosis
      * @param channel
-     * @param options
-     * @return .
      */
-    public <T extends Serializable> DiagnosisChannel<T> channel(Class<? extends DiagnosisChannelID<T>> channel,
-                                                                ChannelOption... options);
+    public DiagnosisChannelDummyImpl(DiagnosisImpl diagnosis,
+                                     Class<? extends DiagnosisChannelID<?>> channel) {
+        //
+    }
 
-    /**
-     * Registers a condition.
-     * 
-     * @param condition
-     * @param options
-     */
     /*
-     * public void registerCondition(DiagnosisCondition condition,
-     * RegisterConditionOption... options);
+     * (non-Javadoc)
+     * 
+     * @see net.xeoh.plugins.diagnosis.local.DiagnosisChannel#status(java.lang.Object)
      */
-
+    @Override
+    public void status(Object value, StatusOption... options) {
+        //
+    }
 }

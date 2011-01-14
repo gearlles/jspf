@@ -44,6 +44,7 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.meta.Author;
 import net.xeoh.plugins.base.annotations.meta.RecognizesOption;
 import net.xeoh.plugins.base.annotations.meta.Version;
+import net.xeoh.plugins.base.diagnosis.channels.tracing.PluginManagerTracer;
 import net.xeoh.plugins.base.impl.classpath.ClassPathManager;
 import net.xeoh.plugins.base.impl.registry.PluginMetaInformation;
 import net.xeoh.plugins.base.impl.registry.PluginMetaInformation.PluginStatus;
@@ -58,6 +59,9 @@ import net.xeoh.plugins.base.options.getplugin.OptionPluginSelector;
 import net.xeoh.plugins.base.options.getplugin.PluginSelector;
 import net.xeoh.plugins.base.util.OptionUtils;
 import net.xeoh.plugins.base.util.PluginConfigurationUtil;
+import net.xeoh.plugins.diagnosis.local.Diagnosis;
+import net.xeoh.plugins.diagnosis.local.impl.DiagnosisImpl;
+import net.xeoh.plugins.diagnosis.local.options.status.OptionInfo;
 import net.xeoh.plugins.informationbroker.impl.InformationBrokerImpl;
 
 /**
@@ -90,6 +94,9 @@ public class PluginManagerImpl implements PluginManager {
     /** User properties for plugin configuration */
     PluginInformation information;
 
+    /** Diagnostic facilities */
+    Diagnosis diagnosis;
+
     /**
      * Construct new properties.
      * 
@@ -117,18 +124,18 @@ public class PluginManagerImpl implements PluginManager {
      * net.xeoh.plugins.base.options.AddPluginsFromOption[])
      */
     public void addPluginsFrom(final URI url, final AddPluginsFromOption... options) {
-        this.logger.fine("Adding plugins from " + url);
-        
+        this.diagnosis.channel(PluginManagerTracer.class).status("add/start", new OptionInfo("url", url));
 
         // Add from the given location
         if (!this.classPathManager.addFromLocation(url)) {
-            this.logger.severe("Unable to add elements, as method is unimplemented for that target : " + url);
+            this.diagnosis.channel(PluginManagerTracer.class).status("add/nohandler", new OptionInfo("url", url));
         }
 
         // Check if we should print a report?
         if ($(options).get(OptionReportAfter.class, null) != null)
             this.pluginRegistry.report();
 
+        this.diagnosis.channel(PluginManagerTracer.class).status("add/end", new OptionInfo("url", url));
         return;
     }
 
@@ -142,13 +149,26 @@ public class PluginManagerImpl implements PluginManager {
     @RecognizesOption(option = OptionPluginSelector.class)
     public <P extends Plugin> P getPlugin(final Class<P> requestedPlugin,
                                           GetPluginOption... options) {
+        // Report our request.
+        if (this.diagnosis != null) {
+            String name = requestedPlugin == null ? "null" : requestedPlugin.getCanonicalName();
+            this.diagnosis.channel(PluginManagerTracer.class).status("get/start", new OptionInfo("plugin", name));
+        }
+
+        // We don't handle null values.
+        if (requestedPlugin == null) {
+            this.diagnosis.channel(PluginManagerTracer.class).status("get/end", new OptionInfo("return", null));
+            return null;
+        }
+
         // Sanity check.
         if (!requestedPlugin.isInterface()) {
+            this.diagnosis.channel(PluginManagerTracer.class).status("get/onlyinterface", new OptionInfo("plugin", requestedPlugin.getCanonicalName()));
+            this.diagnosis.channel(PluginManagerTracer.class).status("get/end", new OptionInfo("return", null));
+
             System.err.println("YOU MUST NOT call getPlugin() with a concrete class; only interfaces are");
             System.err.println("supported for lookup. This means do not call getPlugin(MyPluginImpl.class),");
             System.err.println("but rather getPlugin(MyPlugin.class)!");
-
-            this.logger.warning("YOU MUST NOT call getPlugin() with a concrete class; only interfaces are supported for lookup.");
             return null;
         }
 
@@ -189,6 +209,8 @@ public class PluginManagerImpl implements PluginManager {
 
         // Check for each plugin if it matches
         for (final Plugin plugin : this.pluginRegistry.getAllPlugins()) {
+            if (this.diagnosis != null)
+                this.diagnosis.channel(PluginManagerTracer.class).status("get/considering", new OptionInfo("plugin", plugin.toString()));
 
             // Check the meta information for this plugin. We only want active classes
             final PluginMetaInformation metaInformation = this.pluginRegistry.getMetaInformationFor(plugin);
@@ -198,10 +220,16 @@ public class PluginManagerImpl implements PluginManager {
 
             // Check if the plugin can be assigned to the requested class
             if (requestedPlugin.isAssignableFrom(plugin.getClass())) {
-                if (pluginSelector.selectPlugin((P) plugin)) return (P) plugin;
+                if (pluginSelector.selectPlugin((P) plugin)) {
+                    if (this.diagnosis != null)
+                        this.diagnosis.channel(PluginManagerTracer.class).status("get/end", new OptionInfo("return", plugin.toString()));
+                    return (P) plugin;
+                }
             }
         }
 
+        if (this.diagnosis != null)
+            this.diagnosis.channel(PluginManagerTracer.class).status("get/end", new OptionInfo("return", null));
         return null;
     }
 
@@ -211,27 +239,25 @@ public class PluginManagerImpl implements PluginManager {
      * @see net.xeoh.plugins.base.PluginManager#shutdown()
      */
     public void shutdown() {
-        this.logger.fine("Dumping shutdown cause.");
-        try {
-            StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-            for (StackTraceElement se : stackTrace) {
-                this.logger.finer(se.getClassName() + "." + se.getMethodName() + ":" + se.getLineNumber());
-            }
-        } catch (Exception e) {
-            this.logger.fine("Error generating shutdown strack trace");
-        }
+        this.diagnosis.channel(PluginManagerTracer.class).status("shutdown/start");
 
         // Only execute this method a single time.
-        if (this.shutdownPerformed) return;
+        if (this.shutdownPerformed) {
+            this.diagnosis.channel(PluginManagerTracer.class).status("shutdown/end/alreadyperformed");
+            return;
+        }
 
         // Destroy plugins in a random order
         for (final Plugin p : this.pluginRegistry.getAllPlugins()) {
+            this.diagnosis.channel(PluginManagerTracer.class).status("shutdown/destroy", new OptionInfo("plugin", p.getClass().getCanonicalName()));
             this.spawner.destroyPlugin(p, this.pluginRegistry.getMetaInformationFor(p));
         }
 
         // Curtains down, lights out.
         this.pluginRegistry.clear();
         this.shutdownPerformed = true;
+
+        this.diagnosis.channel(PluginManagerTracer.class).status("shutdown/end");
     }
 
     /**
@@ -263,8 +289,17 @@ public class PluginManagerImpl implements PluginManager {
 
         // We need the information plugin in getPlugin, so we can't get it normally.
         this.information = (PluginInformation) this.spawner.spawnPlugin(PluginInformationImpl.class).plugin;
+        this.diagnosis = (Diagnosis) this.spawner.spawnPlugin(DiagnosisImpl.class).plugin;
+
+        // Inject additional information (MUST NOT USE @InjectPlugin at this point, as
+        // they are not set
+        // 'active' yet) and perform manual init
         ((PluginInformationImpl) this.information).pluginManager = this;
+        ((DiagnosisImpl) this.diagnosis).configuration = this.configuration;
+        ((DiagnosisImpl) this.diagnosis).init();
+
         hookPlugin(new SpawnResult(this.information));
+        hookPlugin(new SpawnResult(this.diagnosis));
 
         // Set all plugins as active we have so far ...
         final Collection<Plugin> allPlugins = this.pluginRegistry.getAllPlugins();
@@ -317,6 +352,15 @@ public class PluginManagerImpl implements PluginManager {
      */
     public PluginConfiguration getPluginConfiguration() {
         return this.configuration;
+    }
+
+    /**
+     * Returns the Diagnosis.
+     * 
+     * @return The diagnosis.
+     */
+    public Diagnosis getDiagnosis() {
+        return this.diagnosis;
     }
 
     /**

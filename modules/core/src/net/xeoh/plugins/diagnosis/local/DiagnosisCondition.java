@@ -31,12 +31,12 @@ package net.xeoh.plugins.diagnosis.local;
  * @author Ralf Biedert
  * @since 1.1
  */
-public interface DiagnosisCondition {
+public abstract class DiagnosisCondition {
 
     /**
      * Returns a list of observed channels this condition handles.
      * 
      * @return A list of all channels this condition depends on.
      */
-    public Class<? extends DiagnosisChannel<?>>[] observedChannels();
+    public abstract Class<? extends DiagnosisChannelID<?>>[] observedChannels();
 }

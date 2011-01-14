@@ -1,5 +1,5 @@
 /*
- * TestCondition.java
+ * OptionInfo.java
  * 
  * Copyright (c) 2011, Ralf Biedert All rights reserved.
  * 
@@ -25,17 +25,28 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.diagnosis.conditions;
+package net.xeoh.plugins.diagnosis.local.options.status;
 
-import net.xeoh.plugins.diagnosis.local.DiagnosisChannel;
-import net.xeoh.plugins.diagnosis.local.DiagnosisCondition;
+import java.io.Serializable;
 
-public class TestCondition implements DiagnosisCondition {
+import net.xeoh.plugins.diagnosis.local.options.StatusOption;
 
-    @Override
-    public Class<? extends DiagnosisChannel<?>>[] observedChannels() {
-        // TODO Auto-generated method stub
-        return null;
+public class OptionInfo implements StatusOption {
+    /** */
+    private static final long serialVersionUID = 5703900703387071451L;
+
+    /** */
+    private final Serializable value;
+
+    /** */
+    private final String key;
+
+    /**
+     * @param key
+     * @param value
+     */
+    public OptionInfo(String key, Serializable value) {
+        this.key = key;
+        this.value = value;
     }
-
 }

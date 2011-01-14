@@ -1,5 +1,5 @@
 /*
- * DiagnosisChannel.java
+ * OptionAtomic.java
  * 
  * Copyright (c) 2011, Ralf Biedert All rights reserved.
  * 
@@ -25,14 +25,18 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.diagnosis.local;
+package net.xeoh.plugins.diagnosis.local.options.status;
 
+import net.xeoh.plugins.diagnosis.local.options.StatusOption;
 
-/**
- * @author Ralf Biedert
- * @since 1.1
- * @param <T>
- */
-public interface DiagnosisChannel<T> {
+public class OptionComment implements StatusOption {
+    /** */
+    private static final long serialVersionUID = 1294219941602892411L;
 
+    /**
+     * @param comment  
+     */
+    public OptionComment(String comment) {
+
+    }
 }

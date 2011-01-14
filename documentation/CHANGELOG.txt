@@ -1,5 +1,19 @@
 
 
+
+1.1.0 (???)
+
+- Added diagnosis facilities.  
+-  
+
+
+
+1.0.0 (RC4) (2011/01/13)
+
+- Added warnings for the most common errors.
+
+
+
 1.0.0 (RC3) (2011/01/12)
 
 - Added even more filtering for default classpath locations

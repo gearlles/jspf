@@ -1,5 +1,5 @@
 /*
- * Diagnosis.java
+ * ChannelOption.java
  * 
  * Copyright (c) 2011, Ralf Biedert All rights reserved.
  * 
@@ -25,39 +25,10 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.diagnosis.local;
+package net.xeoh.plugins.diagnosis.local.options;
 
-import java.io.Serializable;
+import net.xeoh.plugins.base.Option;
 
-import net.xeoh.plugins.base.Plugin;
-import net.xeoh.plugins.diagnosis.local.options.ChannelOption;
-
-/**
- * @author Ralf Biedert
- * @since 1.1
- */
-public interface Diagnosis extends Plugin {
-
-    /**
-     * Returns a given channel.
-     * 
-     * @param <T>
-     * @param channel
-     * @param options
-     * @return .
-     */
-    public <T extends Serializable> DiagnosisChannel<T> channel(Class<? extends DiagnosisChannelID<T>> channel,
-                                                                ChannelOption... options);
-
-    /**
-     * Registers a condition.
-     * 
-     * @param condition
-     * @param options
-     */
-    /*
-     * public void registerCondition(DiagnosisCondition condition,
-     * RegisterConditionOption... options);
-     */
+public interface ChannelOption extends Option {
 
 }

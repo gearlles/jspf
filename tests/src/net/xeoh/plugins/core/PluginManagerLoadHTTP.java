@@ -59,7 +59,7 @@ public class PluginManagerLoadHTTP {
      */
     @After
     public void tearDown() throws Exception {
-        this.pm.shutdown();
+        //this.pm.shutdown();
     }
 
     /**
@@ -71,7 +71,7 @@ public class PluginManagerLoadHTTP {
 
 
         try {
-            this.pm.addPluginsFrom(new URI("http://www.dfki.uni-kl.de/~biedert/dummy.jar"));                                                        
+            this.pm.addPluginsFrom(new URI("http://jspf.googlecode.com/files/coolplugin.jar"));                                                        
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
