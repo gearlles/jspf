@@ -32,9 +32,11 @@ import java.net.URI;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import net.xeoh.plugins.base.util.JSPFProperties;
-import net.xeoh.plugins.diagnosis.diagnosis.channels.LoggingChannel;
+import net.xeoh.plugins.diagnosis.diagnosis.channels.LoggingChannel1;
+import net.xeoh.plugins.diagnosis.diagnosis.channels.LoggingChannel2;
 import net.xeoh.plugins.diagnosis.diagnosis.channels.TestChannel;
 import net.xeoh.plugins.diagnosis.local.Diagnosis;
+import net.xeoh.plugins.diagnosis.local.DiagnosisChannel;
 import net.xeoh.plugins.testplugins.testannotations.impl.TestAnnotationsImpl;
 
 import org.junit.After;
@@ -59,7 +61,7 @@ public class DiagnosisGeneralTest {
 
         props.setProperty(Diagnosis.class, "recording.enabled", "true");
         props.setProperty(Diagnosis.class, "recording.file", "diagnosis.record");
-        props.setProperty(Diagnosis.class, "recording.format", "xml/simple");
+        props.setProperty(Diagnosis.class, "recording.format", "java/serialization");
         props.setProperty(Diagnosis.class, "analysis.stacktraces.enabled", "true");
         props.setProperty(Diagnosis.class, "analysis.stacktraces.depth", "10000");
 
@@ -82,19 +84,45 @@ public class DiagnosisGeneralTest {
     /**
      * 
      */
+    @Test
+    public void benchmark() {
+        Assert.assertNotNull(this.pm);
+        final Diagnosis diagnosis = this.pm.getPlugin(Diagnosis.class);
+
+        long a = System.currentTimeMillis();
+        for(int i=0; i<10000;i++) {
+            diagnosis.channel(LoggingChannel1.class).status(""+i);
+        }
+        long b = System.currentTimeMillis();
+        System.out.println(b-a);
+
+        DiagnosisChannel<String> channel = diagnosis.channel(LoggingChannel2.class);
+        a = System.currentTimeMillis();
+        for(int i=0; i<10000;i++) {
+            channel.status(""+i);
+        }
+        b = System.currentTimeMillis();
+        System.out.println(b-a);
+        
+        
+    }
+    
+    /**
+     * 
+     */
     @SuppressWarnings("boxing")
     @Test
     public void testGetPluginClassOfP() {
         Assert.assertNotNull(this.pm);
         final Diagnosis diagnosis = this.pm.getPlugin(Diagnosis.class);
         
-        diagnosis.channel(LoggingChannel.class).status("Starting Test.");
+        diagnosis.channel(LoggingChannel1.class).status("Starting Test.");
         diagnosis.channel(TestChannel.class).status(100);
 
         diagnosis.channel(TestChannel.class).status(100);
         diagnosis.channel(TestChannel.class).status(100);
         diagnosis.channel(TestChannel.class).status(3000);
-        diagnosis.channel(LoggingChannel.class).status("Initializing Status");
+        diagnosis.channel(LoggingChannel1.class).status("Initializing Status");
         
 
         //DiagnosisCondition condition = new TestCondition();
@@ -158,7 +186,7 @@ public class DiagnosisGeneralTest {
         // Q1: How does the condition access diagnosis-internal functions/variables?
         // Q2: How do we associate conditions with messages / remedies / ...?
         // Q3: Who fires *when* and *how* and triggers *what* when a condition is met?
-        diagnosis.channel(LoggingChannel.class).status("Ending Test.");     
+        diagnosis.channel(LoggingChannel1.class).status("Ending Test.");     
     }
 
 }

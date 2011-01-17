@@ -1,5 +1,5 @@
 /*
- * DiagnosisChannel.java
+ * TestChannel.java
  * 
  * Copyright (c) 2011, Ralf Biedert All rights reserved.
  * 
@@ -25,31 +25,9 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.diagnosis.local;
+package net.xeoh.plugins.diagnosis.diagnosis.channels;
 
-import java.io.Serializable;
-import java.util.Map;
+import net.xeoh.plugins.diagnosis.local.DiagnosisChannelID;
 
-/**
- * @author Ralf Biedert
- * @since 1.1
- * @param <T>
- */
-public abstract class DiagnosisChannelID<T extends Serializable> {
-    // Note: The ChannelID itself does not have to be Serializable, as we never write any
-    // object. We only instantiate it when we want to use some of its methods.
-
-    /**
-     * Returns an end user readable string. For example, if the channel reported Floats
-     * representing temperature, you could convert a value of 30.7 to a string of
-     * "30.7°C".
-     * 
-     * @param t The value to convert.
-     * @param args The optional arguments passed as OptionInfo().
-     * @return The converted value.
-     */
-    public String toUserRepresentation(final T t, final Map<String, Serializable> args) {
-        if (t == null) return "null";
-        return t.toString();
-    }
+public class LoggingChannel2 extends DiagnosisChannelID<String> {
 }

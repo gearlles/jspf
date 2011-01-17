@@ -72,8 +72,10 @@ public class DiagnosisImpl implements Diagnosis {
     public <T extends Serializable> DiagnosisChannel<T> channel(Class<? extends DiagnosisChannelID<T>> channel,
                                                                 ChannelOption... options) {
         // In case we are disabled, return a dummy
-        if (this.isDisabled)
-            return (DiagnosisChannel<T>) new DiagnosisChannelDummyImpl(this, channel);
+        if (this.isDisabled) {
+            final DiagnosisChannel<?> impl = new DiagnosisChannelDummyImpl(this, channel);
+            return (DiagnosisChannel<T>) impl;
+        }
 
         // In case this was the first call, create a serializer
         synchronized (this) {
@@ -81,8 +83,9 @@ public class DiagnosisImpl implements Diagnosis {
                 this.serializer = new LogFileWriter(this.recordingFile);
             }
         }
-
-        return (DiagnosisChannel<T>) new DiagnosisChannelImpl(this, channel);
+        
+        final DiagnosisChannel<?> impl = new DiagnosisChannelImpl(this, channel);
+        return (DiagnosisChannel<T>) impl;
     }
 
     /**

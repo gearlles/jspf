@@ -29,5 +29,5 @@ package net.xeoh.plugins.diagnosis.diagnosis.channels;
 
 import net.xeoh.plugins.diagnosis.local.DiagnosisChannelID;
 
-public class LoggingChannel extends DiagnosisChannelID<String> {
+public class LoggingChannel1 extends DiagnosisChannelID<String> {
 }

@@ -27,29 +27,17 @@
  */
 package net.xeoh.plugins.diagnosis.local;
 
-import java.io.Serializable;
-import java.util.Map;
+import net.xeoh.plugins.diagnosis.local.options.StatusOption;
 
 /**
  * @author Ralf Biedert
  * @since 1.1
  * @param <T>
  */
-public abstract class DiagnosisChannelID<T extends Serializable> {
-    // Note: The ChannelID itself does not have to be Serializable, as we never write any
-    // object. We only instantiate it when we want to use some of its methods.
-
+public interface DiagnosisChannel<T> {
     /**
-     * Returns an end user readable string. For example, if the channel reported Floats
-     * representing temperature, you could convert a value of 30.7 to a string of
-     * "30.7°C".
-     * 
-     * @param t The value to convert.
-     * @param args The optional arguments passed as OptionInfo().
-     * @return The converted value.
+     * @param value
+     * @param options 
      */
-    public String toUserRepresentation(final T t, final Map<String, Serializable> args) {
-        if (t == null) return "null";
-        return t.toString();
-    }
+    public void status(T value, StatusOption... options);
 }
