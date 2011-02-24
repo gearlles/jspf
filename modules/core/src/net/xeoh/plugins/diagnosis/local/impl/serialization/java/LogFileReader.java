@@ -27,7 +27,17 @@
  */
 package net.xeoh.plugins.diagnosis.local.impl.serialization.java;
 
+import static net.jcores.CoreKeeper.$;
+
+import java.io.EOFException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
 public class LogFileReader {
+    /** */
+    private final String file;
 
     /**
      * Creates a new serializer
@@ -35,7 +45,55 @@ public class LogFileReader {
      * @param file The file to write into.
      */
     public LogFileReader(String file) {
-
+        this.file = file;
     }
 
+    /**
+     * @param callback
+     */
+    public void replay(EntryCallback callback) {
+        try {
+            final ObjectInputStream stream = new ObjectInputStream(new FileInputStream(this.file));
+            while (true) {
+                try {
+                    callback.nextEntry((Entry) stream.readObject());
+                } catch(Exception e) {
+                    if(e instanceof EOFException) break;
+                    e.printStackTrace();
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            // e.printStackTrace();
+            System.out.println("End of File");
+        }/* catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }*/
+    }
+
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+        final LogFileReader reader = new LogFileReader("diagnosis.record");
+        reader.replay(new EntryCallback() {
+            @Override
+            public void nextEntry(Entry entry) {
+                final long time = entry.date;
+                final String name = $(entry.channel).split("\\.").get(-1);
+                String opts = "";
+                for (String string : entry.additionalInfo.keySet()) {
+                    opts += ":" + string + "=" + entry.additionalInfo.get(string);
+                }
+
+                if(opts.length() > 0)
+                opts = opts.substring(1);
+
+                String output = time + "," + name + "," + entry.value + "," + opts;
+                if (output.contains("BrowserPluginTracer") && output.contains("callfunction/start"))
+                    System.out.println(output);
+            }
+        });
+    }
 }

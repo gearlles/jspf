@@ -33,7 +33,6 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.PluginConfiguration;
@@ -73,9 +72,6 @@ import net.xeoh.plugins.informationbroker.impl.InformationBrokerImpl;
 @Version(version = 1 * Version.UNIT_MAJOR)
 @Author(name = "Ralf Biedert")
 public class PluginManagerImpl implements PluginManager {
-    /** For debugging. */
-    private final Logger logger = Logger.getLogger(this.getClass().getName());
-
     /** User properties for plugin configuration */
     private final PluginConfiguration configuration;
 

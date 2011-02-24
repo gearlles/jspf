@@ -52,6 +52,9 @@ public class DiagnosisImpl implements Diagnosis {
     /** If true, if we should dump stack traces */
     boolean useStackTraces = false;
 
+    /** If we should compress our output */
+    boolean compressOutput = true;
+        
     /** Depth of stack traces */
     int stackTracesDepth = 1;
 
@@ -60,6 +63,7 @@ public class DiagnosisImpl implements Diagnosis {
 
     /** The actual serializer we use */
     volatile LogFileWriter serializer = null;
+    
 
     /*
      * (non-Javadoc)
@@ -80,7 +84,7 @@ public class DiagnosisImpl implements Diagnosis {
         // In case this was the first call, create a serializer
         synchronized (this) {
             if (this.serializer == null) {
-                this.serializer = new LogFileWriter(this.recordingFile);
+                this.serializer = new LogFileWriter(this.recordingFile, this.compressOutput);
             }
         }
         
@@ -106,6 +110,16 @@ public class DiagnosisImpl implements Diagnosis {
         this.recordingFile = util.getString(Diagnosis.class, "recording.file", "diagnosis.record");
         this.useStackTraces = util.getBoolean(Diagnosis.class, "analysis.stacktraces.enabled", false);
         this.stackTracesDepth = util.getInt(Diagnosis.class, "analysis.stacktraces.depth", 1);
+        
+        String mode = util.getString(Diagnosis.class, "recording.format", "java/serialization/gzip");
+        if("java/serialization/gzip".equals(mode)) {
+            this.compressOutput = true;
+        }
+        
+        if("java/serialization".equals(mode)) {
+            this.compressOutput = false;
+        }
+        
     }
 
     /** Close the log file */

@@ -31,6 +31,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.zip.GZIPOutputStream;
 
 public class LogFileWriter {
 
@@ -40,6 +41,9 @@ public class LogFileWriter {
     /** Object stream to use when writing */
     ObjectOutputStream objectOutputStream;
 
+    /** Zip stream to compress */
+    GZIPOutputStream zipStream;
+
     /** Entries to write into the file */
     LinkedBlockingQueue<Entry> eventQueue = new LinkedBlockingQueue<Entry>();
 
@@ -47,11 +51,16 @@ public class LogFileWriter {
      * Creates a new serializer
      * 
      * @param file The file to write into.
+     * @param compressOutput
      */
-    public LogFileWriter(String file) {
+    public LogFileWriter(String file, boolean compressOutput) {
         try {
             this.fileOutputStream = new FileOutputStream(file);
-            this.objectOutputStream = new ObjectOutputStream(this.fileOutputStream);
+            if (compressOutput) {
+                this.zipStream = new GZIPOutputStream(this.fileOutputStream);
+                this.objectOutputStream = new ObjectOutputStream(this.zipStream);
+            } else
+                this.objectOutputStream = new ObjectOutputStream(this.fileOutputStream);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -64,20 +73,26 @@ public class LogFileWriter {
                 while (true) {
                     try {
                         final Entry take = LogFileWriter.this.eventQueue.take();
-                        LogFileWriter.this.objectOutputStream.writeObject(take);
-                        
-                        if(flushCount++ > 500) {
+                        LogFileWriter.this.objectOutputStream.writeUnshared(take);
+
+                        if (flushCount++ > 50) {
+                            LogFileWriter.this.objectOutputStream.reset();
                             LogFileWriter.this.objectOutputStream.flush();
+                            if (LogFileWriter.this.zipStream != null) {
+                                LogFileWriter.this.zipStream.flush();
+                            }
+                            LogFileWriter.this.fileOutputStream.flush();
                             flushCount = 0;
                         }
-                    } catch (InterruptedException e) {
-                        // Don't do anything
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     }
-                }
-            }
+                    catch (InterruptedException e) {}
+                    catch (IOException e) {
+                         e.printStackTrace();
+                     }
+                 }
+             }
         });
+        thread.setName("LogFileWriter.serializer");
         thread.setDaemon(true);
         thread.start();
 
@@ -94,8 +109,11 @@ public class LogFileWriter {
     void terminate() {
         try {
             this.objectOutputStream.flush();
-            //this.objectOutputStream.close();
-            //this.fileOutputStream.close();
+            if (this.zipStream != null)
+                this.zipStream.flush();
+            this.fileOutputStream.flush();
+            // this.objectOutputStream.close();
+            // this.fileOutputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

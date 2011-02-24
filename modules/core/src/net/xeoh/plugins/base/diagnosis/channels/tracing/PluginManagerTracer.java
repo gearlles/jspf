@@ -32,6 +32,11 @@ import java.util.Map;
 
 import net.xeoh.plugins.diagnosis.local.DiagnosisChannelID;
 
+/**
+ * Traces general messages for the plugin manager.
+ * 
+ * @author Ralf Biedert
+ */
 public class PluginManagerTracer extends DiagnosisChannelID<String> {
     /* (non-Javadoc)
      * @see net.xeoh.plugins.diagnosis.local.DiagnosisChannelID#toUserRepresentation(java.io.Serializable, java.util.Map)

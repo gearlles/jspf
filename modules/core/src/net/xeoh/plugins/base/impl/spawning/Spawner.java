@@ -33,7 +33,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TimerTask;
-import java.util.logging.Logger;
 
 import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.annotations.Thread;
@@ -42,6 +41,7 @@ import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 import net.xeoh.plugins.base.annotations.events.Shutdown;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
+import net.xeoh.plugins.base.diagnosis.channels.tracing.SpawnerTracer;
 import net.xeoh.plugins.base.impl.PluginManagerImpl;
 import net.xeoh.plugins.base.impl.registry.PluginClassMetaInformation.Dependency;
 import net.xeoh.plugins.base.impl.registry.PluginMetaInformation;
@@ -49,6 +49,10 @@ import net.xeoh.plugins.base.impl.registry.PluginMetaInformation.PluginLoadedInf
 import net.xeoh.plugins.base.impl.registry.PluginMetaInformation.PluginStatus;
 import net.xeoh.plugins.base.impl.spawning.handler.InjectHandler;
 import net.xeoh.plugins.base.util.PluginManagerUtil;
+import net.xeoh.plugins.diagnosis.local.Diagnosis;
+import net.xeoh.plugins.diagnosis.local.DiagnosisChannel;
+import net.xeoh.plugins.diagnosis.local.options.StatusOption;
+import net.xeoh.plugins.diagnosis.local.options.status.OptionInfo;
 
 /**
  * Spawn a given class.
@@ -56,8 +60,11 @@ import net.xeoh.plugins.base.util.PluginManagerUtil;
  * @author Ralf Biedert
  */
 public class Spawner {
+    /** */
+    //final Logger logger = Logger.getLogger(this.getClass().getName());
 
-    final Logger logger = Logger.getLogger(this.getClass().getName());
+    /** Used for diagnosic messages */
+    DiagnosisChannel<String> diagnosis;
 
     /** Main plugin manager */
     private final PluginManagerImpl pluginManager;
@@ -80,6 +87,8 @@ public class Spawner {
     public void destroyPlugin(final Plugin plugin,
                                  final PluginMetaInformation metaInformation) {
 
+        log("destroy/start", new OptionInfo("plugin", plugin.getClass().getCanonicalName()));
+        
         // Halt all timer tasks
         for (final TimerTask timerTask : metaInformation.timerTasks) {
             timerTask.cancel();
@@ -102,6 +111,7 @@ public class Spawner {
 
         // Call shutdown hooks
         callShutdownMethods(plugin);
+        log("destroy/end", new OptionInfo("plugin", plugin.getClass().getCanonicalName()));        
     }
 
     /**
@@ -173,6 +183,7 @@ public class Spawner {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public SpawnResult spawnPlugin(final Class c) {
+        log("spawn/start", new OptionInfo("plugin", c.getCanonicalName()));
 
         // Used for time measurements.
         final long startTime = System.nanoTime();
@@ -180,7 +191,7 @@ public class Spawner {
         final TimerTask lateMessage = new TimerTask() {
             @Override
             public void run() {
-                Spawner.this.logger.fine("Class " + c + " takes very long to spawn. You should fix that.");
+                log("spawn/timeout/toolong", new OptionInfo("plugin", c.getCanonicalName()));
             }
         };
 
@@ -199,7 +210,7 @@ public class Spawner {
 
             // Finally load and register plugin
             try {
-                
+
                 new InjectHandler(this.pluginManager).init(spawnedPlugin);
 
                 // Obtain all methods
@@ -227,11 +238,10 @@ public class Spawner {
                 // Currently running
                 spawnResult.metaInformation.pluginStatus = PluginStatus.ACTIVE;
 
+                log("spawn/end", new OptionInfo("plugin", c.getCanonicalName()));        
                 return spawnResult;
-
             } catch (final Throwable e) {
-                this.logger.warning("Unable to load plugin " + c.getName());
-                this.logger.warning(e.toString());
+                log("spawn/exception/init", new OptionInfo("plugin", c.getCanonicalName()));
                 e.printStackTrace();
                 Throwable cause = e.getCause();
                 while (cause != null) {
@@ -242,8 +252,7 @@ public class Spawner {
             return null;
 
         } catch (final Throwable e) {
-            this.logger.warning("Unable to load plugin " + c.getName());
-            this.logger.warning(e.toString());
+            log("spawn/exception/construct", new OptionInfo("plugin", c.getCanonicalName()));
             e.printStackTrace();
             Throwable cause = e.getCause();
             while (cause != null) {
@@ -256,8 +265,10 @@ public class Spawner {
 
             final long stopTime = System.nanoTime();
             final long delta = (stopTime - startTime) / 1000;
-            this.logger.fine("Time to startup plugin " + c + " was " + delta + "µs");
+            log("spawn/duration", new OptionInfo("plugin", c.getCanonicalName()), new OptionInfo("time", ""+ delta));
         }
+        
+        log("spawn/end/abnormal", new OptionInfo("plugin", c.getCanonicalName()));        
         return null;
     }
 
@@ -271,17 +282,17 @@ public class Spawner {
      */
     private boolean callInitMethods(final Plugin spawnedPlugin, final Method[] methods)
                                                                                           throws IllegalAccessException {
-        final Class<? extends Plugin> spawnClass = spawnedPlugin.getClass();
+        log("callinit/start", new OptionInfo("plugin", spawnedPlugin.getClass().getCanonicalName()));        
+        // final Class<? extends Plugin> spawnClass = spawnedPlugin.getClass();
 
-        this.logger.finer("Doing init for " + spawnedPlugin);
 
         for (final Method method : methods) {
-            this.logger.finest("Processing method " + method);
+            log("callinit/method", new OptionInfo("method", method.getName()));        
 
             // Init methods will be marked by the corresponding annotation.
             final Init annotation = method.getAnnotation(Init.class);
             if (annotation != null) {
-                this.logger.finer("Annotation found on method " + method);
+                log("callinit/method/initannotation", new OptionInfo("method", method.getName()));        
 
                 try {
                     final Object invoke = method.invoke(spawnedPlugin, new Object[0]);
@@ -290,23 +301,25 @@ public class Spawner {
                         if (((Boolean) invoke).booleanValue() == false) return false;
                     }
                 } catch (final IllegalArgumentException e) {
-                    this.logger.warning("Error(IAE) invoking requested @Init on plugin " + spawnClass.getName());
-                    this.logger.warning(e.toString());
+                    log("callinit/exception/illegalargument", new OptionInfo("method", method.getName()), new OptionInfo("message", e.getMessage()));        
+                    log("callinit/end/abnormal", new OptionInfo("plugin", spawnedPlugin.getClass().getCanonicalName()));                            
                     e.printStackTrace();
                     return false;
                 } catch (final InvocationTargetException e) {
-                    this.logger.warning("Error(ITE) invoking requested @Init on plugin " + spawnClass.getName());
-                    this.logger.warning(e.toString());
+                    log("callinit/exception/invocationtargetexception", new OptionInfo("method", method.getName()), new OptionInfo("message", e.getMessage()));        
+                    log("callinit/end/abnormal", new OptionInfo("plugin", spawnedPlugin.getClass().getCanonicalName()));                            
                     e.printStackTrace();
                     return false;
                 } catch (final Exception e) {
-                    this.logger.warning("Error invoking requested @Init on plugin (unknown exception): " + spawnClass.getName());
-                    this.logger.warning(e.toString());
+                    log("callinit/exception/exception", new OptionInfo("method", method.getName()), new OptionInfo("message", e.getMessage()));        
+                    log("callinit/end/abnormal", new OptionInfo("plugin", spawnedPlugin.getClass().getCanonicalName()));                                                
                     e.printStackTrace();
                     return false;
                 }
             }
         }
+        
+        log("callinit/end", new OptionInfo("plugin", spawnedPlugin.getClass().getCanonicalName()));                                    
         return true;
     }
 
@@ -314,36 +327,35 @@ public class Spawner {
      * @param plugin
      */
     private void callShutdownMethods(final Plugin plugin) {
+        log("callshutdown/start", new OptionInfo("plugin", plugin.getClass().getCanonicalName()));                
         final Class<? extends Plugin> spawnClass = plugin.getClass();
         final Method[] methods = spawnClass.getMethods();
 
-        this.logger.finer("Doing shutdown for " + plugin);
 
         for (final Method method : methods) {
-            this.logger.finest("Processing method " + method);
+            log("callshutdown/method", new OptionInfo("method", method.getName()));        
 
             // Init methods will be marked by the corresponding annotation.
             final Shutdown annotation = method.getAnnotation(Shutdown.class);
             if (annotation != null) {
-                this.logger.finer("Annotation found on method " + method);
+                log("callshutdown/method/shutdownannotation", new OptionInfo("method", method.getName()));        
 
                 try {
                     method.invoke(plugin, new Object[0]);
                 } catch (final IllegalArgumentException e) {
-                    this.logger.warning("Error invoking requested @Shutdown on plugin " + spawnClass.getName());
-                    this.logger.warning(e.toString());
+                    log("callshutdown/exception/illegalargument", new OptionInfo("method", method.getName()), new OptionInfo("message", e.getMessage()));        
                     e.printStackTrace();
                 } catch (final InvocationTargetException e) {
-                    this.logger.warning("Error invoking requested @Shutdown on plugin " + spawnClass.getName());
-                    this.logger.warning(e.toString());
+                    log("callinit/exception/invocationtargetexception", new OptionInfo("method", method.getName()), new OptionInfo("message", e.getMessage()));        
                     e.printStackTrace();
                 } catch (final Exception e) {
-                    this.logger.warning("Error invoking requested @Shutdown on plugin (unknown exception): " + spawnClass.getName());
-                    this.logger.warning(e.toString());
+                    log("callshutdown/exception/exception", new OptionInfo("method", method.getName()), new OptionInfo("message", e.getMessage()));        
                     e.printStackTrace();
                 }
             }
         }
+        
+        log("callshutdown/end", new OptionInfo("plugin", plugin.getClass().getCanonicalName()));                                    
         return;
     }
 
@@ -356,13 +368,13 @@ public class Spawner {
         return methods;
     }
 
-
     /**
      * @param spawnResult
      * @param methods
      */
     private void spawnThreads(final SpawnResult spawnResult, final Method[] methods) {
-        final Class<? extends Plugin> spawnClass = spawnResult.plugin.getClass();
+        log("spawnthreads/start", new OptionInfo("plugin", spawnResult.plugin.getClass().getCanonicalName()));                
+        
         for (final Method method : methods) {
             // Init methods will be marked by the corresponding annotation. New:
             // also turn on extended accessibility, so elements don't have to be public
@@ -379,21 +391,21 @@ public class Spawner {
                             // fitting argument)
                             method.invoke(spawnResult.plugin, new Object[0]);
                         } catch (final IllegalArgumentException e) {
-                            Spawner.this.logger.warning("Error starting requested thread on plugin (1)" + spawnClass.getName());
-                            Spawner.this.logger.warning(e.getMessage());
+                            log("spawnthreads/exception/illegalargument", new OptionInfo("method", method.getName()), new OptionInfo("message", e.getMessage()));        
                             e.printStackTrace();
                         } catch (final IllegalAccessException e) {
-                            Spawner.this.logger.warning("Error invoking requested thread on plugin (2) " + spawnClass.getName());
-                            Spawner.this.logger.warning(e.getMessage());
+                            log("spawnthreads/exception/illegalaccess", new OptionInfo("method", method.getName()), new OptionInfo("message", e.getMessage()));        
                             e.printStackTrace();
                         } catch (final InvocationTargetException e) {
-                            Spawner.this.logger.warning("Error invoking requested thread on plugin (3) " + spawnClass.getName());
-                            Spawner.this.logger.warning(e.getMessage());
+                            log("spawnthreads/exception/invocationtargetexception", new OptionInfo("method", method.getName()), new OptionInfo("message", e.getMessage()));        
                             e.printStackTrace();
                         }
                     }
                 });
 
+                final String name = spawnResult.plugin.getClass().getName() + "." + method.getName() + "()";
+                log("spawnthreads/threadstart", new OptionInfo("plugin", spawnResult.plugin.getClass().getCanonicalName()), new OptionInfo("threadname", name));                
+                t.setName(name);
                 t.setDaemon(annotation.isDaemonic());
                 t.start();
 
@@ -401,6 +413,8 @@ public class Spawner {
                 spawnResult.metaInformation.threads.add(t);
             }
         }
+        
+        log("spawnthreads/end", new OptionInfo("plugin", spawnResult.plugin.getClass().getCanonicalName()));                
     }
 
     /**
@@ -419,7 +433,7 @@ public class Spawner {
                 final Class<?>[] parameterTypes = method.getParameterTypes();
 
                 if (parameterTypes.length != 1) {
-                    this.logger.warning("Wrong number of parameters for PluginLoaded annotations");
+                    log("pluginloadedmethods/wrongnumberofparams", new OptionInfo("plugin", spawnResult.plugin.getClass().getCanonicalName()),  new OptionInfo("method", method.getName()));                
                     continue;
                 }
 
@@ -430,6 +444,7 @@ public class Spawner {
                 spawnResult.metaInformation.pluginLoadedInformation.add(pli);
             }
         }
+        
     }
 
     /**
@@ -437,7 +452,8 @@ public class Spawner {
      * @param methods
      */
     private void spawnTimer(final SpawnResult spawnResult, final Method[] methods) {
-        final Class<? extends Plugin> spawnClass = spawnResult.plugin.getClass();
+        log("spawntimers/start", new OptionInfo("plugin", spawnResult.plugin.getClass().getCanonicalName()));                
+
         for (final Method method : methods) {
             // Init methods will be marked by the corresponding annotation. New: also
             // turn on extended accessibility, so elements don't have to be public
@@ -460,16 +476,13 @@ public class Spawner {
                                 }
                             }
                         } catch (final IllegalArgumentException e) {
-                            Spawner.this.logger.warning("Error starting requested timer on plugin " + spawnClass.getName());
-                            Spawner.this.logger.warning(e.toString());
+                            log("spawntimers/exception/illegalargument", new OptionInfo("method", method.getName()), new OptionInfo("message", e.getMessage()));        
                             e.printStackTrace();
                         } catch (final IllegalAccessException e) {
-                            Spawner.this.logger.warning("Error invoking requested timer method on plugin " + spawnClass.getName());
-                            Spawner.this.logger.warning(e.toString());
+                            log("spawntimers/exception/illegalaccessexception", new OptionInfo("method", method.getName()), new OptionInfo("message", e.getMessage()));        
                             e.printStackTrace();
                         } catch (final InvocationTargetException e) {
-                            Spawner.this.logger.warning("Error invoking requested timer method on plugin " + spawnClass.getName());
-                            Spawner.this.logger.warning(e.toString());
+                            log("spawntimers/exception/invocationtargetexception", new OptionInfo("method", method.getName()), new OptionInfo("message", e.getMessage()));        
                             e.printStackTrace();
                         }
                     }
@@ -489,6 +502,8 @@ public class Spawner {
             }
 
         }
+        
+        log("spawntimers/end", new OptionInfo("plugin", spawnResult.plugin.getClass().getCanonicalName()));                
     }
 
     /**
@@ -528,5 +543,25 @@ public class Spawner {
         }
 
         return rval;
+    }
+
+    /**
+     * Logs the given message.
+     * 
+     * @param message
+     * @param options
+     */
+    void log(String message, StatusOption... options) {
+        // Try to get the diagnosis
+        if (this.diagnosis == null) {
+            // Check if the diagnosis is already there
+            final Diagnosis diag = this.pluginManager.getDiagnosis();
+            if(diag==null) return;
+            
+            // If yes, get the main channel
+            this.diagnosis = diag.channel(SpawnerTracer.class);
+        }
+        
+        this.diagnosis.status(message, options);
     }
 }

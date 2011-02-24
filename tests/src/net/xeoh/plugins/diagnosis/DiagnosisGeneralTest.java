@@ -39,9 +39,9 @@ import net.xeoh.plugins.diagnosis.local.Diagnosis;
 import net.xeoh.plugins.diagnosis.local.DiagnosisChannel;
 import net.xeoh.plugins.testplugins.testannotations.impl.TestAnnotationsImpl;
 
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -50,13 +50,13 @@ import org.junit.Test;
  */
 public class DiagnosisGeneralTest {
 
-    private PluginManager pm;
+    private static PluginManager pm;
 
     /**
      * @throws Exception
      */
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void setUp() throws Exception {
         final JSPFProperties props = new JSPFProperties();
 
         props.setProperty(Diagnosis.class, "recording.enabled", "true");
@@ -69,16 +69,16 @@ public class DiagnosisGeneralTest {
         // Enable and disable plugins like this:
         props.setProperty(TestAnnotationsImpl.class, "plugin.disabled", "false");
         
-        this.pm = PluginManagerFactory.createPluginManager(props);
-        this.pm.addPluginsFrom(URI.create("xxx:yyy"));
+        pm = PluginManagerFactory.createPluginManager(props);
+        pm.addPluginsFrom(URI.create("xxx:yyy"));
     }
 
     /**
      * @throws Exception
      */
-    @After
-    public void tearDown() throws Exception {
-        this.pm.shutdown();
+    @AfterClass
+    public static void tearDown() throws Exception {
+        pm.shutdown();
     }
 
     /**

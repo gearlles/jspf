@@ -32,6 +32,7 @@ import net.xeoh.plugins.diagnosis.local.DiagnosisChannel;
 import net.xeoh.plugins.diagnosis.local.DiagnosisChannelID;
 import net.xeoh.plugins.diagnosis.local.impl.serialization.java.Entry;
 import net.xeoh.plugins.diagnosis.local.options.StatusOption;
+import net.xeoh.plugins.diagnosis.local.options.status.OptionInfo;
 
 public class DiagnosisChannelImpl implements DiagnosisChannel<Object> {
 
@@ -76,6 +77,14 @@ public class DiagnosisChannelImpl implements DiagnosisChannel<Object> {
             entry.stackTrace = $(stackTrace).slice(2, Math.min(this.diagnosis.stackTracesDepth, stackTrace.length - 2)).string().array(String.class);
         }
 
+        // Get options 
+        for (StatusOption statusOption : options) {
+            if(statusOption instanceof OptionInfo) {
+                final OptionInfo oi = (OptionInfo) statusOption;
+                entry.additionalInfo.put(oi.getKey(), oi.getValue());
+            } 
+        }
+        
         this.diagnosis.recordEntry(entry);
     }
 }

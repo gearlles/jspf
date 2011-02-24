@@ -29,6 +29,8 @@ package net.xeoh.plugins.diagnosis.local.impl.serialization.java;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Reflects an entry on a given channel.
@@ -50,12 +52,15 @@ public class Entry implements Serializable {
 
     /** Stack trace for this call */
     public String[] stackTrace;
-    
+
     /** Channel this entry was observed on */
     public String channel;
-    
+
     /** Value that was observed */
     public Object value;
+
+    /** Additional information */
+    public Map<String, Object> additionalInfo = new HashMap<String, Object>();
 
     /**
      * We do this ourself.
@@ -67,9 +72,10 @@ public class Entry implements Serializable {
         stream.writeShort(this.version);
         stream.writeLong(this.date);
         stream.writeLong(this.threadID);
-        stream.writeObject(this.stackTrace);
-        stream.writeObject(this.channel);
-        stream.writeObject(this.value);
+        stream.writeUnshared(this.stackTrace);
+        stream.writeUnshared(this.channel);
+        stream.writeUnshared(this.value);
+        stream.writeUnshared(this.additionalInfo);
     }
 
     /**
@@ -79,18 +85,24 @@ public class Entry implements Serializable {
      * @throws IOException
      * @throws ClassNotFoundException
      */
+    @SuppressWarnings("unchecked")
     private void readObject(java.io.ObjectInputStream stream) throws IOException,
                                                              ClassNotFoundException {
 
         this.version = stream.readShort();
-        
+
         if (this.version != 1)
             throw new ClassNotFoundException("Version mismatch, cannot handle " + this.version);
-        
+
         this.date = stream.readLong();
         this.threadID = stream.readLong();
-        this.stackTrace = (String[]) stream.readObject();
-        this.channel = (String) stream.readObject();
-        this.value = stream.readObject();
+        this.stackTrace = (String[]) stream.readUnshared();
+        this.channel = (String) stream.readUnshared();
+        this.value = stream.readUnshared();
+        try {
+            this.additionalInfo = (Map<String, Object>) stream.readUnshared();
+        } catch (ClassNotFoundException e) {
+            System.err.println("Unknown type in infos (" + e.getMessage() + "). You should run this in the orig app's classpath!");
+        }
     }
 }

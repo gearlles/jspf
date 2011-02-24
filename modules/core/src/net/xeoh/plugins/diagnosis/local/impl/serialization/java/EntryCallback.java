@@ -1,5 +1,5 @@
 /*
- * OptionInfo.java
+ * EntryCallback.java
  * 
  * Copyright (c) 2011, Ralf Biedert All rights reserved.
  * 
@@ -25,42 +25,8 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.diagnosis.local.options.status;
+package net.xeoh.plugins.diagnosis.local.impl.serialization.java;
 
-import java.io.Serializable;
-
-import net.xeoh.plugins.diagnosis.local.options.StatusOption;
-
-public class OptionInfo implements StatusOption {
-    /** */
-    private static final long serialVersionUID = 5703900703387071451L;
-
-    /** */
-    private final Serializable value;
-
-    /** */
-    private final String key;
-
-    /**
-     * @param key
-     * @param value
-     */
-    public OptionInfo(String key, Serializable value) {
-        this.key = key;
-        this.value = value;
-    }
-
-    /**
-     * @return the value
-     */
-    public Serializable getValue() {
-        return this.value;
-    }
-
-    /**
-     * @return the key
-     */
-    public String getKey() {
-        return this.key;
-    }
+public interface EntryCallback {
+    public void nextEntry(Entry entry);
 }
