@@ -31,6 +31,7 @@ import java.io.Serializable;
 
 import net.xeoh.plugins.base.PluginConfiguration;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
+import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.events.Shutdown;
 import net.xeoh.plugins.base.util.PluginConfigurationUtil;
 import net.xeoh.plugins.diagnosis.local.Diagnosis;
@@ -103,6 +104,7 @@ public class DiagnosisImpl implements Diagnosis {
 
     /** Opens all required streams */
     @SuppressWarnings("boxing")
+    @Init
     public void init() {
         final PluginConfigurationUtil util = new PluginConfigurationUtil(this.configuration);
 
