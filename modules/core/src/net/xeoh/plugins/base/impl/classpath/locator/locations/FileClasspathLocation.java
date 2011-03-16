@@ -123,7 +123,7 @@ public class FileClasspathLocation extends AbstractClassPathLocation {
             for (File file : fileListing) {
                 // Only accept class files
                 if (!file.getAbsolutePath().endsWith(".class")) continue;
-                if (file.getAbsolutePath().contains("$")) continue; // Why are we ignoring files with a $ again?
+                //if (file.getAbsolutePath().contains("$")) continue; // Why are we ignoring files with a $ again?
 
                 final String path = Pattern.quote(toplevel.getAbsolutePath());
 
