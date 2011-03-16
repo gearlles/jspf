@@ -33,6 +33,7 @@ import net.xeoh.plugins.base.PluginConfiguration;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.events.Shutdown;
+import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import net.xeoh.plugins.base.util.PluginConfigurationUtil;
 import net.xeoh.plugins.diagnosis.local.Diagnosis;
 import net.xeoh.plugins.diagnosis.local.DiagnosisChannel;
@@ -45,6 +46,7 @@ import net.xeoh.plugins.diagnosis.local.options.ChannelOption;
 public class DiagnosisImpl implements Diagnosis {
 
     /** Plugin configuration */
+    @InjectPlugin
     public PluginConfiguration configuration;
 
     /** If true, the whole plugin will be disabled */
@@ -55,7 +57,7 @@ public class DiagnosisImpl implements Diagnosis {
 
     /** If we should compress our output */
     boolean compressOutput = true;
-        
+
     /** Depth of stack traces */
     int stackTracesDepth = 1;
 
@@ -64,7 +66,6 @@ public class DiagnosisImpl implements Diagnosis {
 
     /** The actual serializer we use */
     volatile LogFileWriter serializer = null;
-    
 
     /*
      * (non-Javadoc)
@@ -84,11 +85,18 @@ public class DiagnosisImpl implements Diagnosis {
 
         // In case this was the first call, create a serializer
         synchronized (this) {
-            if (this.serializer == null) {
-                this.serializer = new LogFileWriter(this.recordingFile, this.compressOutput);
+            try {
+                if (this.serializer == null) {
+                    this.serializer = new LogFileWriter(this.recordingFile, this.compressOutput);
+                }
+            } catch (Exception e) {
+                // In case something goes wrong, return a dummy
+                e.printStackTrace();
+                final DiagnosisChannel<?> impl = new DiagnosisChannelDummyImpl(this, channel);
+                return (DiagnosisChannel<T>) impl;
             }
         }
-        
+
         final DiagnosisChannel<?> impl = new DiagnosisChannelImpl(this, channel);
         return (DiagnosisChannel<T>) impl;
     }
@@ -112,22 +120,22 @@ public class DiagnosisImpl implements Diagnosis {
         this.recordingFile = util.getString(Diagnosis.class, "recording.file", "diagnosis.record");
         this.useStackTraces = util.getBoolean(Diagnosis.class, "analysis.stacktraces.enabled", false);
         this.stackTracesDepth = util.getInt(Diagnosis.class, "analysis.stacktraces.depth", 1);
-        
+
         String mode = util.getString(Diagnosis.class, "recording.format", "java/serialization/gzip");
-        if("java/serialization/gzip".equals(mode)) {
+        if ("java/serialization/gzip".equals(mode)) {
             this.compressOutput = true;
         }
-        
-        if("java/serialization".equals(mode)) {
+
+        if ("java/serialization".equals(mode)) {
             this.compressOutput = false;
         }
-        
+
     }
 
     /** Close the log file */
     @Shutdown
     public void shutdown() {
         // TODO
-        //this.serializer...()
+        // this.serializer...()
     }
 }
