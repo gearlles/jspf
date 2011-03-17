@@ -53,6 +53,19 @@ public class ClassURI extends URIUtil {
     public static final URI CLASSPATH(String pattern) {
         return URI.create("classpath://" + pattern);
     }
+    
+    
+    /**
+     * Specifies that the given plugin should be added.
+     * 
+     * @param clazz The plugin to add
+
+     * @return The generated URI pattern for the plugin.
+     */
+    public static final URI PLUGIN(Class<? extends Plugin> clazz) {
+        return new ClassURI(clazz).toURI();
+    }
+    
 
     /** The class we wrapped */
     private final Class<? extends Plugin> clazz;
