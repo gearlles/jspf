@@ -41,8 +41,19 @@ import net.xeoh.plugins.base.PluginManager;
  */
 public class ClassURI extends URIUtil {
     /** Means we should add all plugins we have in our classpath */
-    public static final URI ALL = URI.create("classpath://*");
-    
+    public static final URI CLASSPATH = URI.create("classpath://*");
+
+    /**
+     * Specifies a pattern to add from the current classpath.
+     * 
+     * @param pattern For example net.xeoh.myplugins.**
+     * 
+     * @return The generated pattern.
+     */
+    public static final URI CLASSPATH(String pattern) {
+        return URI.create("classpath://" + pattern);
+    }
+
     /** The class we wrapped */
     private final Class<? extends Plugin> clazz;
 
@@ -58,7 +69,9 @@ public class ClassURI extends URIUtil {
         this.clazz = clazz;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see net.xeoh.plugins.base.util.uri.URIUtil#toURI()
      */
     @Override

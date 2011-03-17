@@ -29,7 +29,6 @@ package net.xeoh.plugins.core;
 
 import java.net.URI;
 
-import junit.framework.Assert;
 import net.xeoh.plugins.base.PluginInformation;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
@@ -85,8 +84,5 @@ public class PluginManagerDisablingPlugins {
         final PluginInformation pi = this.pm.getPlugin(PluginInformation.class);
         final TestAnnotations ta = this.pm.getPlugin(TestAnnotations.class);
 
-        System.out.println(ta);
-        Assert.assertNull(ta);
     }
-
 }
