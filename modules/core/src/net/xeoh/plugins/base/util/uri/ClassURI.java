@@ -40,7 +40,10 @@ import net.xeoh.plugins.base.PluginManager;
  * @see PluginManager
  */
 public class ClassURI extends URIUtil {
-
+    /** Means we should add all plugins we have in our classpath */
+    public static final URI ALL = URI.create("classpath://*");
+    
+    /** The class we wrapped */
     private final Class<? extends Plugin> clazz;
 
     /**

@@ -32,6 +32,7 @@ import java.net.URI;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import net.xeoh.plugins.base.util.JSPFProperties;
+import net.xeoh.plugins.base.util.uri.ClassURI;
 import net.xeoh.plugins.remote.RemoteAPI;
 
 import org.junit.After;
@@ -84,7 +85,7 @@ public class PluginManagerLoadClasspath {
 
         Assert.assertNull("Plugin must not be there at this point", plugin);
 
-        this.pm.addPluginsFrom(URI.create("classpath://*"));
+        this.pm.addPluginsFrom(ClassURI.ALL);
         // this.pm.addPluginsFrom(new File("bin/").toURI());
         // this.pm.addPluginsFrom(new URI("classpath://net.xeoh.plugins.remote.impl.*.*"),
         // new OptionReportAfter());
