@@ -74,13 +74,11 @@ public class PluginManagerLoadDirectly {
         Assert.assertNull("Plugin must not be there at this point", plugin);
 
         this.pm.addPluginsFrom(ClassURI.PLUGIN(RemoteDiscoveryImpl.class));
-     /*   
         this.pm.addPluginsFrom(new ClassURI(RemoteDiscoveryImpl.class).toURI());
         this.pm.addPluginsFrom(new ClassURI(RemoteDiscoveryImpl.class).toURI());
         this.pm.addPluginsFrom(new ClassURI(RemoteDiscoveryImpl.class).toURI());
         this.pm.addPluginsFrom(new ClassURI(RemoteDiscoveryImpl.class).toURI());
         this.pm.addPluginsFrom(new ClassURI(RemoteDiscoveryImpl.class).toURI());
-*/
         plugin = this.pm.getPlugin(RemoteDiscovery.class);
         Assert.assertNotNull("Now plugin must be there", plugin);
     }

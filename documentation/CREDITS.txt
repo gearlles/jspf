@@ -15,12 +15,12 @@ Entities involved
 Code used
 ---------
 
-This framework uses directly:
+This framework uses:
 
 - ROX (for XMLRPC services)
 - jmDNS
 - LipeRMI
 - Essence RMI
 - XMLRPC Delight
-
+- jCores
 
