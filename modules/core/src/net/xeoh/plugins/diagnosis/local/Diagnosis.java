@@ -66,14 +66,11 @@ public interface Diagnosis extends Plugin {
                                                                 ChannelOption... options);
 
     /**
-     * Registers a condition.
+     * Registers a listener to the diagnosis.
      * 
-     * @param condition
-     * @param options
+     * @param <T> 
+     * @param channel 
+     * @param listener 
      */
-    /*
-     * public void registerCondition(DiagnosisCondition condition,
-     * RegisterConditionOption... options);
-     */
-
+    public  <T extends Serializable> void registerMonitor(Class<? extends DiagnosisChannelID<T>> channel, DiagnosisMonitor<T> listener);
 }

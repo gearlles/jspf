@@ -28,6 +28,12 @@
 package net.xeoh.plugins.diagnosis.local.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import net.xeoh.plugins.base.PluginConfiguration;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -36,13 +42,32 @@ import net.xeoh.plugins.base.util.PluginConfigurationUtil;
 import net.xeoh.plugins.diagnosis.local.Diagnosis;
 import net.xeoh.plugins.diagnosis.local.DiagnosisChannel;
 import net.xeoh.plugins.diagnosis.local.DiagnosisChannelID;
+import net.xeoh.plugins.diagnosis.local.DiagnosisMonitor;
+import net.xeoh.plugins.diagnosis.local.DiagnosisStatus;
 import net.xeoh.plugins.diagnosis.local.impl.serialization.java.Entry;
 import net.xeoh.plugins.diagnosis.local.impl.serialization.java.LogFileWriter;
 import net.xeoh.plugins.diagnosis.local.options.ChannelOption;
 
 @PluginImplementation
 public class DiagnosisImpl implements Diagnosis {
+    /** Stores information on a key */
+    class KeyEntry {
+        /** Locks access to this item */
+        final Lock entryLock = new ReentrantLock();
 
+        /** All listeners subscribed to this item */
+        final Collection<DiagnosisMonitor<?>> allListeners = new ArrayList<DiagnosisMonitor<?>>();
+
+        /** The current channel holder */
+        DiagnosisStatus<?> lastItem = null;
+    }
+
+    /** Manages all information regarding a key */
+    final Map<Class<? extends DiagnosisChannelID<?>>, KeyEntry> items = new HashMap<Class<? extends DiagnosisChannelID<?>>, KeyEntry>();
+
+    /** Locks access to the items */
+    final Lock itemsLock = new ReentrantLock();
+    
     /** Plugin configuration (will be injected manually by the PluginManager) */
     public PluginConfiguration configuration;
 
@@ -101,10 +126,31 @@ public class DiagnosisImpl implements Diagnosis {
     /**
      * Stores the given entry to our record file
      * 
+     * @param status 
      * @param entry
      */
-    public void recordEntry(Entry entry) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public void recordEntry(DiagnosisStatus<?> status, Entry entry) {
         this.serializer.record(entry);
+        
+        final KeyEntry keyEntry = getKeyEntry(status.getChannel());
+
+        // Now process entry
+        try {
+            keyEntry.entryLock.lock();
+            keyEntry.lastItem = status;
+
+            // Check if we should publish silently.
+            for (DiagnosisMonitor<?> listener : keyEntry.allListeners) {
+                try {
+                    ((DiagnosisMonitor<?>) listener).onStatusChange((DiagnosisStatus) status);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } finally {
+            keyEntry.entryLock.unlock();
+        }
     }
 
     /** Opens all required streams */
@@ -134,5 +180,53 @@ public class DiagnosisImpl implements Diagnosis {
     public void shutdown() {
         // TODO
         // this.serializer...()
+    }
+
+    /* (non-Javadoc)
+     * @see net.xeoh.plugins.diagnosis.local.Diagnosis#registerListener(java.lang.Class, net.xeoh.plugins.diagnosis.local.DiagnosisListener)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Serializable> void registerMonitor(Class<? extends DiagnosisChannelID<T>> channel,
+                                                          DiagnosisMonitor<T> listener) {
+        if (channel == null || listener == null) return;
+
+        // Get the meta information for the requested id
+        final KeyEntry keyEntry = getKeyEntry(channel);
+
+        // Now process and add the entry
+        try {
+            keyEntry.entryLock.lock();
+            // If there has been a channel established, use that one
+            if (keyEntry.lastItem != null) {
+                listener.onStatusChange((DiagnosisStatus<T>) keyEntry.lastItem);
+            }
+            
+            keyEntry.allListeners.add(listener);
+        } finally {
+            keyEntry.entryLock.unlock();
+        }
+    }
+    
+
+    /**
+     * Returns the key entry of a given ID.
+     * 
+     * @param id The ID to request
+     * @return The key entry.
+     */
+    private KeyEntry getKeyEntry(Class<? extends DiagnosisChannelID<?>> id) {
+        KeyEntry keyEntry = null;
+        this.itemsLock.lock();
+        try {
+            keyEntry = this.items.get(id);
+            if (keyEntry == null) {
+                keyEntry = new KeyEntry();
+                this.items.put(id, keyEntry);
+            }
+        } finally {
+            this.itemsLock.unlock();
+        }
+        return keyEntry;
     }
 }

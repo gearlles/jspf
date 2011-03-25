@@ -27,6 +27,7 @@
  */
 package net.xeoh.plugins.diagnosis;
 
+import java.io.Serializable;
 import java.net.URI;
 
 import net.xeoh.plugins.base.PluginManager;
@@ -37,6 +38,11 @@ import net.xeoh.plugins.diagnosis.diagnosis.channels.LoggingChannel2;
 import net.xeoh.plugins.diagnosis.diagnosis.channels.TestChannel;
 import net.xeoh.plugins.diagnosis.local.Diagnosis;
 import net.xeoh.plugins.diagnosis.local.DiagnosisChannel;
+import net.xeoh.plugins.diagnosis.local.DiagnosisMonitor;
+import net.xeoh.plugins.diagnosis.local.DiagnosisStatus;
+import net.xeoh.plugins.diagnosis.local.util.DiagnosisUtil;
+import net.xeoh.plugins.diagnosis.local.util.conditions.TwoStateAndMatch;
+import net.xeoh.plugins.diagnosis.local.util.conditions.matcher.Is;
 import net.xeoh.plugins.testplugins.testannotations.impl.TestAnnotationsImpl;
 
 import org.junit.AfterClass;
@@ -118,12 +124,44 @@ public class DiagnosisGeneralTest {
         
         diagnosis.channel(LoggingChannel1.class).status("Starting Test.");
         diagnosis.channel(TestChannel.class).status(100);
-
         diagnosis.channel(TestChannel.class).status(100);
         diagnosis.channel(TestChannel.class).status(100);
         diagnosis.channel(TestChannel.class).status(3000);
         diagnosis.channel(LoggingChannel1.class).status("Initializing Status");
         
+        
+        DiagnosisUtil util = new DiagnosisUtil(diagnosis);
+        util.registerMonitors(new DiagnosisMonitor<Serializable>() {
+            @Override
+            public void onStatusChange(DiagnosisStatus<Serializable> status) {
+                if(status.getChannel().equals(TestChannel.class)) System.out.println("TC");
+                System.out.println(">>> " + status.getValue());
+            }
+        }, TestChannel.class, LoggingChannel1.class);
+
+        diagnosis.channel(TestChannel.class).status(6667);
+        diagnosis.channel(TestChannel.class).status(100);
+
+   
+        util.registerCondition(new TwoStateAndMatch() {
+            /** */
+            @Override
+            protected void setupMatcher() {
+                match(TestChannel.class, new Is(100));
+            }
+            
+            /** */
+            @Override
+            public void stateChanged(STATE state) {
+                System.out.println("STATE CJAMGE" + state);
+            }
+        });
+        diagnosis.channel(TestChannel.class).status(3000);
+        diagnosis.channel(TestChannel.class).status(100);
+
+        //D2 d;
+        //diagnosis.status(URI.create(TestChannel.class, "xxx"), 300);
+        //diagnosis.channel(LoggingChannel1.class).status("start/x");
 
         //DiagnosisCondition condition = new TestCondition();
         //condition

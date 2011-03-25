@@ -7,3 +7,5 @@ syntax: regexp
 ^ant\.build$
 syntax: regexp
 ^documentation/api$
+syntax: regexp
+^diagnosis\.record$

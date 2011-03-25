@@ -37,6 +37,7 @@ import java.util.Map;
  * 
  * @author Ralf Biedert
  */
+@SuppressWarnings("rawtypes")
 public class Entry implements Serializable {
     /** */
     private static final long serialVersionUID = -361673738793578516L;

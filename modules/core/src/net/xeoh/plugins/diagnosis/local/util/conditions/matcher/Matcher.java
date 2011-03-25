@@ -1,5 +1,5 @@
 /*
- * Condition.java
+ * Matcher.java
  * 
  * Copyright (c) 2011, Ralf Biedert All rights reserved.
  * 
@@ -25,18 +25,16 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.diagnosis.local;
+package net.xeoh.plugins.diagnosis.local.util.conditions.matcher;
 
 /**
  * @author Ralf Biedert
- * @since 1.1
  */
-public abstract class DiagnosisCondition {
-
+public abstract class Matcher {
     /**
-     * Returns a list of observed channels this condition handles.
-     * 
-     * @return A list of all channels this condition depends on.
+     * Returns true if the matcher matches, false if not.
+     * @param object
+     * @return .
      */
-    public abstract Class<? extends DiagnosisChannelID<?>>[] observedChannels();
+    public abstract boolean matches(Object object);
 }

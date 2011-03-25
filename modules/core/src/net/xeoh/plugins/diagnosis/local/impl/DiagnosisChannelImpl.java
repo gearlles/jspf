@@ -28,6 +28,9 @@
 package net.xeoh.plugins.diagnosis.local.impl;
 
 import static net.jcores.CoreKeeper.$;
+
+import java.io.Serializable;
+
 import net.xeoh.plugins.diagnosis.local.DiagnosisChannel;
 import net.xeoh.plugins.diagnosis.local.DiagnosisChannelID;
 import net.xeoh.plugins.diagnosis.local.impl.serialization.java.Entry;
@@ -60,6 +63,7 @@ public class DiagnosisChannelImpl implements DiagnosisChannel<Object> {
      * 
      * @see net.xeoh.plugins.diagnosis.local.DiagnosisChannel#status(java.lang.Object)
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public void status(Object value, StatusOption... options) {
         final long timestamp = System.currentTimeMillis();
@@ -76,15 +80,16 @@ public class DiagnosisChannelImpl implements DiagnosisChannel<Object> {
             final StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
             entry.stackTrace = $(stackTrace).slice(2, Math.min(this.diagnosis.stackTracesDepth, stackTrace.length - 2)).string().array(String.class);
         }
-
-        // Get options 
-        for (StatusOption statusOption : options) {
-            if(statusOption instanceof OptionInfo) {
-                final OptionInfo oi = (OptionInfo) statusOption;
-                entry.additionalInfo.put(oi.getKey(), oi.getValue());
-            } 
-        }
         
-        this.diagnosis.recordEntry(entry);
+        // Process all option infos
+        final OptionInfo[] infos = $(options).cast(OptionInfo.class).array(OptionInfo.class);
+        for (OptionInfo oi : infos) {
+            entry.additionalInfo.put(oi.getKey(), oi.getValue());
+        }
+
+        // Create status object
+        final DiagnosisStatusImpl status = new DiagnosisStatusImpl((Class<? extends DiagnosisChannelID>) this.channel, (Serializable) value, timestamp, infos);
+        
+        this.diagnosis.recordEntry(status, entry);
     }
 }
