@@ -32,9 +32,9 @@ import static net.jcores.CoreKeeper.$;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -69,16 +69,13 @@ public class DiagnosisImpl implements Diagnosis {
     }
 
     /** Manages all information regarding a key */
-    final Map<Class<? extends DiagnosisChannelID<?>>, KeyEntry> items = new HashMap<Class<? extends DiagnosisChannelID<?>>, KeyEntry>();
+    final Map<Class<? extends DiagnosisChannelID<?>>, KeyEntry> items = new ConcurrentHashMap<Class<? extends DiagnosisChannelID<?>>, KeyEntry>();
 
-    /** Locks access to the items */
-    final Lock itemsLock = new ReentrantLock();
-    
     /** Plugin configuration (will be injected manually by the PluginManager) */
     public PluginConfiguration configuration;
 
     /** If true, the whole plugin will be disabled */
-    boolean isDisabled = true;
+    boolean isDisabled = false;
 
     /** If true, if we should dump stack traces */
     boolean useStackTraces = false;
@@ -94,6 +91,9 @@ public class DiagnosisImpl implements Diagnosis {
 
     /** The actual serializer we use */
     volatile LogFileWriter serializer = null;
+
+    /** If recording should be enabled */
+    boolean recordingEnabled = false;
 
     /*
      * (non-Javadoc)
@@ -113,15 +113,8 @@ public class DiagnosisImpl implements Diagnosis {
 
         // In case this was the first call, create a serializer
         synchronized (this) {
-            try {
-                if (this.serializer == null) {
-                    this.serializer = new LogFileWriter(this.recordingFile, this.compressOutput);
-                }
-            } catch (Exception e) {
-                // In case something goes wrong, return a dummy
-                e.printStackTrace();
-                final DiagnosisChannel<?> impl = new DiagnosisChannelDummyImpl(this, channel);
-                return (DiagnosisChannel<T>) impl;
+            if (this.serializer == null && this.recordingEnabled) {
+                this.serializer = createWriter();
             }
         }
 
@@ -129,23 +122,48 @@ public class DiagnosisImpl implements Diagnosis {
         return (DiagnosisChannel<T>) impl;
     }
 
+    
+    /**
+     * Try to create a write for our logging data.
+     * 
+     * @return
+     */
+    LogFileWriter createWriter() {
+        // First try to return a writer with the given name
+        try {
+            return new LogFileWriter(this.recordingFile, this.compressOutput);
+        } catch (Exception e) {}
+
+        // First try to return a writer with some time stamp attached (in case the old one was not overwritable)
+        try {
+            return new LogFileWriter(this.recordingFile + "." + System.currentTimeMillis(), this.compressOutput);
+        } catch (Exception e) {}
+
+        // Now we are out of luck
+        return null;
+    }
+
     /**
      * Stores the given entry to our record file
      * 
-     * @param status 
+     * @param status
      * @param entry
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void recordEntry(DiagnosisStatus<?> status, Entry entry) {
-        this.serializer.record(entry);
-        
+        if (this.serializer != null)
+            this.serializer.record(entry);
+
         final KeyEntry keyEntry = getKeyEntry(status.getChannel());
 
+
+        
         // Now process entry
         try {
             keyEntry.entryLock.lock();
             keyEntry.lastItem = status;
 
+            
             // Check if we should publish silently.
             for (DiagnosisMonitor<?> listener : keyEntry.allListeners) {
                 try {
@@ -165,7 +183,8 @@ public class DiagnosisImpl implements Diagnosis {
     public void init() {
         final PluginConfigurationUtil util = new PluginConfigurationUtil(this.configuration);
 
-        this.isDisabled = !util.getBoolean(Diagnosis.class, "recording.enabled", false);
+        this.isDisabled = !util.getBoolean(Diagnosis.class, "general.enabled", true);
+        this.recordingEnabled = util.getBoolean(Diagnosis.class, "recording.enabled", false);
         this.recordingFile = util.getString(Diagnosis.class, "recording.file", "diagnosis.record");
         this.useStackTraces = util.getBoolean(Diagnosis.class, "analysis.stacktraces.enabled", false);
         this.stackTracesDepth = util.getInt(Diagnosis.class, "analysis.stacktraces.depth", 1);
@@ -188,8 +207,11 @@ public class DiagnosisImpl implements Diagnosis {
         // this.serializer...()
     }
 
-    /* (non-Javadoc)
-     * @see net.xeoh.plugins.diagnosis.local.Diagnosis#registerListener(java.lang.Class, net.xeoh.plugins.diagnosis.local.DiagnosisListener)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.xeoh.plugins.diagnosis.local.Diagnosis#registerListener(java.lang.Class,
+     * net.xeoh.plugins.diagnosis.local.DiagnosisListener)
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -200,20 +222,24 @@ public class DiagnosisImpl implements Diagnosis {
         // Get the meta information for the requested id
         final KeyEntry keyEntry = getKeyEntry(channel);
 
+        
         // Now process and add the entry
         try {
             keyEntry.entryLock.lock();
             // If there has been a channel established, use that one
             if (keyEntry.lastItem != null) {
-                listener.onStatusChange((DiagnosisStatus<T>) keyEntry.lastItem);
+                try {
+                    listener.onStatusChange((DiagnosisStatus<T>) keyEntry.lastItem);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-            
+
             keyEntry.allListeners.add(listener);
         } finally {
             keyEntry.entryLock.unlock();
         }
     }
-    
 
     /**
      * Returns the key entry of a given ID.
@@ -223,23 +249,23 @@ public class DiagnosisImpl implements Diagnosis {
      */
     private KeyEntry getKeyEntry(Class<? extends DiagnosisChannelID<?>> id) {
         KeyEntry keyEntry = null;
-        this.itemsLock.lock();
-        try {
+        
+        synchronized (this.items) {
             keyEntry = this.items.get(id);
             if (keyEntry == null) {
                 keyEntry = new KeyEntry();
                 this.items.put(id, keyEntry);
             }
-        } finally {
-            this.itemsLock.unlock();
         }
+
         return keyEntry;
     }
 
-    
-    
-    /* (non-Javadoc)
-     * @see net.xeoh.plugins.diagnosis.local.Diagnosis#replay(java.lang.String, net.xeoh.plugins.diagnosis.local.DiagnosisMonitor)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.xeoh.plugins.diagnosis.local.Diagnosis#replay(java.lang.String,
+     * net.xeoh.plugins.diagnosis.local.DiagnosisMonitor)
      */
     @Override
     public void replay(final String file, final DiagnosisMonitor<?> listener) {

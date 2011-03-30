@@ -57,6 +57,7 @@ public class LogFileWriter {
      */
     public LogFileWriter(String file, boolean compressOutput) {
         try {
+            $(file).file().delete();
             this.fileOutputStream = new FileOutputStream($(file).get("diagnosis.fallback.record"));
             if (compressOutput) {
                 this.zipStream = new GZIPOutputStream(this.fileOutputStream);
@@ -65,6 +66,7 @@ public class LogFileWriter {
                 this.objectOutputStream = new ObjectOutputStream(this.fileOutputStream);
         } catch (Exception e) {
             e.printStackTrace();
+            return;
         }
 
         // Create recording thread
