@@ -37,7 +37,6 @@ import java.util.Map;
  * 
  * @author Ralf Biedert
  */
-@SuppressWarnings("rawtypes")
 public class Entry implements Serializable {
     /** */
     private static final long serialVersionUID = -361673738793578516L;
@@ -103,7 +102,9 @@ public class Entry implements Serializable {
         try {
             this.additionalInfo = (Map<String, Object>) stream.readUnshared();
         } catch (ClassNotFoundException e) {
-            System.err.println("Unknown type in infos (" + e.getMessage() + "). You should run this in the orig app's classpath!");
-        }
+            // FIXME: Due to a Java 'feature' we cannot prevent the CNFException to propagate upwards ... This means the object
+            // will be missing ... 
+            // System.err.println("Unknown type in infos (" + e.getMessage() + "). You should run this in the orig app's classpath!");
+        } 
     }
 }

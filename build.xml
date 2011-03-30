@@ -10,6 +10,7 @@
     
     <!-- Define different roots -->
     <property name="modules.root" value="modules/"/>
+    <property name="tools.root" value="modules/tools/"/>
     <property name="build.root" value="ant.build/"/>
     <property name="distribution.root" value="dist/"/>
     
@@ -34,7 +35,8 @@
     <import file="modules/plugins/remote.json/build.xml"/>
     <import file="modules/plugins/remote.discovery/build.xml"/>
     <import file="modules/plugins/remote.bus/build.xml"/>
-    
+    <import file="modules/tools/diagnosisreader/build.xml"/>
+
     
     
     <!-- Build plugins -->
@@ -47,7 +49,8 @@
     <target name="remote.lipermi" depends="remote.discovery, clean, compile.remote.lipermi, pack.remote.lipermi"/>
     <target name="remote.javascript" depends="remote.discovery, clean, compile.remote.javascript, pack.remote.javascript"/>
     <target name="remote.json" depends="remote.discovery, clean, compile.remote.json, pack.remote.json"/>
-    
+    <target name="diagnosisreader" depends="clean, compile.diagnosisreader, pack.diagnosisreader"/>
+
     
     <!-- Run tests before we're done -->
     <target name="test" description="Run all testcases" depends="core, remote, remote.xmlrpc, remote.ermi, remote.lipermi, remote.javascript, remote.json, remote.discovery">
@@ -115,6 +118,6 @@
     </target>
     
     <!-- Pack plugins -->
-    <target name="all" depends="core, remote, remote.xmlrpc, remote.xmlrpcdelight, remote.ermi, remote.lipermi, remote.javascript, remote.json, remote.discovery, documentation, preparepublish"/>
+    <target name="all" depends="core, diagnosisreader, remote, remote.xmlrpc, remote.xmlrpcdelight, remote.ermi, remote.lipermi, remote.javascript, remote.json, remote.discovery, documentation, preparepublish"/>
     
 </project>

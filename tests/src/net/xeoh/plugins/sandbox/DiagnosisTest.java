@@ -1,7 +1,7 @@
 /*
- * Condition.java
+ * JMDNSTest.java
  * 
- * Copyright (c) 2011, Ralf Biedert All rights reserved.
+ * Copyright (c) 2009, Ralf Biedert All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -25,45 +25,44 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.diagnosis.local.util.conditions;
+package net.xeoh.plugins.sandbox;
 
 import static net.jcores.CoreKeeper.$;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import net.xeoh.plugins.diagnosis.local.DiagnosisChannelID;
+import net.xeoh.plugins.base.PluginManager;
+import net.xeoh.plugins.base.impl.PluginManagerFactory;
+import net.xeoh.plugins.base.util.uri.ClassURI;
+import net.xeoh.plugins.diagnosis.local.Diagnosis;
 import net.xeoh.plugins.diagnosis.local.DiagnosisMonitor;
+import net.xeoh.plugins.diagnosis.local.DiagnosisStatus;
 
 /**
- * Abstract class for any condition.
- * 
- * @author Ralf Biedert
+ * @author rb
+ *
  */
-public abstract class Condition implements DiagnosisMonitor<Serializable> {
-    
-    /** The channels to observe */
-    private List<Class<?>> channels = new ArrayList<Class<?>>();
-
+public class DiagnosisTest {
     /**
-     * Adds a channel to the list of required channels.
-     * 
-     * @param channel
+     * @param args
      */
-    public void require(Class<? extends DiagnosisChannelID<?>> channel) {
-        if(this.channels.contains(channel)) return;
-        this.channels.add(channel);
-    }
+    public static void main(String[] args) {
 
-    
-    /**
-     * Returns the required channels for this condition.
-     * 
-     * @return The required channels
-     */
-    public Class<?>[] getRequiredChannels() {
-        return $(this.channels).array(Class.class);
+        PluginManager pm = PluginManagerFactory.createPluginManager();
+        pm.addPluginsFrom(ClassURI.CLASSPATH);
+        
+        
+        final AtomicInteger i = new AtomicInteger();
+        pm.getPlugin(Diagnosis.class).replay("1", new DiagnosisMonitor<Serializable>() {
+            @Override
+            public void onStatusChange(DiagnosisStatus<Serializable> status) {
+                if(!$(status.getValue()).string().contains("processadditional/param")) return;
+                System.out.println(status.getValue());
+                i.incrementAndGet();
+            }
+        });
+
+        System.out.println(i);
     }
-    
 }

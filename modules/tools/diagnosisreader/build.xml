@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+
+<!-- General project description -->
+<project name="JSPF.diagnosisreader">
+    <property name="diagnosisreader.modulename" value="diagnosisreader"/>
+    
+    
+    <target name="compile.diagnosisreader" description="Compile the diagnosisreader plugin">
+        <!-- Create output folder -->
+        <mkdir dir="${build.root}/${diagnosisreader.modulename}/"/>
+        
+        
+        <!-- Compile all classes -->
+        <javac srcdir="${tools.root}/${diagnosisreader.modulename}/src" destdir="${build.root}/${diagnosisreader.modulename}/" source="1.6" target="1.6" debug="true">
+            <classpath>
+                <fileset dir="${tools.root}/${diagnosisreader.modulename}/dependencies/">
+                    <include name="*.jar"/>
+                </fileset>
+                <fileset dir="${distribution.root}/">
+                    <filename name="*.jar" />
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+    
+    
+    <target name="pack.diagnosisreader" description="Pack the diagnosisreader plugin with its dependencies">
+        <!-- Create output folder -->
+        <mkdir dir="${distribution.root}/"/>
+        <mkdir dir="${distribution.root}/diagnosisreader"/>
+        
+        <!-- Unjar related -->
+        <unjar dest="${build.root}/${diagnosisreader.modulename}/" src="${distribution.root}/${prefix}.${core.modulename}-${version}.jar"/>
+        <unjar dest="${build.root}/${diagnosisreader.modulename}/" src="${tools.root}/${diagnosisreader.modulename}/dependencies/forms.jar"/>
+        
+        <!-- Copy resources -->
+        <copy file="${tools.root}/${diagnosisreader.modulename}/src/net/xeoh/plugins/diagnosisreader/ui/dropfileshere.png" tofile="${build.root}/${diagnosisreader.modulename}/net/xeoh/plugins/diagnosisreader/ui/dropfileshere.png" />
+
+        <!-- Rejar everything -->
+        <jar destfile="${distribution.root}/diagnosisreader/${diagnosisreader.modulename}.jar" basedir="${build.root}/${diagnosisreader.modulename}/">
+            <manifest>
+                  <attribute name="Main-Class" value="net.xeoh.plugins.diagnosisreader.DiagnosisReader"/>
+            </manifest>
+        </jar>
+
+        <!-- Copy EXE -->
+        <copy file="${tools.root}/${diagnosisreader.modulename}/dependencies/exe4j/diagnosisreader.exe" tofile="${distribution.root}/diagnosisreader/diagnosisreader.exe" />
+    </target>
+    
+    
+    <target name="test.diagnosisreader" description="Pack the diagnosisreader plugin with its dependencies">
+        <!-- Create output folder -->
+        <mkdir dir="${distribution.root}/"/>
+        
+        <!-- Build jUnit Tests -->
+        <mkdir dir="${build.root}/${diagnosisreader.modulename}.junit/"/>
+        
+        <javac srcdir="${modules.root}/${diagnosisreader.modulename}/src" destdir="${build.root}/${diagnosisreader.modulename}/" source="1.6" target="1.6">
+            <classpath>
+                <fileset dir="${tools.root}/${diagnosisreader.modulename}/dependencies/">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+    
+    <target name="documentation.diagnosisreader">
+        <javadoc destdir="documentation/api/${diagnosisreader.modulename}/" author="true" version="true" use="true" windowtitle="JSPF API">
+            
+            <packageset dir="${tools.root}/${diagnosisreader.modulename}/src/" defaultexcludes="yes">
+                <!--include name="net/xeoh/plugins/*"/-->
+                <include name="net/xeoh/plugins/base"/>
+                <include name="net/xeoh/plugins/base/options/**"/>
+                <include name="net/xeoh/plugins/base/facades"/>
+                <include name="net/xeoh/plugins/base/impl/PluginManagerFactory.java"/>
+                <include name="net/xeoh/plugins/base/annotations/**"/>
+                <include name="net/xeoh/plugins/bus"/>
+                <include name="net/xeoh/plugins/bus/messages"/>
+                <include name="net/xeoh/plugins/defaultsprovider"/>
+                <include name="net/xeoh/plugins/informationbroker"/>
+            </packageset>
+            
+            <doctitle>
+                MyTitle
+            </doctitle>
+            <link href="http://developer.java.sun.com/developer/products/xml/docs/api/"/>
+        </javadoc>
+    </target>
+</project>

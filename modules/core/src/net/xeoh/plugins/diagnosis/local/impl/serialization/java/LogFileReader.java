@@ -59,6 +59,7 @@ public class LogFileReader {
                     callback.nextEntry((Entry) stream.readObject());
                 } catch(Exception e) {
                     if(e instanceof EOFException) break;
+                    if(e instanceof ClassNotFoundException) { System.err.println("Skipping one entry due to a class not found: " + e.getMessage()); continue; }
                     e.printStackTrace();
                 }
             }
@@ -67,9 +68,7 @@ public class LogFileReader {
         } catch (IOException e) {
             // e.printStackTrace();
             System.out.println("End of File");
-        }/* catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }*/
+        }
     }
 
     /**

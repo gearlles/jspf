@@ -1,5 +1,5 @@
 /*
- * Condition.java
+ * DropPanel.java
  * 
  * Copyright (c) 2011, Ralf Biedert All rights reserved.
  * 
@@ -25,45 +25,68 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.diagnosis.local.util.conditions;
+package net.xeoh.plugins.diagnosisreader.ui;
 
-import static net.jcores.CoreKeeper.$;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import javax.imageio.ImageIO;
+import javax.swing.JPanel;
 
-import net.xeoh.plugins.diagnosis.local.DiagnosisChannelID;
-import net.xeoh.plugins.diagnosis.local.DiagnosisMonitor;
+public class DropPanel extends JPanel {
+    /**  */
+    private static final long serialVersionUID = 4384668615658760387L;
 
-/**
- * Abstract class for any condition.
- * 
- * @author Ralf Biedert
- */
-public abstract class Condition implements DiagnosisMonitor<Serializable> {
-    
-    /** The channels to observe */
-    private List<Class<?>> channels = new ArrayList<Class<?>>();
+    /** */
+    private BufferedImage image;
 
-    /**
-     * Adds a channel to the list of required channels.
-     * 
-     * @param channel
-     */
-    public void require(Class<? extends DiagnosisChannelID<?>> channel) {
-        if(this.channels.contains(channel)) return;
-        this.channels.add(channel);
+    public DropPanel() {
+        try {
+            this.image = ImageIO.read(DropPanel.class.getResourceAsStream("dropfileshere.png"));
+        } catch (IOException e) {}
     }
 
-    
-    /**
-     * Returns the required channels for this condition.
+    /*
+     * (non-Javadoc)
      * 
-     * @return The required channels
+     * @see javax.swing.JComponent#paint(java.awt.Graphics)
      */
-    public Class<?>[] getRequiredChannels() {
-        return $(this.channels).array(Class.class);
+    @Override
+    public void paint(Graphics g) {
+        g.drawImage(this.image, 0, 0, null);
     }
-    
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see javax.swing.JComponent#getPreferredSize()
+     */
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(this.image.getWidth(), this.image.getHeight());
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see javax.swing.JComponent#getMinimumSize()
+     */
+    @Override
+    public Dimension getMinimumSize() {
+        return this.getPreferredSize();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see javax.swing.JComponent#getMaximumSize()
+     */
+    @Override
+    public Dimension getMaximumSize() {
+        return this.getPreferredSize();
+    }
+
+  
 }

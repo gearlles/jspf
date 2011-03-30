@@ -10,6 +10,7 @@
 	<classpathentry kind="src" path="modules/plugins/remote.json/src"/>
 	<classpathentry kind="src" path="modules/plugins/remote.lipermi/src"/>
 	<classpathentry kind="src" path="modules/plugins/remote.discovery/src"/>
+	<classpathentry kind="src" path="modules/tools/diagnosisreader/src"/>
 	<classpathentry kind="src" path="modules/tools/plugindoctor/src"/>
 	<classpathentry kind="src" path="tests/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
@@ -41,6 +42,7 @@
 	<classpathentry kind="lib" path="modules/tools/plugindoctor/dependencies/jarjar-1.0.jar"/>
 	<classpathentry kind="lib" path="tests/plugins/coolplugin.jar"/>
 	<classpathentry kind="lib" path="modules/core/dependencies/jcores.jar"/>
+	<classpathentry kind="lib" path="modules/tools/diagnosisreader/dependencies/forms.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="modules/plugins/remote.lipermi/dependencies/lipermi.mod.jar"/>
 	<classpathentry kind="output" path="bin"/>

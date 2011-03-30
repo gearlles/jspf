@@ -27,10 +27,13 @@
  */
 package net.xeoh.plugins.diagnosis.local.impl;
 
+import static net.jcores.CoreKeeper.$;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -45,8 +48,11 @@ import net.xeoh.plugins.diagnosis.local.DiagnosisChannelID;
 import net.xeoh.plugins.diagnosis.local.DiagnosisMonitor;
 import net.xeoh.plugins.diagnosis.local.DiagnosisStatus;
 import net.xeoh.plugins.diagnosis.local.impl.serialization.java.Entry;
+import net.xeoh.plugins.diagnosis.local.impl.serialization.java.EntryCallback;
+import net.xeoh.plugins.diagnosis.local.impl.serialization.java.LogFileReader;
 import net.xeoh.plugins.diagnosis.local.impl.serialization.java.LogFileWriter;
 import net.xeoh.plugins.diagnosis.local.options.ChannelOption;
+import net.xeoh.plugins.diagnosis.local.options.status.OptionInfo;
 
 @PluginImplementation
 public class DiagnosisImpl implements Diagnosis {
@@ -72,7 +78,7 @@ public class DiagnosisImpl implements Diagnosis {
     public PluginConfiguration configuration;
 
     /** If true, the whole plugin will be disabled */
-    boolean isDisabled = false;
+    boolean isDisabled = true;
 
     /** If true, if we should dump stack traces */
     boolean useStackTraces = false;
@@ -228,5 +234,29 @@ public class DiagnosisImpl implements Diagnosis {
             this.itemsLock.unlock();
         }
         return keyEntry;
+    }
+
+    
+    
+    /* (non-Javadoc)
+     * @see net.xeoh.plugins.diagnosis.local.Diagnosis#replay(java.lang.String, net.xeoh.plugins.diagnosis.local.DiagnosisMonitor)
+     */
+    @Override
+    public void replay(final String file, final DiagnosisMonitor<?> listener) {
+        final LogFileReader reader = new LogFileReader(file);
+        reader.replay(new EntryCallback() {
+            @SuppressWarnings({ "rawtypes", "unchecked" })
+            @Override
+            public void nextEntry(Entry entry) {
+                // Convert the entry to a status events
+                final List<OptionInfo> infos = new ArrayList<OptionInfo>();
+                for (String value : entry.additionalInfo.keySet()) {
+                    infos.add(new OptionInfo(value, (Serializable) entry.additionalInfo.get(value)));
+                }
+
+                final DiagnosisStatusImpl<?> event = new DiagnosisStatusImpl(entry.channel, (Serializable) entry.value, entry.date, $(infos).array(OptionInfo.class));
+                listener.onStatusChange((DiagnosisStatus) event);
+            }
+        });
     }
 }

@@ -73,4 +73,13 @@ public interface Diagnosis extends Plugin {
      * @param listener 
      */
     public  <T extends Serializable> void registerMonitor(Class<? extends DiagnosisChannelID<T>> channel, DiagnosisMonitor<T> listener);
+    
+    
+    /**
+     * Adds a replay listener for a given file.
+     * 
+     * @param file
+     * @param listener
+     */
+    public void replay(String file, DiagnosisMonitor<?> listener); 
 }

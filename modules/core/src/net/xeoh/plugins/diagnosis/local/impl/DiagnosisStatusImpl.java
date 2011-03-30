@@ -39,18 +39,21 @@ import net.xeoh.plugins.diagnosis.local.options.status.OptionInfo;
  * @param <T>
  */
 public class DiagnosisStatusImpl<T extends Serializable> implements DiagnosisStatus<T> {
+    
+    /** */
+    final private Class<? extends DiagnosisChannelID<T>> channel;
+    
+    /** */
+    final private String channelString;
 
     /** */
-    private T value;
+    final private T value;
     
     /** */
-    private Class<? extends DiagnosisChannelID<T>> channel;
+    final private long date;
     
     /** */
-    private long date;
-    
-    /** */
-    private OptionInfo[] infos;
+    final private OptionInfo[] infos;
 
     /**
      * @param channel
@@ -60,11 +63,27 @@ public class DiagnosisStatusImpl<T extends Serializable> implements DiagnosisSta
      */
     public DiagnosisStatusImpl(Class<? extends DiagnosisChannelID<T>> channel, T value, long date, OptionInfo[] infos) {
         this.channel = channel;
+        this.channelString = channel.getCanonicalName();
         this.value = value;
         this.date = date;
         this.infos = infos;
     }
 
+    /**
+     * @param channelName
+     * @param value
+     * @param date
+     * @param infos
+     */
+    public DiagnosisStatusImpl(String channelName, T value, long date, OptionInfo[] infos) {
+        this.channel = null;
+        this.channelString = channelName;
+        this.value = value;
+        this.date = date;
+        this.infos = infos;
+    }
+
+    
     /*
      * (non-Javadoc)
      * 
@@ -105,4 +124,11 @@ public class DiagnosisStatusImpl<T extends Serializable> implements DiagnosisSta
         return this.date;
     }
 
+    /* (non-Javadoc)
+     * @see net.xeoh.plugins.diagnosis.local.DiagnosisStatus#getChannelAsString()
+     */
+    @Override
+    public String getChannelAsString() {
+        return this.channelString;
+    }
 }

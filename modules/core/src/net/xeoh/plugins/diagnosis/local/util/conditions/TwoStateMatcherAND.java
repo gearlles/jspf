@@ -28,8 +28,6 @@
 package net.xeoh.plugins.diagnosis.local.util.conditions;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import net.xeoh.plugins.diagnosis.local.DiagnosisChannelID;
@@ -42,40 +40,15 @@ import net.xeoh.plugins.diagnosis.local.util.conditions.matcher.Matcher;
  * 
  * @author Ralf Biedert
  */
-public abstract class TwoStateAndMatch extends TwoStateCondition {
-    /** Stores the values we need for matching */
-    Map<Class<? extends DiagnosisChannelID<?>>, Matcher> onRequirements = new HashMap<Class<? extends DiagnosisChannelID<?>>, Matcher>();
-
-    /** Stores the values we need for matching */
-    Map<Class<? extends DiagnosisChannelID<?>>, Object> currentStatus = new HashMap<Class<? extends DiagnosisChannelID<?>>, Object>();
-    
-    /** */
-    public TwoStateAndMatch() {
-        setupMatcher();
-    }
-
-    /** Override this method to set up your matcher */
-    protected void setupMatcher() {
-    }
-
-    /**
-     * Makes the condition match a number of channel states (linked with AND).
-     * 
-     * @param <T>
-     * @param channel
-     * @param matcher
-     */
-    public <T extends Serializable> void match(Class<? extends DiagnosisChannelID<T>> channel, Matcher matcher) {
-        require(channel);
-        this.onRequirements.put(channel, matcher);
-    }
-    
+public abstract class TwoStateMatcherAND extends TwoStateMatcher {
     
     /* (non-Javadoc)
      * @see net.xeoh.plugins.diagnosis.local.DiagnosisMonitor#onStatusChange(net.xeoh.plugins.diagnosis.local.DiagnosisStatus)
      */
+    @SuppressWarnings("cast")
     @Override
     public void onStatusChange(DiagnosisStatus<Serializable> status) {
+        
         // First, update our values
         this.currentStatus.put(status.getChannel(), status.getValue());
         
@@ -89,6 +62,20 @@ public abstract class TwoStateAndMatch extends TwoStateCondition {
                 announceState(STATE.OFF);
                 return;
             }
+        }
+        
+        // Match dependant conditions
+        for (TwoStateCondition twoState : this.requiredConditions) {
+            // FIXME: Aarrgh. javac failes on the following line while eclipse doesn't ...
+            //if(!$(twoState.getRequiredChannels()).contains(status.getChannel())) continue;
+            // twoState.onStatusChange(status);
+            
+            /*
+            if(twoState.getState() == STATE.OFF) {
+                announceState(STATE.OFF);
+                return;
+            }
+            */
         }
         
         announceState(STATE.ON);

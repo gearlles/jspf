@@ -1,5 +1,5 @@
 /*
- * Condition.java
+ * ConverterInfo.java
  * 
  * Copyright (c) 2011, Ralf Biedert All rights reserved.
  * 
@@ -25,45 +25,16 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.diagnosis.local.util.conditions;
-
-import static net.jcores.CoreKeeper.$;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
-import net.xeoh.plugins.diagnosis.local.DiagnosisChannelID;
-import net.xeoh.plugins.diagnosis.local.DiagnosisMonitor;
+package net.xeoh.plugins.diagnosisreader.converters;
 
 /**
- * Abstract class for any condition.
- * 
  * @author Ralf Biedert
  */
-public abstract class Condition implements DiagnosisMonitor<Serializable> {
-    
-    /** The channels to observe */
-    private List<Class<?>> channels = new ArrayList<Class<?>>();
-
+public interface ConverterInfo {
     /**
-     * Adds a channel to the list of required channels.
+     * Name of this converter.
      * 
-     * @param channel
+     * @return .
      */
-    public void require(Class<? extends DiagnosisChannelID<?>> channel) {
-        if(this.channels.contains(channel)) return;
-        this.channels.add(channel);
-    }
-
-    
-    /**
-     * Returns the required channels for this condition.
-     * 
-     * @return The required channels
-     */
-    public Class<?>[] getRequiredChannels() {
-        return $(this.channels).array(Class.class);
-    }
-    
+    public String getName();
 }

@@ -41,7 +41,8 @@ import net.xeoh.plugins.diagnosis.local.DiagnosisChannel;
 import net.xeoh.plugins.diagnosis.local.DiagnosisMonitor;
 import net.xeoh.plugins.diagnosis.local.DiagnosisStatus;
 import net.xeoh.plugins.diagnosis.local.util.DiagnosisUtil;
-import net.xeoh.plugins.diagnosis.local.util.conditions.TwoStateAndMatch;
+import net.xeoh.plugins.diagnosis.local.util.conditions.TwoStateMatcherAND;
+import net.xeoh.plugins.diagnosis.local.util.conditions.matcher.Contains;
 import net.xeoh.plugins.diagnosis.local.util.conditions.matcher.Is;
 import net.xeoh.plugins.testplugins.testannotations.impl.TestAnnotationsImpl;
 
@@ -143,11 +144,12 @@ public class DiagnosisGeneralTest {
         diagnosis.channel(TestChannel.class).status(100);
 
    
-        util.registerCondition(new TwoStateAndMatch() {
+        util.registerCondition(new TwoStateMatcherAND() {
             /** */
             @Override
             protected void setupMatcher() {
                 match(TestChannel.class, new Is(100));
+                match(LoggingChannel1.class, new Contains("xtatus"));
             }
             
             /** */

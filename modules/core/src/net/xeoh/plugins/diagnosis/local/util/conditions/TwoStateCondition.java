@@ -58,4 +58,13 @@ public abstract class TwoStateCondition extends Condition {
      * @param state The new state.
      */
     public abstract void stateChanged(STATE state);
+    
+    /**
+     * Returns the current state of this condition.
+     * 
+     * @return The current state.
+     */
+    public STATE getState() {
+        return this.lastState;
+    }
 }

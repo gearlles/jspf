@@ -1,5 +1,5 @@
 /*
- * Condition.java
+ * DiagnosisReader.java
  * 
  * Copyright (c) 2011, Ralf Biedert All rights reserved.
  * 
@@ -25,45 +25,44 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.diagnosis.local.util.conditions;
+package net.xeoh.plugins.diagnosisreader;
 
-import static net.jcores.CoreKeeper.$;
+import java.io.File;
+import java.util.Collection;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import javax.swing.UIManager;
 
-import net.xeoh.plugins.diagnosis.local.DiagnosisChannelID;
-import net.xeoh.plugins.diagnosis.local.DiagnosisMonitor;
+import net.xeoh.plugins.base.PluginManager;
+import net.xeoh.plugins.base.impl.PluginManagerFactory;
+import net.xeoh.plugins.base.util.PluginManagerUtil;
+import net.xeoh.plugins.base.util.uri.ClassURI;
+import net.xeoh.plugins.diagnosisreader.converters.Converter;
+import net.xeoh.plugins.diagnosisreader.converters.impl.plain.PlainConverterImpl;
+import net.xeoh.plugins.diagnosisreader.ui.MainWindow;
 
 /**
- * Abstract class for any condition.
- * 
  * @author Ralf Biedert
  */
-public abstract class Condition implements DiagnosisMonitor<Serializable> {
-    
-    /** The channels to observe */
-    private List<Class<?>> channels = new ArrayList<Class<?>>();
-
-    /**
-     * Adds a channel to the list of required channels.
-     * 
-     * @param channel
-     */
-    public void require(Class<? extends DiagnosisChannelID<?>> channel) {
-        if(this.channels.contains(channel)) return;
-        this.channels.add(channel);
+public class DiagnosisReader {
+    public static void main(String[] args) {
+        // Set the system look and feel
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (final Exception e) {}
+        
+        // We only need the default plugins and a few of our owns
+        final PluginManager pluginManager = PluginManagerFactory.createPluginManager();
+        final PluginManagerUtil pluginManagerUtil = new PluginManagerUtil(pluginManager);
+        
+        pluginManager.addPluginsFrom(ClassURI.PLUGIN(PlainConverterImpl.class));
+        pluginManager.addPluginsFrom(new File("plugins/").toURI());
+        
+        final MainWindow mainWindow = new MainWindow(pluginManager);
+        mainWindow.setVisible(true);
+        
+        final Collection<Converter> converters = pluginManagerUtil.getPlugins(Converter.class);
+        for (Converter converter : converters) {
+            mainWindow.registerHandler(converter);
+        }
     }
-
-    
-    /**
-     * Returns the required channels for this condition.
-     * 
-     * @return The required channels
-     */
-    public Class<?>[] getRequiredChannels() {
-        return $(this.channels).array(Class.class);
-    }
-    
 }

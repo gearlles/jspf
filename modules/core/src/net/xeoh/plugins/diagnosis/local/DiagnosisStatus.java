@@ -48,6 +48,13 @@ public interface DiagnosisStatus<T extends Serializable> {
     public Class<? extends DiagnosisChannelID<T>> getChannel();
     
     /**
+     * Returns the channel as a string. Mostly used for replay.
+     *  
+     * @return String representation of the channel.
+     */
+    public String getChannelAsString();
+    
+    /**
      * Returns the new value.
      * 
      * @return The value.
