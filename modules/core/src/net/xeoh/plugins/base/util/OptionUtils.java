@@ -33,7 +33,7 @@ import java.util.Collection;
 import net.xeoh.plugins.base.Option;
 
 /**
- * Handles options within plugin methods. Likely to be replaced by 
+ * Handles options within plugin methods. Likely to be replaced by
  * <a href="http://jcores.net">jCores</a>.
  * 
  * @author Ralf Biedert
@@ -62,6 +62,7 @@ public class OptionUtils<T extends Option> {
      */
     public boolean contains(Class<? extends T> option) {
         for (T t : this.options) {
+            if (t == null) continue;            
             if (option.isAssignableFrom(t.getClass())) return true;
         }
 
@@ -76,6 +77,7 @@ public class OptionUtils<T extends Option> {
      */
     public boolean containsAny(Class<? extends T>... option) {
         for (T t : this.options) {
+            if (t == null) continue;
             for (Class<? extends T> cls : option) {
                 if (cls.isAssignableFrom(t.getClass())) return true;
             }
@@ -87,15 +89,16 @@ public class OptionUtils<T extends Option> {
     /**
      * Returns the selection option
      * 
-     * @param <O> 
+     * @param <O>
      * 
      * @param option
-     * @param deflt 
+     * @param deflt
      * @return .
      */
     @SuppressWarnings("unchecked")
     public <O extends T> O get(Class<? extends O> option, O... deflt) {
         for (T t : this.options) {
+            if (t == null) continue;
             if (option.isAssignableFrom(t.getClass())) return (O) t;
         }
 
@@ -108,7 +111,7 @@ public class OptionUtils<T extends Option> {
     /**
      * Returns the selection option
      * 
-     * @param <O> 
+     * @param <O>
      * 
      * @param option
      * @return .
@@ -119,6 +122,7 @@ public class OptionUtils<T extends Option> {
         final Collection<O> rval = new ArrayList<O>();
 
         for (T t : this.options) {
+            if (t == null) continue;
             if (option.isAssignableFrom(t.getClass())) {
                 rval.add((O) t);
             }
@@ -130,15 +134,16 @@ public class OptionUtils<T extends Option> {
     /**
      * Returns the selection option
      * 
-     * @param <O> 
+     * @param <O>
      * 
      * @param option
-     * @param handler 
+     * @param handler
      * 
      */
     @SuppressWarnings("unchecked")
     public <O extends T> void handle(Class<? extends O> option, OptionHandler<O> handler) {
         for (T t : this.options) {
+            if (t == null) continue;
             if (option.isAssignableFrom(t.getClass())) {
                 handler.handle((O) t);
             }
