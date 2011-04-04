@@ -45,7 +45,6 @@ public abstract class TwoStateMatcherAND extends TwoStateMatcher {
     /* (non-Javadoc)
      * @see net.xeoh.plugins.diagnosis.local.DiagnosisMonitor#onStatusChange(net.xeoh.plugins.diagnosis.local.DiagnosisStatus)
      */
-    @SuppressWarnings("cast")
     @Override
     public void onStatusChange(DiagnosisStatus<Serializable> status) {
         
@@ -65,7 +64,7 @@ public abstract class TwoStateMatcherAND extends TwoStateMatcher {
         }
         
         // Match dependant conditions
-        for (TwoStateCondition twoState : this.requiredConditions) {
+        for (@SuppressWarnings("unused") TwoStateCondition twoState : this.requiredConditions) {
             // FIXME: Aarrgh. javac failes on the following line while eclipse doesn't ...
             //if(!$(twoState.getRequiredChannels()).contains(status.getChannel())) continue;
             // twoState.onStatusChange(status);

@@ -83,5 +83,4 @@ public @interface InjectPlugin {
      * @return .
      */
     boolean isOptional() default false;
-
 }

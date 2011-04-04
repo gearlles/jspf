@@ -27,11 +27,14 @@
  */
 package net.xeoh.plugins.base.util;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.PluginManager;
+import net.xeoh.plugins.base.options.AddPluginsFromOption;
+import net.xeoh.plugins.base.options.GetPluginOption;
 import net.xeoh.plugins.base.options.getplugin.OptionPluginSelector;
 import net.xeoh.plugins.base.options.getplugin.PluginSelector;
 
@@ -42,7 +45,7 @@ import net.xeoh.plugins.base.options.getplugin.PluginSelector;
  * @author Ralf Biedert
  * @see PluginManager
  */
-public class PluginManagerUtil {
+public class PluginManagerUtil implements PluginManager {
 
     private final PluginManager pluginManager;
 
@@ -108,4 +111,28 @@ public class PluginManagerUtil {
         return allPlugins;
     }
 
+    
+    /* (non-Javadoc)
+     * @see net.xeoh.plugins.base.PluginManager#addPluginsFrom(java.net.URI, net.xeoh.plugins.base.options.AddPluginsFromOption[])
+     */
+    @Override
+    public void addPluginsFrom(URI url, AddPluginsFromOption... options) {
+        this.pluginManager.addPluginsFrom(url, options);
+    }
+
+    /* (non-Javadoc)
+     * @see net.xeoh.plugins.base.PluginManager#getPlugin(java.lang.Class, net.xeoh.plugins.base.options.GetPluginOption[])
+     */
+    @Override
+    public <P extends Plugin> P getPlugin(Class<P> plugin, GetPluginOption... options) {
+        return this.pluginManager.getPlugin(plugin, options);
+    }
+
+    /* (non-Javadoc)
+     * @see net.xeoh.plugins.base.PluginManager#shutdown()
+     */
+    @Override
+    public void shutdown() {
+        this.pluginManager.shutdown();
+    }
 }
