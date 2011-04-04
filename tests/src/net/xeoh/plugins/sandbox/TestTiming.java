@@ -27,9 +27,26 @@
  */
 package net.xeoh.plugins.sandbox;
 
+import java.io.File;
+import java.net.URI;
 
-public class Profiling {
+import net.xeoh.plugins.base.PluginManager;
+import net.xeoh.plugins.base.impl.PluginManagerFactory;
+import net.xeoh.plugins.base.util.JSPFProperties;
+
+public class TestTiming {
     public static void main(String[] args) {
-       while(true) System.out.println(System.nanoTime());
+        System.out.println(new File("bin/").toURI());
+        
+        final JSPFProperties props = new JSPFProperties();
+
+        props.setProperty(PluginManager.class, "cache.enabled", "true");
+        props.setProperty(PluginManager.class, "cache.mode", "weak");
+        props.setProperty(PluginManager.class, "cache.file", "jspf.cache");
+        props.setProperty(PluginManager.class, "logging.level", "INFO");
+        props.setProperty(PluginManager.class, "classpath.filter.default.pattern", "");
+
+        PluginManager pm = PluginManagerFactory.createPluginManager(props);
+        pm.addPluginsFrom(URI.create("classpath://*"));
     }
 }

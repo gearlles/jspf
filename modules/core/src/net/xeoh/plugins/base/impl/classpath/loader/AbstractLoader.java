@@ -115,8 +115,8 @@ public abstract class AbstractLoader {
 
             // Don't load plugins already spawned.
             if (name.startsWith("net.xeoh.plugins.base") || 
-                name.startsWith("net.xeoh.plugins.diagnosis") ||
-                name.startsWith("net.xeoh.plugins.informationbroker")) return;
+                name.startsWith("net.xeoh.plugins.diagnosis.") ||
+                name.startsWith("net.xeoh.plugins.informationbroker.")) return;
 
             // Get the plugin's annotation
             final PluginImplementation annotation = possiblePlugin.getAnnotation(PluginImplementation.class);
