@@ -1,19 +1,19 @@
 /*
  * AbstractLoader.java
- * 
+ *
  * Copyright (c) 2009, Ralf Biedert All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this list of
  * conditions and the following disclaimer. Redistributions in binary form must reproduce the
  * above copyright notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the author nor the names of its contributors may be used to endorse or
  * promote products derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS
  * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
@@ -23,7 +23,7 @@
  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  */
 package net.xeoh.plugins.base.impl.classpath.loader;
 
@@ -55,7 +55,7 @@ import net.xeoh.plugins.base.util.PluginConfigurationUtil;
 
 /**
  * The abstract base class of all loaders, provides methods for spawning classes.
- * 
+ *
  * @author Ralf Biedert
  */
 public abstract class AbstractLoader {
@@ -81,7 +81,7 @@ public abstract class AbstractLoader {
 
     /**
      * Load plugins from a given source
-     * 
+     *
      * @param uri
      */
     public abstract void loadFrom(URI uri);
@@ -89,7 +89,7 @@ public abstract class AbstractLoader {
     /**
      * Tries to load a class from a given source. If it is a plugin, it will be
      * registered.
-     * 
+     *
      * @param location
      * @param name
      */
@@ -114,7 +114,7 @@ public abstract class AbstractLoader {
             final Class<?> possiblePlugin = classPathManager.loadClass(location, name);
 
             // Don't load plugins already spawned.
-            if (name.startsWith("net.xeoh.plugins.base") || 
+            if (name.startsWith("net.xeoh.plugins.base") ||
                 name.startsWith("net.xeoh.plugins.diagnosis.") ||
                 name.startsWith("net.xeoh.plugins.informationbroker.")) return;
 
