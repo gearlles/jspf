@@ -5,7 +5,7 @@
     
     <!-- Define different global variables -->
     <property name="prefix" value="jspf"/>
-    <property name="version" value="1.0.0"/>
+    <property name="version" value="1.0.1"/>
     
     
     <!-- Define different roots -->
@@ -106,6 +106,7 @@
                 <include name="${distribution.root}/*core*"/>
                 <include name="${distribution.root}/*remote*"/>
                 <include name="${distribution.root}/*db*"/>
+                <include name="${distribution.root}/diagnosisreader"/>
             </fileset>
         </zip>
         

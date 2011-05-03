@@ -1,7 +1,7 @@
 /*
- * ClassFinderTest.java
+ * VanillaPluginUtil.java
  * 
- * Copyright (c) 2009, Ralf Biedert All rights reserved.
+ * Copyright (c) 2011, Ralf Biedert All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -25,47 +25,18 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.sandbox;
-
-import static net.jcores.CoreKeeper.$;
-
-import java.io.File;
-import java.net.MalformedURLException;
-import java.util.Collection;
-import java.util.List;
+package net.xeoh.plugins.base.util;
 
 import net.xeoh.plugins.base.Plugin;
-import net.xeoh.plugins.base.PluginInformation;
-import net.xeoh.plugins.base.PluginInformation.Information;
-import net.xeoh.plugins.base.PluginManager;
-import net.xeoh.plugins.base.impl.PluginManagerFactory;
-import net.xeoh.plugins.base.util.PluginManagerUtil;
 
 /**
- * @author rb
+ * Vanilla wrapper for plugins.
+ * 
+ * @author Ralf Biedert
+ * @param <T>
  */
-public class LoadIsolated {
-    /**
-     * @param args
-     * @throws MalformedURLException
-     * @throws ClassNotFoundException 
-     */
-    public static void main(String[] args) throws MalformedURLException,
-                                          ClassNotFoundException {
-        
-        PluginManager pm = PluginManagerFactory.createPluginManager();
-        List<File> list = $(".").file().dir().filter(".*jar$").print().list();
-        for (File file : list) {
-            pm.addPluginsFrom(file.toURI());
-        }
-        
-        PluginInformation pi = pm.getPlugin(PluginInformation.class);
-        PluginManagerUtil pmu = new PluginManagerUtil(pm);
-        Collection<Plugin> plugins = pmu.getPlugins();
-        
-        for (Plugin plugin : plugins) {
-            System.out.println(plugin + ": ");
-            $(pi.getInformation(Information.CLASSPATH_ORIGIN, plugin)).print();
-        }
+public abstract class VanillaPluginUtil<T extends Plugin> extends VanillaUtil<T> {
+    public VanillaPluginUtil(T object) {
+        super(object);
     }
 }

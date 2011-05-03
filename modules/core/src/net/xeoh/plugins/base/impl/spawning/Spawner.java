@@ -27,10 +27,9 @@
  */
 package net.xeoh.plugins.base.impl.spawning;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TimerTask;
 
@@ -40,7 +39,6 @@ import net.xeoh.plugins.base.annotations.Timer;
 import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 import net.xeoh.plugins.base.annotations.events.Shutdown;
-import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import net.xeoh.plugins.base.diagnosis.channels.tracing.SpawnerTracer;
 import net.xeoh.plugins.base.impl.PluginManagerImpl;
 import net.xeoh.plugins.base.impl.registry.PluginClassMetaInformation.Dependency;
@@ -201,8 +199,10 @@ public class Spawner {
             timer.schedule(lateMessage, 250);
 
             // Instanciate the plugin
-            final Plugin spawnedPlugin = (Plugin) c.newInstance();
-
+            final Constructor constructor = c.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            final Plugin spawnedPlugin = (Plugin) constructor.newInstance();
+            
             // In here spawning of the plugin worked
             final SpawnResult spawnResult = new SpawnResult(spawnedPlugin);
             spawnResult.metaInformation.pluginStatus = PluginStatus.SPAWNED;
@@ -507,42 +507,13 @@ public class Spawner {
     }
 
     /**
-     * Returns the list of all dependencies the plugin has .
+     * Returns the list of all dependencies the plugin has.
      * 
      * @param pluginClass
      * @return .
      */
-    @SuppressWarnings("unchecked")
     public Collection<Dependency> getDependencies(Class<? extends Plugin> pluginClass) {
-        final Collection<Dependency> rval = new ArrayList<Dependency>();
-
-        // All fields we have a look at
-        final Field[] fields = pluginClass.getFields();
-
-        // Process every field
-        for (final Field field : fields) {
-            // Try to get inject annotation. New: also turn on extended accessibility,
-            // so elements don't have to be public anymore.
-            field.setAccessible(true);
-            final InjectPlugin ipannotation = field.getAnnotation(InjectPlugin.class);
-
-            // If there is one ..
-            if (ipannotation == null) continue;
-
-            // Don't recognize optional fields as dependencies.
-            if (ipannotation.isOptional()) continue;
-
-            // Obtain capabilities
-
-            final Dependency d = new Dependency();
-            d.capabilites = ipannotation.requiredCapabilities();
-            d.pluginClass = (Class<? extends Plugin>) field.getType();
-            d.isOptional = ipannotation.isOptional();
-
-            rval.add(d);
-        }
-
-        return rval;
+        return new InjectHandler(this.pluginManager).getDependencies(pluginClass);
     }
 
     /**

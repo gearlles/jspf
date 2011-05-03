@@ -82,10 +82,12 @@ public class PluginInformationTest {
         final Collection<String> caps = pi.getInformation(Information.CAPABILITIES, ta);
         final Collection<String> author = pi.getInformation(Information.AUTHORS, ta);
         final Collection<String> version = pi.getInformation(Information.VERSION, ta);
-
+        final Collection<String> origin = pi.getInformation(Information.CLASSPATH_ORIGIN, ta);
+        
         Assert.assertTrue("Caps must contain SUNSHINE", caps.contains("SUNSHINE"));
         Assert.assertTrue("Caps must contain RAIN", caps.contains("RAIN"));
         Assert.assertTrue("Author must contain AUTHOR OK", author.contains("AUTHOR OK"));
         Assert.assertTrue("Version must be 667", version.contains("667"));
+        System.out.println(origin);
     }
 }

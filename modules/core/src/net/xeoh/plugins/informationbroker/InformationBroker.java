@@ -51,6 +51,7 @@ import net.xeoh.plugins.informationbroker.util.InformationBrokerUtil;
  * @author Ralf Biedert
  * 
  * @see InformationItem
+ * @see InformationBrokerUtil
  */
 public interface InformationBroker extends Plugin {
 
@@ -83,7 +84,7 @@ public interface InformationBroker extends Plugin {
      * 
      * <code>
      * plugin.subscribe(UserName.class, new InformationListener&lt;String>() {<br/>
-     * &nbsp;&nbsp;&nbsp;&nbsp;public void update(InformationItem&lt;String> item) {<br/>
+     * &nbsp;&nbsp;&nbsp;&nbsp;public void update(String item) {<br/>
      * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...<br/>
      * &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
      * });

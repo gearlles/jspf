@@ -38,8 +38,7 @@ import net.xeoh.plugins.base.PluginConfiguration;
  * @author Ralf Biedert
  * @see PluginConfiguration
  */
-public class PluginConfigurationUtil implements PluginConfiguration {
-    private final PluginConfiguration pluginConfiguration;
+public class PluginConfigurationUtil extends VanillaPluginUtil<PluginConfiguration> implements PluginConfiguration {
 
     /**
      * Creates a new util for the given interface.
@@ -47,7 +46,7 @@ public class PluginConfigurationUtil implements PluginConfiguration {
      * @param pc The interface to create the utils for.
      */
     public PluginConfigurationUtil(PluginConfiguration pc) {
-        this.pluginConfiguration = pc;
+        super(pc);
     }
 
     final Logger logger = Logger.getLogger(this.getClass().getName());
@@ -63,7 +62,7 @@ public class PluginConfigurationUtil implements PluginConfiguration {
     @SuppressWarnings("boxing")
     public int getInt(final Class<?> root, final String subkey,
                       final Integer... defautvalue) {
-        final String configuration = this.pluginConfiguration.getConfiguration(root, subkey);
+        final String configuration = this.object.getConfiguration(root, subkey);
         if (configuration == null) {
             if (defautvalue.length >= 1) return defautvalue[0];
             this.logger.warning("Returning default 0, but nothing was specified. Your application might behave strangely. Subkey was " + subkey);
@@ -83,7 +82,7 @@ public class PluginConfigurationUtil implements PluginConfiguration {
      */
     public String getString(final Class<?> root, final String subkey,
                             final String... defautvalue) {
-        final String configuration = this.pluginConfiguration.getConfiguration(root, subkey);
+        final String configuration = this.object.getConfiguration(root, subkey);
         if (configuration == null) {
             if (defautvalue.length >= 1) return defautvalue[0];
             this.logger.warning("Returning default '', but nothing was specified. Your application might behave strangely. Subkey was " + subkey);
@@ -104,7 +103,7 @@ public class PluginConfigurationUtil implements PluginConfiguration {
     @SuppressWarnings("boxing")
     public float getFloat(final Class<?> root, final String subkey,
                           final Float... defautvalue) {
-        final String configuration = this.pluginConfiguration.getConfiguration(root, subkey);
+        final String configuration = this.object.getConfiguration(root, subkey);
         if (configuration == null) {
             if (defautvalue.length >= 1) return defautvalue[0];
             this.logger.warning("Returning default '', but nothing was specified. Your application might behave strangely. Subkey was " + subkey);
@@ -126,7 +125,7 @@ public class PluginConfigurationUtil implements PluginConfiguration {
     @SuppressWarnings("boxing")
     public boolean getBoolean(final Class<?> root, final String subkey,
                               final Boolean... defautvalue) {
-        final String configuration = this.pluginConfiguration.getConfiguration(root, subkey);
+        final String configuration = this.object.getConfiguration(root, subkey);
         if (configuration == null) {
             if (defautvalue.length >= 1) return defautvalue[0];
             this.logger.warning("Returning default '', but nothing was specified. Your application might behave strangely. Subkey was " + subkey);
@@ -147,7 +146,7 @@ public class PluginConfigurationUtil implements PluginConfiguration {
     @SuppressWarnings("boxing")
     public double getDouble(final Class<?> root, final String subkey,
                             final Double... defautvalue) {
-        final String configuration = this.pluginConfiguration.getConfiguration(root, subkey);
+        final String configuration = this.object.getConfiguration(root, subkey);
         if (configuration == null) {
             if (defautvalue.length >= 1) return defautvalue[0];
             this.logger.warning("Returning default '', but nothing was specified. Your application might behave strangely. Subkey was " + subkey);
@@ -164,7 +163,7 @@ public class PluginConfigurationUtil implements PluginConfiguration {
      */
     @Override
     public String getConfiguration(Class<?> root, String subkey) {
-        return this.pluginConfiguration.getConfiguration(root, subkey);
+        return this.object.getConfiguration(root, subkey);
     }
 
     /*
@@ -175,6 +174,6 @@ public class PluginConfigurationUtil implements PluginConfiguration {
      */
     @Override
     public void setConfiguration(Class<?> root, String subkey, String value) {
-        this.pluginConfiguration.setConfiguration(root, subkey, value);
+        this.object.setConfiguration(root, subkey, value);
     }
 }

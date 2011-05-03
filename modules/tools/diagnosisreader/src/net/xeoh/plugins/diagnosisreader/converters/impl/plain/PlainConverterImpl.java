@@ -32,6 +32,7 @@ import static net.jcores.CoreKeeper.$;
 import java.io.File;
 import java.io.Serializable;
 
+import net.jcores.cores.CoreFile;
 import net.jcores.interfaces.functions.F1;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -74,11 +75,13 @@ public class PlainConverterImpl implements Converter {
      */
     @Override
     public void convert(File file) {
-        final StringBuilder sb = new StringBuilder();
+        
+        final CoreFile f = $(file.getAbsolutePath() + ".txt").file().delete();
         
         this.diagnosis.replay(file.getAbsolutePath(), new DiagnosisMonitor<Serializable>() {
             @Override
             public void onStatusChange(DiagnosisStatus<Serializable> status) {
+                final StringBuilder sb = new StringBuilder();
                 sb.append(status.getDate());
                 sb.append(" ");
                 sb.append($(status.getChannelAsString()).split("\\.").get(-1));
@@ -92,10 +95,11 @@ public class PlainConverterImpl implements Converter {
                     }
                 }).string().join(", "));
                 sb.append(" }\n");
+                
+                // Write text to file
+                f.append(sb.toString());
             }
         });
         
-        // Write text to file
-        $(file.getAbsolutePath() + ".txt").file().delete().append(sb);
     }
 }

@@ -34,6 +34,7 @@ import java.util.Collection;
 
 import net.jcores.cores.CoreFile;
 import net.jcores.cores.CoreObject;
+import net.jcores.interfaces.functions.F0;
 import net.jcores.interfaces.functions.F1;
 import net.jcores.options.OptionDropTypeFiles;
 import net.xeoh.plugins.base.PluginManager;
@@ -60,8 +61,13 @@ public class MainWindow extends MainWindowTemplate {
         // Make the drop panel accept files
         $(this.dropPanel).onDrop(new F1<CoreObject<Object>, Void>() {
             @Override
-            public Void f(CoreObject<Object> arg0) {
-                process(arg0.as(CoreFile.class));
+            public Void f(final CoreObject<Object> arg0) {
+                $.oneTime(new F0() {
+                    @Override
+                    public void f() {
+                        process(arg0.as(CoreFile.class));
+                    }
+                }, 1);
                 return null;
             }
         }, new OptionDropTypeFiles());

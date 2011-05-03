@@ -71,7 +71,7 @@ public interface PluginInformation extends Plugin {
         VERSION,
 
         /** 
-         * Date when the plugin was initialized. The unix time will be returned (S1).<br/><br/>
+         * Date when the plugin was initialized (S1). The unix time will be returned.<br/><br/>
          * 
          * TODO: Not implemented yet.
          */

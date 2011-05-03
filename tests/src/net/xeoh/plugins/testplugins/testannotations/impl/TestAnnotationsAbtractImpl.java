@@ -34,6 +34,7 @@ import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import net.xeoh.plugins.informationbroker.InformationBroker;
+import net.xeoh.plugins.informationbroker.util.InformationBrokerUtil;
 import net.xeoh.plugins.remote.RemoteAPI;
 import net.xeoh.plugins.testplugins.testannotations.TestAnnotations;
 
@@ -46,8 +47,12 @@ public class TestAnnotationsAbtractImpl implements TestAnnotations {
      * 
      */
     @InjectPlugin
-    public InformationBroker bus;
+    public InformationBrokerUtil bus;
 
+    @InjectPlugin
+    public InformationBroker busbus;
+
+    
     String init = "INIT FAILED";
 
     String thread = "THREAD FAILED";
@@ -68,7 +73,7 @@ public class TestAnnotationsAbtractImpl implements TestAnnotations {
 
     public String getInjectionStatus() {
         System.out.println("GET STATUS CALLED " + this.bus);
-        return this.bus != null ? "INJECTION OK" : "INJECTION FAILED";
+        return this.bus != null && this.busbus != null && this.bus.getObject() == this.busbus ? "INJECTION OK" : "INJECTION FAILED";
     }
 
     public String getThreadStatus() {

@@ -29,27 +29,27 @@ package net.xeoh.plugins.diagnosis.local.util;
 
 import java.io.Serializable;
 
+import net.xeoh.plugins.base.util.VanillaPluginUtil;
 import net.xeoh.plugins.diagnosis.local.Diagnosis;
+import net.xeoh.plugins.diagnosis.local.DiagnosisChannel;
 import net.xeoh.plugins.diagnosis.local.DiagnosisChannelID;
 import net.xeoh.plugins.diagnosis.local.DiagnosisMonitor;
+import net.xeoh.plugins.diagnosis.local.options.ChannelOption;
 import net.xeoh.plugins.diagnosis.local.util.conditions.Condition;
 
 /**
  * @author Ralf Biedert
  */
-public class DiagnosisUtil {
-    /** */
-    private Diagnosis diagnosis;
-
+public class DiagnosisUtil extends VanillaPluginUtil<Diagnosis> implements Diagnosis {
     /**
      * @param diagnosis
      */
     public DiagnosisUtil(Diagnosis diagnosis) {
-        this.diagnosis = diagnosis;
+        super(diagnosis);
     }
     
     /**
-     * Registers a monitor listening to many channels
+     * Registers a monitor listening to many channels.
      *  
      * @param listener
      * @param all
@@ -62,7 +62,7 @@ public class DiagnosisUtil {
         // Stores all items we received so far
         for (final Class<?> c : all) {
             final Class<? extends DiagnosisChannelID<Serializable>> cc = (Class<? extends DiagnosisChannelID<Serializable>>) c;
-            this.diagnosis.registerMonitor(cc, (DiagnosisMonitor<Serializable>) listener);
+            this.object.registerMonitor(cc, (DiagnosisMonitor<Serializable>) listener);
         }
     }
     
@@ -75,5 +75,31 @@ public class DiagnosisUtil {
         if(condition == null) return;
 
         registerMonitors(condition, condition.getRequiredChannels());
+    }
+
+    /* (non-Javadoc)
+     * @see net.xeoh.plugins.diagnosis.local.Diagnosis#channel(java.lang.Class, net.xeoh.plugins.diagnosis.local.options.ChannelOption[])
+     */
+    @Override
+    public <T extends Serializable> DiagnosisChannel<T> channel(Class<? extends DiagnosisChannelID<T>> channel,
+                                                                ChannelOption... options) {
+        return this.object.channel(channel, options);
+    }
+
+    /* (non-Javadoc)
+     * @see net.xeoh.plugins.diagnosis.local.Diagnosis#registerMonitor(java.lang.Class, net.xeoh.plugins.diagnosis.local.DiagnosisMonitor)
+     */
+    @Override
+    public <T extends Serializable> void registerMonitor(Class<? extends DiagnosisChannelID<T>> channel,
+                                                         DiagnosisMonitor<T> listener) {
+        this.object.registerMonitor(channel, listener);
+    }
+
+    /* (non-Javadoc)
+     * @see net.xeoh.plugins.diagnosis.local.Diagnosis#replay(java.lang.String, net.xeoh.plugins.diagnosis.local.DiagnosisMonitor)
+     */
+    @Override
+    public void replay(String file, DiagnosisMonitor<?> listener) {
+        this.object.replay(file, listener);
     }
 }

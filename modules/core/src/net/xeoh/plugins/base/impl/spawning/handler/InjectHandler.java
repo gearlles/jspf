@@ -27,15 +27,24 @@
  */
 package net.xeoh.plugins.base.impl.spawning.handler;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
+import net.xeoh.plugins.base.impl.registry.PluginClassMetaInformation.Dependency;
 import net.xeoh.plugins.base.options.getplugin.OptionCapabilities;
 
+/**
+ * Handles injections into plugins. 
+ * 
+ * @author Ralf Biedert
+ */
 public class InjectHandler extends AbstractHandler {
 
     /**
@@ -45,6 +54,7 @@ public class InjectHandler extends AbstractHandler {
         super(pluginManager);
     }
 
+    
     /*
      * (non-Javadoc)
      * 
@@ -79,7 +89,7 @@ public class InjectHandler extends AbstractHandler {
 
                 this.logger.fine("Injecting plugin by autodetection (" + typeOfField.getName() + ") into " + plugin.getClass().getName());
 
-                field.set(plugin, this.pluginManager.getPlugin(typeOfField, new OptionCapabilities(capabilities)));
+                field.set(plugin, getEntityForType(typeOfField, capabilities));
             }
         }
 
@@ -102,7 +112,7 @@ public class InjectHandler extends AbstractHandler {
                 this.logger.fine("Injecting plugin by autodetection (" + typeOfMethod.getName() + ") into " + plugin.getClass().getName());
 
                 try {
-                    method.invoke(plugin, this.pluginManager.getPlugin(typeOfMethod, new OptionCapabilities(capabilities)));
+                    method.invoke(plugin, getEntityForType(typeOfMethod, capabilities));
                 } catch (IllegalArgumentException e) {
                     this.logger.warning("Unable to inject plugin " + typeOfMethod + " into method " + method);
                     e.printStackTrace();
@@ -126,5 +136,126 @@ public class InjectHandler extends AbstractHandler {
         // TODO Auto-generated method stub
 
     }
+    
+    
+    /**
+     * Returns the true plugin interface type for something that accepts 
+     * an @InjectPlugin annotation. This is either the interface directly,
+     * or some Util that accepts a interface as the first parameter.  
+     * 
+     * @param type
+     * @return
+     */
+    Class<?> getTrueDependencyInterfaceType(Class<?> type) {
+        // If it is an interface, return that
+        if(type.isInterface()) return type;
+        
+        
+        // In all other cases, return the type of the first parameter of the given class
+        try {
+            final Constructor<?>[] declaredConstructors = type.getDeclaredConstructors();
+            for (Constructor<?> constructor : declaredConstructors) {
+                final Class<?>[] parameterTypes = constructor.getParameterTypes();
+                if(parameterTypes.length != 1) continue;
+                if(parameterTypes[0].isAssignableFrom(type)) return parameterTypes[0];
+            }
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Tries to get an entity for the requested type.
+     * 
+     * @param type
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    Plugin getEntityForType(Class<?> type, String...capabilities) {
+        // We need that anyways.
+        Plugin plugin = this.pluginManager.getPlugin((Class<Plugin>) getTrueDependencyInterfaceType(type), new OptionCapabilities(capabilities)); 
+        
+        // First check if the requested type is an anctual interface or not. If it is, we simply treat
+        // it as a plugin, if it is not (i.e., a ordinary class), we treat it as a util wrapper.
+        if(type.isInterface()) {
+            return plugin;
+        }
+        
+        // In that case, we have to inspect the first parameter of the constructor that accepts itself as a 
+        // paramter.
+        try {
+            final Constructor<?>[] constructors = type.getDeclaredConstructors();
+            for (Constructor<?> constructor : constructors) {
+                final Class<?>[] parameterTypes = constructor.getParameterTypes();
+                if(parameterTypes.length != 1) continue;
+                if(parameterTypes[0].isAssignableFrom(type)) return (Plugin) constructor.newInstance(plugin);            
+            }
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        
+        return null;
+    }
+    
+    
+    /**
+     * Returns the list of all dependencies the plugin has.
+     * 
+     * @param pluginClass
+     * @return .
+     */
+    @SuppressWarnings("unchecked")
+    public Collection<Dependency> getDependencies(Class<? extends Plugin> pluginClass) {
+        final Collection<Dependency> rval = new ArrayList<Dependency>();
 
+        // All fields we have a look at
+        final Field[] fields = pluginClass.getFields();
+        final Method[] methods = pluginClass.getMethods();
+        
+
+        // Process every field
+        for (final Field field : fields) {
+            field.setAccessible(true);
+            
+            final InjectPlugin ipannotation = field.getAnnotation(InjectPlugin.class);
+            if (ipannotation == null) continue;
+            if (ipannotation.isOptional()) continue;
+
+            final Dependency d = new Dependency();
+            d.capabilites = ipannotation.requiredCapabilities();
+            d.pluginClass = (Class<? extends Plugin>) getTrueDependencyInterfaceType(field.getType());
+            d.isOptional = ipannotation.isOptional();
+
+            rval.add(d);
+        }
+        
+        // And setter methods as well (aka Scala hack)
+        for (Method method : methods) {
+            method.setAccessible(true);
+            
+            final InjectPlugin ipannotation = method.getAnnotation(InjectPlugin.class);
+            if (ipannotation == null) continue;
+            if (ipannotation.isOptional()) continue;
+
+
+            final Dependency d = new Dependency();
+            d.capabilites = ipannotation.requiredCapabilities();
+            d.pluginClass = (Class<? extends Plugin>) getTrueDependencyInterfaceType(method.getParameterTypes()[0]);
+            d.isOptional = ipannotation.isOptional();
+
+            rval.add(d);
+        }        
+
+        return rval;
+    }
 }

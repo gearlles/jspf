@@ -63,6 +63,9 @@ public class PluginInformationImpl implements PluginInformation {
     @InjectPlugin
     public PluginManager pluginManager;
 
+    /** Dum dum dum dum .... don't touch this ... */
+    private PluginInformationImpl() { }
+    
     /*
      * (non-Javadoc)
      * 
@@ -107,7 +110,7 @@ public class PluginInformationImpl implements PluginInformation {
             break;
 
         default:
-            this.logger.info("Requested InformationItem is now known!");
+            this.logger.info("Requested InformationItem is not known!");
             break;
         }
 

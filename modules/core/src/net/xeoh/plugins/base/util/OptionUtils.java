@@ -40,10 +40,7 @@ import net.xeoh.plugins.base.Option;
  * 
  * @param <T> Type paramter.
  */
-public class OptionUtils<T extends Option> {
-
-    /** Options */
-    private T[] options;
+public class OptionUtils<T extends Option> extends VanillaUtil<T[]> {
 
     /**
      * Creates a new options array.
@@ -51,7 +48,7 @@ public class OptionUtils<T extends Option> {
      * @param options
      */
     public OptionUtils(T... options) {
-        this.options = options;
+        super(options);
     }
 
     /**
@@ -61,7 +58,7 @@ public class OptionUtils<T extends Option> {
      * @return .
      */
     public boolean contains(Class<? extends T> option) {
-        for (T t : this.options) {
+        for (T t : this.object) {
             if (t == null) continue;            
             if (option.isAssignableFrom(t.getClass())) return true;
         }
@@ -76,7 +73,7 @@ public class OptionUtils<T extends Option> {
      * @return .
      */
     public boolean containsAny(Class<? extends T>... option) {
-        for (T t : this.options) {
+        for (T t : this.object) {
             if (t == null) continue;
             for (Class<? extends T> cls : option) {
                 if (cls.isAssignableFrom(t.getClass())) return true;
@@ -97,7 +94,7 @@ public class OptionUtils<T extends Option> {
      */
     @SuppressWarnings("unchecked")
     public <O extends T> O get(Class<? extends O> option, O... deflt) {
-        for (T t : this.options) {
+        for (T t : this.object) {
             if (t == null) continue;
             if (option.isAssignableFrom(t.getClass())) return (O) t;
         }
@@ -121,7 +118,7 @@ public class OptionUtils<T extends Option> {
 
         final Collection<O> rval = new ArrayList<O>();
 
-        for (T t : this.options) {
+        for (T t : this.object) {
             if (t == null) continue;
             if (option.isAssignableFrom(t.getClass())) {
                 rval.add((O) t);
@@ -142,7 +139,7 @@ public class OptionUtils<T extends Option> {
      */
     @SuppressWarnings("unchecked")
     public <O extends T> void handle(Class<? extends O> option, OptionHandler<O> handler) {
-        for (T t : this.options) {
+        for (T t : this.object) {
             if (t == null) continue;
             if (option.isAssignableFrom(t.getClass())) {
                 handler.handle((O) t);

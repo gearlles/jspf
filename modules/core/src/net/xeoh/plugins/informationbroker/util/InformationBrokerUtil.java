@@ -31,9 +31,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
+import net.xeoh.plugins.base.util.VanillaPluginUtil;
 import net.xeoh.plugins.informationbroker.InformationBroker;
 import net.xeoh.plugins.informationbroker.InformationItem;
 import net.xeoh.plugins.informationbroker.InformationListener;
+import net.xeoh.plugins.informationbroker.options.PublishOption;
+import net.xeoh.plugins.informationbroker.options.SubscribeOption;
 import net.xeoh.plugins.informationbroker.options.subscribe.OptionInstantRequest;
 
 /**
@@ -44,17 +47,14 @@ import net.xeoh.plugins.informationbroker.options.subscribe.OptionInstantRequest
  * @author Ralf Biedert
  * @see InformationBroker
  */
-public class InformationBrokerUtil {
-    /** The information broker */
-    private final InformationBroker broker;
-
+public class InformationBrokerUtil extends VanillaPluginUtil<InformationBroker> implements InformationBroker {
     /**
      * Creates a new InformationBrokerUtil.
      * 
      * @param broker
      */
     public InformationBrokerUtil(InformationBroker broker) {
-        this.broker = broker;
+        super(broker);
     }
 
     /**
@@ -64,7 +64,7 @@ public class InformationBrokerUtil {
      * <br/>
      * 
      * <code>
-     * get(new StringID("user:name"), "unknown");
+     * get(UserName.class, "unknown");
      * </code><br/>
      * <br/>
      * 
@@ -75,15 +75,15 @@ public class InformationBrokerUtil {
      * in case neither was found.
      */
     public <T> T get(Class<? extends InformationItem<T>> id, T... dflt) {
-        final AtomicReference<T> object = new AtomicReference<T>();
-        this.broker.subscribe(id, new InformationListener<T>() {
+        final AtomicReference<T> o = new AtomicReference<T>();
+        this.object.subscribe(id, new InformationListener<T>() {
             @Override
             public void update(T item) {
-                object.set(item);
+                o.set(item);
             }
         }, new OptionInstantRequest());
 
-        final T rval = object.get();
+        final T rval = o.get();
 
         // Now check if we have a sensible return value or not, and return the default
         // if we must
@@ -119,7 +119,7 @@ public class InformationBrokerUtil {
         for (final Class<?> c : all) {
             final Class<? extends InformationItem<Object>> cc = (Class<? extends InformationItem<Object>>) c;
 
-            this.broker.subscribe(cc, new InformationListener<Object>() {
+            this.object.subscribe(cc, new InformationListener<Object>() {
                 @Override
                 public void update(Object item) {
                     // First update the map
@@ -132,5 +132,25 @@ public class InformationBrokerUtil {
                 }
             });
         }
+    }
+
+    @Override
+    public <T> void publish(Class<? extends InformationItem<T>> channel, T item,
+                            PublishOption... options) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public <T> void subscribe(Class<? extends InformationItem<T>> channel,
+                              InformationListener<T> listener, SubscribeOption... options) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void unsubscribe(InformationListener<?> listener) {
+        // TODO Auto-generated method stub
+        
     }
 }

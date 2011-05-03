@@ -1,5 +1,5 @@
 /*
- * TestInitImpl.java
+ * PluginTest.java
  *
  * Copyright (c) 2008, Ralf Biedert All rights reserved.
  *
@@ -25,29 +25,67 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package net.xeoh.plugins.testplugins.testannotations.impl;
+package net.xeoh.plugins.core;
 
-import java.lang.reflect.Method;
+import net.xeoh.plugins.base.PluginManager;
+import net.xeoh.plugins.base.impl.PluginManagerFactory;
+import net.xeoh.plugins.base.util.JSPFProperties;
+import net.xeoh.plugins.base.util.uri.ClassURI;
+import net.xeoh.plugins.testplugins.testannotations.TestAnnotations;
 
-import net.xeoh.plugins.base.annotations.PluginImplementation;
-import net.xeoh.plugins.base.annotations.configuration.ConfigurationFile;
-import net.xeoh.plugins.base.annotations.meta.Author;
-import net.xeoh.plugins.base.annotations.meta.Version;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author rb
- *
+ * 
  */
-@Author(name = "AUTHOR OK")
-@Version(version = 667)
-@ConfigurationFile(file="config.properties")
-@PluginImplementation
-public class TestAnnotationsImpl extends TestAnnotationsAbtractImpl {
-    
-    public static void main(String[] args) {
-        for (final Method method : TestAnnotationsImpl.class.getMethods()) {
-            String implementationMethodId = method.toString();
-            System.out.println(implementationMethodId);
+public class PluginManagerAnnotations {
+
+    private PluginManager pm;
+
+    /**
+     * @throws Exception
+     */
+    @Before
+    public void setUp() throws Exception {
+        final JSPFProperties props = new JSPFProperties();
+        this.pm = PluginManagerFactory.createPluginManager(props);
+        this.pm.addPluginsFrom(ClassURI.CLASSPATH);
+    }
+
+    /**
+     * @throws Exception
+     */
+    @After
+    public void tearDown() throws Exception {
+        this.pm.shutdown();
+    }
+
+    /**
+     * 
+     */
+    @Test
+    public void testAnnotations() {
+        Assert.assertNotNull(this.pm);
+
+        final TestAnnotations plugin = this.pm.getPlugin(TestAnnotations.class);
+
+        Assert.assertNotNull(plugin);
+
+        Assert.assertEquals(plugin.getInitStatus(), "INIT OK");
+        Assert.assertEquals(plugin.getInjectionStatus(), "INJECTION OK");
+
+        try {
+            Thread.sleep(100);
+        } catch (final InterruptedException e) {
+            e.printStackTrace();
         }
+
+        Assert.assertEquals(plugin.getThreadStatus(), "THREAD OK");
+        Assert.assertEquals(plugin.getTimerStatus(), "TIMER OK");
+
     }
 }

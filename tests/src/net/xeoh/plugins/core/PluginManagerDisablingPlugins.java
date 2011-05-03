@@ -83,6 +83,5 @@ public class PluginManagerDisablingPlugins {
     public void testGetPluginClassOfP() {
         final PluginInformation pi = this.pm.getPlugin(PluginInformation.class);
         final TestAnnotations ta = this.pm.getPlugin(TestAnnotations.class);
-
     }
 }

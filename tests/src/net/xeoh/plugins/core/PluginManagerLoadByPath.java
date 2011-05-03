@@ -93,7 +93,7 @@ public class PluginManagerLoadByPath {
     /**
      * 
      */
-    //@Test
+    @Test
     public void testGetPluginClassOfP() {
         Assert.assertNotNull(this.pm);
 
@@ -112,6 +112,7 @@ public class PluginManagerLoadByPath {
 
         Assert.assertEquals(plugin.getThreadStatus(), "THREAD OK");
         Assert.assertEquals(plugin.getTimerStatus(), "TIMER OK");
+
     }
 
     /**

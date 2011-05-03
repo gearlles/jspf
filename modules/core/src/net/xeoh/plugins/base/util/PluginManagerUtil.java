@@ -45,9 +45,8 @@ import net.xeoh.plugins.base.options.getplugin.PluginSelector;
  * @author Ralf Biedert
  * @see PluginManager
  */
-public class PluginManagerUtil implements PluginManager {
+public class PluginManagerUtil extends VanillaPluginUtil<PluginManager> implements PluginManager {
 
-    private final PluginManager pluginManager;
 
     /**
      * Creates a new util for the given interface.
@@ -55,11 +54,11 @@ public class PluginManagerUtil implements PluginManager {
      * @param pm The interface to create the utils for.
      */
     public PluginManagerUtil(PluginManager pm) {
-        this.pluginManager = pm;
+        super(pm);
     }
 
     /**
-     * Returns all interfaces implementing the given interface, not just the first, 
+     * Returns all plugins implementing the given interface, not just the first, 
      * 'random' match. Use this method if you want to list  the registed plugins (or 
      * select from them on your own). For example, to get all plugins implementing the 
      * <code>Chat</code> interface, write:<br/><br/>
@@ -83,6 +82,16 @@ public class PluginManagerUtil implements PluginManager {
     }
 
     /**
+     * Returns all plugins. Use this method if you want to list all registed plugins.
+     * 
+     * @see OptionPluginSelector 
+     * @return A collection of all plugins implementing the given interface.
+     */
+    public Collection<Plugin> getPlugins() {
+        return getPlugins(Plugin.class);
+    }
+    
+    /**
      * Returns all interfaces implementing the given interface AND satisfying the 
      * given plugin selector. Use this method if you want to list some of the 
      * registed plugins (or select from them on your own). 
@@ -98,7 +107,7 @@ public class PluginManagerUtil implements PluginManager {
                                                        final PluginSelector<P> selector) {
         final Collection<P> allPlugins = new ArrayList<P>();
 
-        this.pluginManager.getPlugin(plugin, new OptionPluginSelector<P>(new PluginSelector<P>() {
+        this.object.getPlugin(plugin, new OptionPluginSelector<P>(new PluginSelector<P>() {
 
             public boolean selectPlugin(final P p) {
                 if (selector.selectPlugin(p)) {
@@ -117,7 +126,7 @@ public class PluginManagerUtil implements PluginManager {
      */
     @Override
     public void addPluginsFrom(URI url, AddPluginsFromOption... options) {
-        this.pluginManager.addPluginsFrom(url, options);
+        this.object.addPluginsFrom(url, options);
     }
 
     /* (non-Javadoc)
@@ -125,7 +134,7 @@ public class PluginManagerUtil implements PluginManager {
      */
     @Override
     public <P extends Plugin> P getPlugin(Class<P> plugin, GetPluginOption... options) {
-        return this.pluginManager.getPlugin(plugin, options);
+        return this.object.getPlugin(plugin, options);
     }
 
     /* (non-Javadoc)
@@ -133,6 +142,6 @@ public class PluginManagerUtil implements PluginManager {
      */
     @Override
     public void shutdown() {
-        this.pluginManager.shutdown();
+        this.object.shutdown();
     }
 }

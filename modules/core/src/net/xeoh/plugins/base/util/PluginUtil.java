@@ -40,16 +40,14 @@ import net.xeoh.plugins.base.Plugin;
  * 
  * @author Ralf Biedert
  */
-public class PluginUtil {
-    final Plugin plugin;
-
+public class PluginUtil extends VanillaPluginUtil<Plugin> {
     /**
      * The plugin to wrap.
      * 
      * @param plugin
      */
     public PluginUtil(Plugin plugin) {
-        this.plugin = plugin;
+        super(plugin);
     }
 
     /**
@@ -103,7 +101,7 @@ public class PluginUtil {
         final Collection<Class<? extends Plugin>> rval = new ArrayList<Class<? extends Plugin>>();
 
         List<Class<?>> candidates = new ArrayList<Class<?>>();
-        Class<?> current = this.plugin.getClass();
+        Class<?> current = this.object.getClass();
 
         // Check the plugin class and all its parents what interfaces they contain 
         while (current != null && !Object.class.equals(current)) {

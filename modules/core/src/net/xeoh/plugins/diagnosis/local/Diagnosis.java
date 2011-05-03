@@ -33,6 +33,7 @@ import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.PluginConfiguration;
 import net.xeoh.plugins.base.util.JSPFProperties;
 import net.xeoh.plugins.diagnosis.local.options.ChannelOption;
+import net.xeoh.plugins.diagnosis.local.util.DiagnosisUtil;
 
 /**
  * Main enty point to the diagnosis. Allows your application to record diagnosis data to various channels, which
@@ -52,6 +53,7 @@ import net.xeoh.plugins.diagnosis.local.options.ChannelOption;
  *  
  * @author Ralf Biedert
  * @since 1.1
+ * @see DiagnosisUtil
  */
 public interface Diagnosis extends Plugin {
     /**
