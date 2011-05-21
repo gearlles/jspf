@@ -37,6 +37,7 @@ import net.xeoh.plugins.base.impl.PluginManagerImpl;
 import net.xeoh.plugins.base.impl.classpath.ClassPathManager;
 import net.xeoh.plugins.base.impl.classpath.locator.AbstractClassPathLocation;
 import net.xeoh.plugins.base.impl.classpath.locator.ClassPathLocator;
+import net.xeoh.plugins.base.options.AddPluginsFromOption;
 
 /**
  * A loader to handle classpath://* URIs.
@@ -70,18 +71,18 @@ public class InternalClasspathLoader extends AbstractLoader {
      * @see net.xeoh.plugins.base.impl.loader.AbstractLoader#loadFrom(java.net.URI)
      */
     @Override
-    public void loadFrom(URI url) {
+    public void loadFrom(URI url, AddPluginsFromOption[] options) {
 
         // Special handler to load files from the local classpath
         if (url.toString().contains("*")) {
             if (url.toString().equals("classpath://*")) {
-                loadAllClasspathPluginClasses(null);
+                loadAllClasspathPluginClasses(null, options);
             } else {
                 String pattern = url.toString();
                 pattern = pattern.replace("**", ".+");
                 pattern = pattern.replace("*", "[^\\.]*");
                 pattern = pattern.replace("classpath://", "");
-                loadAllClasspathPluginClasses(pattern);
+                loadAllClasspathPluginClasses(pattern, options);
             }
             return;
         }
@@ -111,11 +112,12 @@ public class InternalClasspathLoader extends AbstractLoader {
      * Load all plugins from the classpath that match a given pattern.
      * 
      * @param pattern
+     * @param options 
      */
-    private void loadAllClasspathPluginClasses(String pattern) {
+    private void loadAllClasspathPluginClasses(String pattern, AddPluginsFromOption[] options) {
         // Start the classpath search
         this.logger.finer("Starting classpath search with pattern " + pattern);
-
+        
         // Get all classpath locations of the current classpath
         final ClassPathManager manager = this.pluginManager.getClassPathManager();
         final ClassPathLocator locator = manager.getLocator();

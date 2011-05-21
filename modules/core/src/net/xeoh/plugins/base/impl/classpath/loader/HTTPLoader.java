@@ -33,6 +33,7 @@ import java.net.URI;
 import java.net.URL;
 
 import net.xeoh.plugins.base.impl.PluginManagerImpl;
+import net.xeoh.plugins.base.options.AddPluginsFromOption;
 
 /**
  * @author rb
@@ -61,7 +62,7 @@ public class HTTPLoader extends FileLoader {
      * @see net.xeoh.plugins.base.impl.loader.AbstractLoader#loadFrom(java.net.URI)
      */
     @Override
-    public void loadFrom(URI url) {
+    public void loadFrom(URI url, AddPluginsFromOption[] options) {
         // Handle http files
         if (url.getScheme().equals("http")) {
 

@@ -39,6 +39,7 @@ import net.xeoh.plugins.base.impl.classpath.ClassPathManager;
 import net.xeoh.plugins.base.impl.classpath.locator.AbstractClassPathLocation;
 import net.xeoh.plugins.base.impl.classpath.locator.ClassPathLocator;
 import net.xeoh.plugins.base.impl.classpath.locator.locations.JARClasspathLocation;
+import net.xeoh.plugins.base.options.AddPluginsFromOption;
 
 /**
  * @author rb
@@ -70,7 +71,7 @@ public class FileLoader extends AbstractLoader {
      * @see net.xeoh.plugins.base.impl.loader.AbstractLoader#loadFrom(java.net.URI)
      */
     @Override
-    public void loadFrom(URI url) {
+    public void loadFrom(URI url, AddPluginsFromOption[] options) {
         // If not caught by the previous handler, handle files normally.
         if (url.getScheme().equals("file")) {
 

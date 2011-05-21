@@ -37,12 +37,15 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Logger;
 
+import net.jcores.interfaces.functions.F1;
 import net.xeoh.plugins.base.PluginManager;
+import net.xeoh.plugins.base.diagnosis.channels.tracing.SpawnerTracer;
 import net.xeoh.plugins.base.impl.PluginManagerImpl;
 import net.xeoh.plugins.base.impl.classpath.cache.JARCache;
 import net.xeoh.plugins.base.util.PluginConfigurationUtil;
+import net.xeoh.plugins.diagnosis.local.Diagnosis;
+import net.xeoh.plugins.diagnosis.local.util.DiagnosisChannelUtil;
 
 /**
  * Used to find classpaths, JARs and their contents.
@@ -51,14 +54,12 @@ import net.xeoh.plugins.base.util.PluginConfigurationUtil;
  */
 public class ClassPathLocator {
 
-    /** For debugging output */
-    protected final Logger logger = Logger.getLogger(this.getClass().getName());
-
     /** Cache to lookup elements */
     private final JARCache cache;
 
     /** Mainly used to access the config. */
     private PluginManagerImpl pluginManager;
+
 
     /**
      * @param pluginManager
@@ -112,7 +113,7 @@ public class ClassPathLocator {
             // If we have no JARs, this is probably a classpath, in this case warn that
             // the method is not recommended
             if (toplevel.toString().contains("/bin/") || toplevel.toString().contains("class")) {
-                this.logger.warning("Adding plugins in 'raw' classpaths, such as 'bin/' or 'classes/' is not recommended. Please use classpath://* instead (the video is a bit outdated in this respect).");
+                System.err.println("Adding plugins in 'raw' classpaths, such as 'bin/' or 'classes/' is not recommended. Please use classpath://* instead (the video is a bit outdated in this respect).");
             }
             rval.add(AbstractClassPathLocation.newClasspathLocation(this.cache, toplevel.toString(), toplevel));
             return rval;
@@ -130,10 +131,15 @@ public class ClassPathLocator {
     /**
      * Finds all locations inside the current classpath.
      * 
+     * @param deepInspection If we should perform a deep inspection of the classpath (for dynamic loading)
+     * 
      * @return .
      */
     @SuppressWarnings("boxing")
     public Collection<AbstractClassPathLocation> findInCurrentClassPath() {
+        final DiagnosisChannelUtil<String> channel = new DiagnosisChannelUtil<String>(this.pluginManager.getPlugin(Diagnosis.class).channel(SpawnerTracer.class));
+        
+        channel.status("findinclasspath/start");
         final Collection<AbstractClassPathLocation> rval = new ArrayList<AbstractClassPathLocation>();
 
         // Get our current classpath (TODO: Better get this using
@@ -142,15 +148,34 @@ public class ClassPathLocator {
         final String blacklist[] = new PluginConfigurationUtil(this.pluginManager.getPluginConfiguration()).getString(PluginManager.class, "classpath.filter.default.pattern", "/jre/lib/;/jdk/lib/;/lib/rt.jar").split(";");
         final String pathSep = System.getProperty("path.separator");
         final String classpath = System.getProperty("java.class.path");
-        final String[] split = classpath.split(pathSep);
         final List<URL> toFilter = new ArrayList<URL>();
 
-        this.logger.fine("Finding classes in current classpath (using separator '" + pathSep + "'): " + classpath);
+        String[] classpaths = classpath.split(pathSep);
+
+        channel.status("findinclasspath/status", "pathseparator", pathSep, "blacklist", $(blacklist).join(";"));
+        
+        // Optional, our URL classloader ... In case JSPF has been loaded from an 
+        // URL class loader as well (Issue #29)
+        URLClassLoader ourloader = $(getClass().getClassLoader()).cast(URLClassLoader.class).get(0);
+        while (ourloader != ClassLoader.getSystemClassLoader() && ourloader != null) {
+            System.out.println(ourloader);
+            channel.status("findinclasspath/urlloader");
+            classpaths = $(ourloader.getURLs()).file().forEach(new F1<File, String>() {
+                @Override
+                public String f(File arg0) {
+                    System.out.println(" " + arg0);
+                    channel.status("findinclasspath/urlloader/path", "path", arg0);
+                    return arg0.getAbsolutePath();
+                }
+            }).add(classpaths).unique().array(String.class);
+            ourloader = $(ourloader.getParent()).cast(URLClassLoader.class).get(0);
+        }
+        
 
         // Check if we should filter, if yes, get topmost classloader so we know
         // what to filter out
         if (filter) {
-            this.logger.finer("Filtering default classpaths by request.");
+            channel.status("findinclasspath/filter");
 
             ClassLoader loader = ClassLoader.getSystemClassLoader();
             while (loader != null && loader.getParent() != null)
@@ -160,28 +185,22 @@ public class ClassPathLocator {
             if (loader != null && loader instanceof URLClassLoader) {
                 URL[] urls = ((URLClassLoader) loader).getURLs();
                 for (URL url : urls) {
-                    this.logger.finer("Putting '" + url + "' on our filterlist.");
+                    channel.status("findinclasspath/filter/add", "item", url);
                     toFilter.add(url);
                 }
-            }
-
-            // Print blacklisted elements
-            for (String item : blacklist) {
-                this.logger.finer("Blacklist entry: " + item);
             }
         }
 
         // Process all possible locations
-        for (String string : split) {
+        for (String string : classpaths) {
             try {
                 final URL url = new File(string).toURI().toURL();
-
-                this.logger.fine("Trying to add '" + string + "' to our classpath location.");
-                this.logger.fine("Converted to " + url);
+                
+                channel.status("findinclasspath/add", "raw", string, "url", url);
 
                 // Check if the url was already contained
                 if (toFilter.contains(url) || blacklisted(blacklist, url)) {
-                    this.logger.fine("But it was filtered because it was in our list or blacklisted.");
+                    channel.status("findinclasspath/add/blacklisted", "raw", string, "url", url);
                     continue;
                 }
 

@@ -64,12 +64,13 @@ import net.xeoh.plugins.diagnosis.local.options.status.OptionInfo;
 import net.xeoh.plugins.informationbroker.impl.InformationBrokerImpl;
 
 /**
- * In implementation of the PluginManager interface. <br>
+ * Implementation of the PluginManager interface. Do not use this class. Do not cast the PluginManager to this implementation. 
+ * Do not access any of the public methods.<br>
  * 
  * @author Ralf Biedert
  */
 @PluginImplementation
-@Version(version = 1 * Version.UNIT_MAJOR)
+@Version(version = 1 * Version.UNIT_MAJOR + 0 * Version.UNIT_MINOR + 2 * Version.UNIT_RELEASE)
 @Author(name = "Ralf Biedert")
 public class PluginManagerImpl implements PluginManager {
     /** User properties for plugin configuration */
@@ -123,7 +124,7 @@ public class PluginManagerImpl implements PluginManager {
         this.diagnosis.channel(PluginManagerTracer.class).status("add/start", new OptionInfo("url", url));
 
         // Add from the given location
-        if (!this.classPathManager.addFromLocation(url)) {
+        if (!this.classPathManager.addFromLocation(url, options)) {
             this.diagnosis.channel(PluginManagerTracer.class).status("add/nohandler", new OptionInfo("url", url));
         }
 

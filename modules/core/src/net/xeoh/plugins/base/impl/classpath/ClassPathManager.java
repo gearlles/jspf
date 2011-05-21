@@ -48,6 +48,7 @@ import net.xeoh.plugins.base.impl.classpath.loader.InternalClasspathLoader;
 import net.xeoh.plugins.base.impl.classpath.locator.AbstractClassPathLocation;
 import net.xeoh.plugins.base.impl.classpath.locator.ClassPathLocator;
 import net.xeoh.plugins.base.impl.classpath.locator.locations.JARClasspathLocation;
+import net.xeoh.plugins.base.options.AddPluginsFromOption;
 
 import org.codehaus.classworlds.ClassRealm;
 import org.codehaus.classworlds.ClassWorld;
@@ -124,9 +125,10 @@ public class ClassPathManager {
      * Locates plugins at a given source, loads them and adds them to the registry.
      * 
      * @param location
+     * @param options 
      * @return .
      */
-    public boolean addFromLocation(URI location) {
+    public boolean addFromLocation(URI location, AddPluginsFromOption[] options) {
         this.cacheLock.lock();
         try {
             // Load local cache
@@ -135,7 +137,7 @@ public class ClassPathManager {
             // Handle URI
             for (AbstractLoader loader : this.pluginLoader) {
                 if (!loader.handlesURI(location)) continue;
-                loader.loadFrom(location);
+                loader.loadFrom(location, options);
                 return true;
             }
         } finally {

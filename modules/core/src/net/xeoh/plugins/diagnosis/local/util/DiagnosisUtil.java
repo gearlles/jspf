@@ -31,13 +31,14 @@ import java.io.Serializable;
 
 import net.xeoh.plugins.base.util.VanillaPluginUtil;
 import net.xeoh.plugins.diagnosis.local.Diagnosis;
-import net.xeoh.plugins.diagnosis.local.DiagnosisChannel;
 import net.xeoh.plugins.diagnosis.local.DiagnosisChannelID;
 import net.xeoh.plugins.diagnosis.local.DiagnosisMonitor;
 import net.xeoh.plugins.diagnosis.local.options.ChannelOption;
 import net.xeoh.plugins.diagnosis.local.util.conditions.Condition;
 
 /**
+ * Wraps a {@link Diagnosis} object and provides helper functions.
+ * 
  * @author Ralf Biedert
  */
 public class DiagnosisUtil extends VanillaPluginUtil<Diagnosis> implements Diagnosis {
@@ -81,9 +82,9 @@ public class DiagnosisUtil extends VanillaPluginUtil<Diagnosis> implements Diagn
      * @see net.xeoh.plugins.diagnosis.local.Diagnosis#channel(java.lang.Class, net.xeoh.plugins.diagnosis.local.options.ChannelOption[])
      */
     @Override
-    public <T extends Serializable> DiagnosisChannel<T> channel(Class<? extends DiagnosisChannelID<T>> channel,
+    public <T extends Serializable> DiagnosisChannelUtil<T> channel(Class<? extends DiagnosisChannelID<T>> channel,
                                                                 ChannelOption... options) {
-        return this.object.channel(channel, options);
+        return new DiagnosisChannelUtil<T>(this.object.channel(channel, options));
     }
 
     /* (non-Javadoc)

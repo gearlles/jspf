@@ -34,6 +34,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.StreamCorruptedException;
 
 public class LogFileReader {
     /** */
@@ -59,6 +60,7 @@ public class LogFileReader {
                     callback.nextEntry((Entry) stream.readObject());
                 } catch(Exception e) {
                     if(e instanceof EOFException) break;
+                    if(e instanceof StreamCorruptedException) break;
                     if(e instanceof ClassNotFoundException) { System.err.println("Skipping one entry due to a class not found: " + e.getMessage()); continue; }
                     e.printStackTrace();
                 }

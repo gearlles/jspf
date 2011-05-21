@@ -31,6 +31,7 @@ import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import net.xeoh.plugins.base.util.JSPFProperties;
 import net.xeoh.plugins.base.util.uri.ClassURI;
+import net.xeoh.plugins.diagnosis.local.Diagnosis;
 import net.xeoh.plugins.remote.RemoteAPI;
 
 import org.junit.After;
@@ -59,6 +60,13 @@ public class PluginManagerLoadClasspath {
         // props.setProperty(PluginManager.class, "logging.level", "ALL");
         props.setProperty(PluginManager.class, "classpath.filter.default.pattern", "");
 
+        props.setProperty(Diagnosis.class, "recording.enabled", "true");
+        props.setProperty(Diagnosis.class, "recording.file", "diagnosis.record");
+        props.setProperty(Diagnosis.class, "recording.format", "java/serialization");
+        props.setProperty(Diagnosis.class, "analysis.stacktraces.enabled", "true");
+        props.setProperty(Diagnosis.class, "analysis.stacktraces.depth", "10000");
+
+        
         this.pm = PluginManagerFactory.createPluginManager(props);
     }
 

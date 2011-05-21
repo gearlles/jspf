@@ -50,6 +50,7 @@ import net.xeoh.plugins.base.impl.registry.PluginMetaInformation.PluginStatus;
 import net.xeoh.plugins.base.impl.registry.PluginRegistry;
 import net.xeoh.plugins.base.impl.spawning.SpawnResult;
 import net.xeoh.plugins.base.impl.spawning.Spawner;
+import net.xeoh.plugins.base.options.AddPluginsFromOption;
 import net.xeoh.plugins.base.options.getplugin.OptionCapabilities;
 import net.xeoh.plugins.base.util.PluginConfigurationUtil;
 
@@ -83,8 +84,9 @@ public abstract class AbstractLoader {
      * Load plugins from a given source
      *
      * @param uri
+     * @param options 
      */
-    public abstract void loadFrom(URI uri);
+    public abstract void loadFrom(URI uri, AddPluginsFromOption[] options);
 
     /**
      * Tries to load a class from a given source. If it is a plugin, it will be

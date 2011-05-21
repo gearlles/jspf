@@ -33,6 +33,7 @@ import net.xeoh.plugins.base.PluginConfiguration;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import net.xeoh.plugins.base.util.JSPFProperties;
+import net.xeoh.plugins.base.util.uri.ClassURI;
 import net.xeoh.plugins.testplugins.testannotations.TestAnnotations;
 
 import org.junit.Assert;
@@ -53,7 +54,7 @@ public class ShutdownTest {
     @Before
     public void setUp() throws Exception {
         JSPFProperties pros = new JSPFProperties();
-        pros.setProperty(PluginManager.class, "logging.level", "ALL");
+        pros.setProperty(PluginManager.class, "logging.level", "WARNING");
         this.pm = PluginManagerFactory.createPluginManager(pros);
         this.pm.addPluginsFrom(new URI("classpath://*"));
     }
@@ -73,6 +74,20 @@ public class ShutdownTest {
         Assert.assertNull(plugin);
         Assert.assertNull(this.pm.getPlugin(PluginConfiguration.class));
 
+    }
+
+    /**
+     * 
+     */
+    @Test
+    public void testMany() {
+        for(int i=0; i<10000; i++) {
+            System.out.println();
+            System.out.println("Run " + i);
+            PluginManager manager = PluginManagerFactory.createPluginManager();
+            manager.addPluginsFrom(ClassURI.CLASSPATH);
+            manager.shutdown();
+        }
     }
 
 }

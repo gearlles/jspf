@@ -28,7 +28,6 @@
 package net.xeoh.plugins.diagnosis;
 
 import java.io.Serializable;
-import java.net.URI;
 
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
@@ -40,6 +39,8 @@ import net.xeoh.plugins.diagnosis.local.Diagnosis;
 import net.xeoh.plugins.diagnosis.local.DiagnosisChannel;
 import net.xeoh.plugins.diagnosis.local.DiagnosisMonitor;
 import net.xeoh.plugins.diagnosis.local.DiagnosisStatus;
+import net.xeoh.plugins.diagnosis.local.options.status.OptionInfo;
+import net.xeoh.plugins.diagnosis.local.util.DiagnosisChannelUtil;
 import net.xeoh.plugins.diagnosis.local.util.DiagnosisUtil;
 import net.xeoh.plugins.diagnosis.local.util.conditions.TwoStateMatcherAND;
 import net.xeoh.plugins.diagnosis.local.util.conditions.matcher.Contains;
@@ -63,7 +64,7 @@ public class DiagnosisGeneralTest {
      * @throws Exception
      */
     @BeforeClass
-    public static void setUp() throws Exception {
+    public static void setUp() {
         final JSPFProperties props = new JSPFProperties();
 
         props.setProperty(Diagnosis.class, "recording.enabled", "true");
@@ -76,8 +77,13 @@ public class DiagnosisGeneralTest {
         // Enable and disable plugins like this:
         props.setProperty(TestAnnotationsImpl.class, "plugin.disabled", "false");
         
-        pm = PluginManagerFactory.createPluginManager(props);
-        pm.addPluginsFrom(URI.create("xxx:yyy"));
+        try {
+            pm = PluginManagerFactory.createPluginManager(props);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //pm.addPluginsFrom(URI.create("xxx:yyy"));
     }
 
     /**
@@ -112,6 +118,11 @@ public class DiagnosisGeneralTest {
         System.out.println(b-a);
         
         
+        DiagnosisChannelUtil<String> c = new DiagnosisChannelUtil<String>(null);
+        c.status("null");
+        c.status("null", "a", "b");
+        c.status("null", new OptionInfo("a", "b"));
+
     }
     
     /**
