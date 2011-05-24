@@ -131,8 +131,6 @@ public class ClassPathLocator {
     /**
      * Finds all locations inside the current classpath.
      * 
-     * @param deepInspection If we should perform a deep inspection of the classpath (for dynamic loading)
-     * 
      * @return .
      */
     @SuppressWarnings("boxing")
@@ -158,12 +156,10 @@ public class ClassPathLocator {
         // URL class loader as well (Issue #29)
         URLClassLoader ourloader = $(getClass().getClassLoader()).cast(URLClassLoader.class).get(0);
         while (ourloader != ClassLoader.getSystemClassLoader() && ourloader != null) {
-            System.out.println(ourloader);
             channel.status("findinclasspath/urlloader");
             classpaths = $(ourloader.getURLs()).file().forEach(new F1<File, String>() {
                 @Override
                 public String f(File arg0) {
-                    System.out.println(" " + arg0);
                     channel.status("findinclasspath/urlloader/path", "path", arg0);
                     return arg0.getAbsolutePath();
                 }
