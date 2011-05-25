@@ -18,6 +18,7 @@
                 </fileset>
             </classpath>
         </javac>
+
     </target>
     
     
@@ -31,6 +32,7 @@
         
         <!-- Rejar everything -->
         <jar destfile="${distribution.root}/${prefix}.${core.modulename}-${version}.jar" basedir="${build.root}/${core.modulename}/"/>
+        <jar destfile="${distribution.root}/${prefix}.${core.modulename}-${version}-sources.jar" basedir="${modules.root}/${core.modulename}/src"/>
     </target>
     
     
@@ -71,5 +73,9 @@
             </doctitle>
             <link href="http://developer.java.sun.com/developer/products/xml/docs/api/"/>
         </javadoc>
+
+        <!-- Create Javadoc jar file -->
+        <jar destfile="${distribution.root}/${prefix}.${core.modulename}-${version}-javadoc.jar" basedir="documentation/api/${core.modulename}"/>
     </target>
+
 </project>

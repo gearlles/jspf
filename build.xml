@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!-- General project description -->
-<project name="JSPF" default="all">
+<project name="JSPF" default="all" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
     
     <!-- Define different global variables -->
     <property name="prefix" value="jspf"/>
@@ -117,8 +117,32 @@
             </fileset>
         </zip>
     </target>
-    
+
+
+    <!-- Addressing Issue #26, Maven support. XML in here from Rick Herrick. Contact jspf@googlegroups.com for support. --> 
+    <target name="maven">
+        <property name="groupId" value="net.xeoh.plugins"/>
+        <property name="artifactId" value="${prefix}.core"/>
+        <property name="libraryId" value="${artifactId}-${version}"/>
+
+        <!-- The whole pom/writepom/pom thing is to work around a bug in maven-ant-tasks: http://jira.codehaus.org/browse/MANTTASKS-170.
+             When this is fixed, the writepom and second pom can be removed and the in-memory pom can be used directly as below. -->
+        <!-- artifact:pom id="corepom" groupId="${groupId}" artifactId="${artifactId}" version="${version}" name="Java Simple Plugin Framework">
+            <dependency groupId="classworlds" artifactId="classworlds" version="1.0"/>
+            <dependency groupId="jcores" artifactId="jcores" version="1.0"/>
+        </artifact:pom -->
+        <artifact:pom id="corepomgen" groupId="${groupId}" artifactId="${artifactId}" version="${version}" name="Java Simple Plugin Framework">
+            <dependency groupId="classworlds" artifactId="classworlds" version="1.0"/>
+            <dependency groupId="jcores" artifactId="jcores" version="1.0"/>
+        </artifact:pom>
+        <artifact:writepom pomRefId="corepomgen" file="${distribution.root}/pom.xml"/>
+        <artifact:pom id="corepom" file="${distribution.root}/pom.xml"/>
+        <artifact:install file="${distribution.root}/${libraryId}.jar" pomRefId="corepom">
+            <attach file="${distribution.root}/${libraryId}-sources.jar" type="jar" classifier="sources"/>
+            <attach file="${distribution.root}/${libraryId}-javadoc.jar" type="jar" classifier="javadoc"/>
+        </artifact:install>
+    </target>
+
     <!-- Pack plugins -->
     <target name="all" depends="core, diagnosisreader, remote, remote.xmlrpc, remote.xmlrpcdelight, remote.ermi, remote.lipermi, remote.javascript, remote.json, remote.discovery, documentation, preparepublish"/>
-    
 </project>
