@@ -60,8 +60,7 @@ public class InternalClasspathLoader extends AbstractLoader {
      */
     @Override
     public boolean handlesURI(URI uri) {
-        if (uri.getScheme().equals("classpath")) return true;
-
+        if (uri != null && "classpath".equals(uri.getScheme())) return true;
         return false;
     }
 
@@ -72,7 +71,6 @@ public class InternalClasspathLoader extends AbstractLoader {
      */
     @Override
     public void loadFrom(URI url, AddPluginsFromOption[] options) {
-
         // Special handler to load files from the local classpath
         if (url.toString().contains("*")) {
             if (url.toString().equals("classpath://*")) {
@@ -112,12 +110,13 @@ public class InternalClasspathLoader extends AbstractLoader {
      * Load all plugins from the classpath that match a given pattern.
      * 
      * @param pattern
-     * @param options 
+     * @param options
      */
-    private void loadAllClasspathPluginClasses(String pattern, AddPluginsFromOption[] options) {
+    private void loadAllClasspathPluginClasses(String pattern,
+                                               AddPluginsFromOption[] options) {
         // Start the classpath search
         this.logger.finer("Starting classpath search with pattern " + pattern);
-        
+
         // Get all classpath locations of the current classpath
         final ClassPathManager manager = this.pluginManager.getClassPathManager();
         final ClassPathLocator locator = manager.getLocator();

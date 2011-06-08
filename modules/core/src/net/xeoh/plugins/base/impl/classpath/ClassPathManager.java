@@ -129,6 +129,8 @@ public class ClassPathManager {
      * @return .
      */
     public boolean addFromLocation(URI location, AddPluginsFromOption[] options) {
+        if(location == null) return false;
+        
         this.cacheLock.lock();
         try {
             // Load local cache

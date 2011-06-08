@@ -122,7 +122,8 @@ public class PluginManagerImpl implements PluginManager {
      */
     public void addPluginsFrom(final URI url, final AddPluginsFromOption... options) {
         this.diagnosis.channel(PluginManagerTracer.class).status("add/start", new OptionInfo("url", url));
-
+        if(url == null) return;
+        
         // Add from the given location
         if (!this.classPathManager.addFromLocation(url, options)) {
             this.diagnosis.channel(PluginManagerTracer.class).status("add/nohandler", new OptionInfo("url", url));

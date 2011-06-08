@@ -53,8 +53,7 @@ public class HTTPLoader extends FileLoader {
      */
     @Override
     public boolean handlesURI(URI uri) {
-        if (uri.getScheme().equals("http")) return true;
-
+        if (uri != null && "http".equals(uri.getScheme())) return true;
         return false;
     }
 
@@ -64,8 +63,7 @@ public class HTTPLoader extends FileLoader {
     @Override
     public void loadFrom(URI url, AddPluginsFromOption[] options) {
         // Handle http files
-        if (url.getScheme().equals("http")) {
-
+        if ("http".equals(url.getScheme())) {
             try {
                 // download the file (TODO: download could be improved a bit ...)
                 java.io.File tmpFile = java.io.File.createTempFile("jspfplugindownload", ".jar");

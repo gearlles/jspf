@@ -155,7 +155,7 @@ public class ClassPathLocator {
         // Optional, our URL classloader ... In case JSPF has been loaded from an 
         // URL class loader as well (Issue #29)
         URLClassLoader ourloader = $(getClass().getClassLoader()).cast(URLClassLoader.class).get(0);
-        while (ourloader != ClassLoader.getSystemClassLoader() && ourloader != null) {
+        while (ourloader != null) { // Removed check for system classloader, might need its elements as well
             channel.status("findinclasspath/urlloader");
             classpaths = $(ourloader.getURLs()).file().forEach(new F1<File, String>() {
                 @Override
