@@ -129,11 +129,11 @@
              When this is fixed, the writepom and second pom can be removed and the in-memory pom can be used directly as below. -->
         <!-- artifact:pom id="corepom" groupId="${groupId}" artifactId="${artifactId}" version="${version}" name="Java Simple Plugin Framework">
             <dependency groupId="classworlds" artifactId="classworlds" version="1.0"/>
-            <dependency groupId="jcores" artifactId="jcores" version="1.0"/>
+            <dependency groupId="org.net.jcores" artifactId="jcores" version="0.8.0"/>
         </artifact:pom -->
         <artifact:pom id="corepomgen" groupId="${groupId}" artifactId="${artifactId}" version="${version}" name="Java Simple Plugin Framework">
             <dependency groupId="classworlds" artifactId="classworlds" version="1.0"/>
-            <dependency groupId="jcores" artifactId="jcores" version="1.0"/>
+            <dependency groupId="org.net.jcores" artifactId="jcores" version="0.8.0"/>
         </artifact:pom>
         <artifact:writepom pomRefId="corepomgen" file="${distribution.root}/pom.xml"/>
         <artifact:pom id="corepom" file="${distribution.root}/pom.xml"/>
