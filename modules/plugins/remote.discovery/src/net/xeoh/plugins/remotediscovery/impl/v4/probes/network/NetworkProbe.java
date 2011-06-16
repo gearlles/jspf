@@ -64,9 +64,12 @@ import net.xeoh.plugins.base.PluginConfiguration;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.util.OptionUtils;
 import net.xeoh.plugins.base.util.PluginConfigurationUtil;
+import net.xeoh.plugins.diagnosis.local.Diagnosis;
+import net.xeoh.plugins.diagnosis.local.util.DiagnosisChannelUtil;
 import net.xeoh.plugins.remote.PublishMethod;
 import net.xeoh.plugins.remotediscovery.DiscoveredPlugin;
 import net.xeoh.plugins.remotediscovery.RemoteDiscovery;
+import net.xeoh.plugins.remotediscovery.diagnosis.channel.tracer.ProbeTracer;
 import net.xeoh.plugins.remotediscovery.impl.common.discoverymanager.DiscoveryManager;
 import net.xeoh.plugins.remotediscovery.impl.common.discoverymanager.ExportInfo;
 import net.xeoh.plugins.remotediscovery.impl.common.discoverymanager.ExportedPlugin;
@@ -86,23 +89,28 @@ import org.freshvanilla.rmi.VanillaRmiServer;
 import org.freshvanilla.utils.SimpleResource;
 
 /**
- * @author rb
- *
+ * @author Ralf Biedert
  */
 public class NetworkProbe extends AbstractProbe {
+    /** Export name of the manager */
     private static final String EXPORT_NAME = "DiscoveryManager";
 
+    /** Network announce name */
     private static final String NAME = "JSPF";
 
+    /** ZeroConf type */
     private static final String TYPE = "_jspfplugindiscovery._tcp.local.";
 
     /** How we lock for the first call? */
     private String lockMode;
 
+    /** */
     private final PluginConfiguration pluginConfiguration;
 
+    /** Time to lock after startup */
     private int startupLock;
 
+    /** */
     private Timer timer;
 
     /** */
@@ -128,13 +136,16 @@ public class NetworkProbe extends AbstractProbe {
     /** */
     AtomicLong discoverThreadCounter = new AtomicLong();
 
+    /** Main JmDNS object */
     JmDNS jmdns;
 
     /** Server of the exported local manager */
     VanillaRmiServer<DiscoveryManager> localManagerExportServer;
 
-    final Logger logger = Logger.getLogger(this.getClass().getName());
-
+    /** */
+    final Logger _logger = Logger.getLogger(this.getClass().getName());
+    final DiagnosisChannelUtil<String> logger; 
+    
     long timeOfStartup;
 
     /**
@@ -144,6 +155,7 @@ public class NetworkProbe extends AbstractProbe {
         super(pluginManager);
 
         this.pluginConfiguration = pluginManager.getPlugin(PluginConfiguration.class);
+        this.logger = new DiagnosisChannelUtil<String>(pluginManager.getPlugin(Diagnosis.class).channel(ProbeTracer.class));
     }
 
     /**
@@ -160,20 +172,20 @@ public class NetworkProbe extends AbstractProbe {
     /** */
     @SuppressWarnings("boxing")
     public void backgroundInit() {
-        // (Ralf:) zomfg, this is one of the worst hacks i've done the last couple of months. Deep within  jmdns we placed a variable to
+        // (Ralf:) zomfg, this is one of the worst hacks i've done the last years. Deep within  jmdns we placed a variable to
         // override a check if it is already save to transmit something. jmDNS usually takes 5 seconds to reach that state, but that's
         // too long for us. If you set this variable the check will be skipped and the request should take place much faster.
         // Appears to work(tm).
         ServiceResolver.ANNOUNCE_OVERRIDE = true;
 
-        this.logger.fine("Staring background init");
+        this.logger.status("backgroundinit/start");
 
         final PluginConfigurationUtil pcu = new PluginConfigurationUtil(this.pluginConfiguration);
         this.startupLock = pcu.getInt(RemoteDiscovery.class, "startup.locktime", 1000);
         this.lockMode = pcu.getString(RemoteDiscovery.class, "startup.lockmode", "onepass");
 
         try {
-            this.logger.finer("Locking");
+            this.logger.status("backgroundinit/lock");
 
             this.jmdnsLock.lock();
             this.jmdns = JmDNS.create(); // Maybe init with local loopback in case no other network card is present, otherwise returns null 
@@ -182,9 +194,9 @@ public class NetworkProbe extends AbstractProbe {
 
             final int port = RemoteDiscoveryImpl.getFreePort();
             final ServiceInfo service = ServiceInfo.create(TYPE, NAME + " @" + this.timeOfStartup, port, 0, 0, EXPORT_NAME);
-            this.logger.finer("Exporting at port " + port);
+            this.logger.status("backgroundinit/export", "port", port);
             this.localManagerExportServer = Proxies.newServer(EXPORT_NAME, port, (DiscoveryManager) this.localTCPIPManager);
-            this.logger.finer("Announcing at port " + port);
+            this.logger.status("backgroundinit/announce", "port", port);
             this.jmdns.registerService(service);
 
             // Set it again, this time for the lock below
@@ -192,12 +204,14 @@ public class NetworkProbe extends AbstractProbe {
         } catch (final IOException e) {
             e.printStackTrace();
         } catch (final IllegalStateException e) {
-            this.logger.warning("Error starting discovery.");
+            this.logger.status("backgroundinit/exception/illegalstate", "message", e.getMessage());
         } finally {
-            this.logger.finer("Unlocking");
+            this.logger.status("backgroundinit/unlock");
             this.startupLatch.countDown();
             this.jmdnsLock.unlock();
         }
+        
+        this.logger.status("backgroundinit/end");
     }
 
     /**
@@ -209,11 +223,7 @@ public class NetworkProbe extends AbstractProbe {
     public Collection<DiscoveredPlugin> discover(final Class<? extends Plugin> plugin,
                                                  final DiscoverOption... options) {
 
-        this.logger.fine("Got request to discover " + plugin);
-
-        // Our options ...
-        @SuppressWarnings("unused")
-        final OptionUtils<DiscoverOption> ou = new OptionUtils<DiscoverOption>(options);
+        this.logger.status("discover/start", "plugin", plugin);
 
         // Wait until init is done ...
         try {
@@ -251,6 +261,8 @@ public class NetworkProbe extends AbstractProbe {
             }
         }
 
+        this.logger.status("discover/end");
+
         // Eventually resolve the request.
         return resolve(plugin, options);
     }
@@ -277,7 +289,7 @@ public class NetworkProbe extends AbstractProbe {
             // TODO: jmdsn can be null if no network card is present
             infos = this.jmdns.list(TYPE);
         } catch (final IllegalStateException e) {
-            this.logger.warning("Error discovering plugins ...");
+            this.logger.status("discoverthread/exception", "message", e.getMessage());
         } finally {
             this.jmdnsLock.unlock();
         }
@@ -405,14 +417,15 @@ public class NetworkProbe extends AbstractProbe {
         return true;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "boxing", "rawtypes" })
     private DiscoveryManager getRemoteProxyToDiscoveryManager(final String ip,
                                                               final int port) {
 
         final String address = ip + ":" + port;
         final int timeout = 500; // 500 ms RemoteAPIImpl if need detailed version...
 
-        this.logger.fine("Construction proxy to remote endpoint " + address);
+        this.logger.status("remoteproxytodiscovery/start", "ip", ip, "port", port);
+
         final DiscoveryManager newClient = Proxies.newClient(EXPORT_NAME, address, getClass().getClassLoader(), DiscoveryManager.class);
 
         // Execute collection asynchronously (TODO: cache pool usage could be improved)
@@ -436,14 +449,14 @@ public class NetworkProbe extends AbstractProbe {
 
             return newClient;
         } catch (final InterruptedException e) {
-            this.logger.warning("Error while waiting for a getRemoteProxy() result");
+            this.logger.status("remoteproxytodiscovery/exception/interrupted", "message", e.getMessage());
             e.printStackTrace();
         } catch (final ExecutionException e) {
-            e.printStackTrace();
+            this.logger.status("remoteproxytodiscovery/exception/executionexception", "message", e.getMessage());
         } catch (final TimeoutException e) {
-            this.logger.fine("Connection to the manager times out ... very strange.");
-            //e.printStackTrace();
+            this.logger.status("remoteproxytodiscovery/exception/timeoutexception", "message", e.getMessage());
         } catch (final SecurityException e) {
+            this.logger.status("remoteproxytodiscovery/exception/securityexception", "message", e.getMessage());
             e.printStackTrace();
         } finally {
             AccessController.doPrivileged(new PrivilegedAction<Object>() {
@@ -453,7 +466,11 @@ public class NetworkProbe extends AbstractProbe {
                     return null;
                 }
             });
+            
+            this.logger.status("remoteproxytodiscovery/end");
         }
+        
+        this.logger.status("remoteproxytodiscovery/end");        
         return null;
     }
 
@@ -489,6 +506,7 @@ public class NetworkProbe extends AbstractProbe {
      * @param options 
      * @return
      */
+    @SuppressWarnings("boxing")
     private Collection<DiscoveredPlugin> resolve(final Class<? extends Plugin> plugin,
                                                  final DiscoverOption[] options) {
 
@@ -508,7 +526,7 @@ public class NetworkProbe extends AbstractProbe {
             // No matter what happens, close the manager
             try {
                 if (mgr == null) {
-                    this.logger.info("Remote DiscoveryManager at " + endpoint.address.getHostAddress() + ":" + endpoint.port + " did not answer even though it appears to be there. .");
+                    this.logger.status("resolve/vanished", "address", endpoint.address.getHostAddress(), "port", endpoint.port);
                     continue;
                 }
 
@@ -529,10 +547,10 @@ public class NetworkProbe extends AbstractProbe {
                             final long time = (stop - start) / 1000;
 
                             // And set it
-                            NetworkProbe.this.logger.finer("Ping time to manager was " + time + "µs");
+                            NetworkProbe.this.logger.status("resolve/ping", "time", time);
                             pingTime.set((int) time);
                         } catch (final Exception e) {
-                            NetworkProbe.this.logger.info("Error getting ping time of remote manager " + endpoint.address + ":" + endpoint.port);
+                            NetworkProbe.this.logger.status("resolve/exception/ping", "message", e.getMessage());
                         }
                         return null;
                     }
@@ -577,7 +595,7 @@ public class NetworkProbe extends AbstractProbe {
                     }
                 }
             } catch (final Exception e) {
-                this.logger.warning("Error talking to " + endpoint.address + ":" + endpoint.port + ". This usually means you have some version mess on the network.");
+                this.logger.status("resolve/exception/versionmess", "address", endpoint.address, "port", endpoint.port);
                 e.printStackTrace();
             } finally {
                 // In case the manager is of the type simple resource (which it should be), try to close it.
@@ -594,7 +612,7 @@ public class NetworkProbe extends AbstractProbe {
 
                     } catch (final Exception e) {
                         e.printStackTrace();
-                        this.logger.fine("Error closing remote DiscoveryManager ...");
+                        this.logger.status("resolve/exception/close", "address", endpoint.address, "port", endpoint.port);
                     }
                 }
             }
@@ -652,7 +670,7 @@ public class NetworkProbe extends AbstractProbe {
 
         // Debug plugins
         for (final DiscoveredPlugin p : result) {
-            this.logger.fine("Returning plugin " + p);
+            this.logger.status("resolve/return/", "plugin", p.getPublishURI());
         }
 
         return result;
