@@ -27,6 +27,8 @@
  */
 package net.xeoh.plugins.base.util;
 
+import static net.jcores.CoreKeeper.$;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,6 +37,7 @@ import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.options.AddPluginsFromOption;
 import net.xeoh.plugins.base.options.GetPluginOption;
+import net.xeoh.plugins.base.options.getplugin.OptionCapabilities;
 import net.xeoh.plugins.base.options.getplugin.OptionPluginSelector;
 import net.xeoh.plugins.base.options.getplugin.PluginSelector;
 
@@ -44,6 +47,7 @@ import net.xeoh.plugins.base.options.getplugin.PluginSelector;
  *
  * @author Ralf Biedert
  * @see PluginManager
+ * @since 1.0
  */
 public class PluginManagerUtil extends VanillaPluginUtil<PluginManager> implements PluginManager {
 
@@ -119,14 +123,31 @@ public class PluginManagerUtil extends VanillaPluginUtil<PluginManager> implemen
 
         return allPlugins;
     }
+    
+    /**
+     * Returns the next best plugin implementing the requested interface and fulfilling
+     * all capabilities specified.
+     * 
+     * @since 1.0.3
+     * @param <P> Type of the requested plugin.
+     * @param plugin The interface to request. 
+     * @param cap1 The first capability to consider.
+     * @param caps The other, optional, capabilities to consider.
+     * @see OptionCapabilities  
+     * @return A collection of plugins for which the collector return true.
+     */
+    public <P extends Plugin> P getPlugin(Class<P> plugin, String cap1, String... caps) {
+        return this.object.getPlugin(plugin, new OptionCapabilities($(cap1).add(caps).unsafearray()));
+    }
 
     
     /* (non-Javadoc)
      * @see net.xeoh.plugins.base.PluginManager#addPluginsFrom(java.net.URI, net.xeoh.plugins.base.options.AddPluginsFromOption[])
      */
     @Override
-    public void addPluginsFrom(URI url, AddPluginsFromOption... options) {
+    public PluginManagerUtil addPluginsFrom(URI url, AddPluginsFromOption... options) {
         this.object.addPluginsFrom(url, options);
+        return this;
     }
 
     /* (non-Javadoc)
@@ -136,7 +157,7 @@ public class PluginManagerUtil extends VanillaPluginUtil<PluginManager> implemen
     public <P extends Plugin> P getPlugin(Class<P> plugin, GetPluginOption... options) {
         return this.object.getPlugin(plugin, options);
     }
-
+    
     /* (non-Javadoc)
      * @see net.xeoh.plugins.base.PluginManager#shutdown()
      */

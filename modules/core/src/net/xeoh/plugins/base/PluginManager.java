@@ -110,8 +110,9 @@ public interface PluginManager extends Plugin {
      * 
      * @param options A set of options supported. Please see the individual options for more
      * details.
+     * @return This plugin manager.
      */
-    public void addPluginsFrom(URI url, AddPluginsFromOption... options);
+    public PluginManager addPluginsFrom(URI url, AddPluginsFromOption... options);
 
     /**
      * Returns the next best plugin for the requested interface. The way the plugin is being 

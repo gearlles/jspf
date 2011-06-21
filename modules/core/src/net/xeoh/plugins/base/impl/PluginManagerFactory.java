@@ -36,6 +36,7 @@ import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.PluginConfiguration;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.util.JSPFProperties;
+import net.xeoh.plugins.base.util.PluginManagerUtil;
 
 /**
  * Factory class to create new {@link PluginManager}. This is your entry and starting point for 
@@ -67,6 +68,23 @@ public class PluginManagerFactory {
     }
 
     /**
+     * Creates a new {@link PluginManager} which will be wrapped in a {@link PluginManagerUtil} object, 
+     * no user configuration is used. The manager will be (almost) empty, i.e., containing no {@link Plugin}s 
+     * except some internal ones.<br/><br/>
+     * 
+     * The next thing you should probably do is adding your own plugins by calling 
+     * <code>addPluginsFrom()</code>.
+     * 
+     * @since 1.0.3
+     * @return A freshly wrapped plugin manager.
+     */
+    public static PluginManagerUtil createPluginManagerX() {
+        return new PluginManagerUtil(createPluginManager());
+    }
+
+
+    
+    /**
      * Creates a new {@link PluginManager} with a supplied user configuration. The user configuration
      * can be obtained by using the {@link PluginConfiguration}. <br/><br/>
      * 
@@ -96,6 +114,29 @@ public class PluginManagerFactory {
         return new PluginManagerImpl(initialProperties);
     }
 
+    
+    
+    /**
+     * Creates a new {@link PluginManager}, wrapped in a {@link PluginManagerUtil} object, with a supplied user 
+     * configuration. The user configuration can be obtained by using the {@link PluginConfiguration}. <br/><br/>
+     * 
+     * The next thing you should probably do is adding your own plugins by calling 
+     * <code>addPluginsFrom()</code>.<br/><br/>
+     * 
+     * In order to assist debugging, you can set one of {@link JSPFProperties}'s preferences by 
+     * calling: <code>setProperty(PluginManager.class, "logging.level", "INFO")</code> (INFO
+     * can be replaced by OFF, WARNING, INFO, FINE, FINER or FINEST respectively.
+     * 
+     * @param initialProperties Initial properties to use.
+     * @since 1.0.3
+     * @return A freshly wrapped manager with the supplied configuration. 
+     */
+    public static PluginManagerUtil createPluginManagerX(final Properties initialProperties) {
+        return new PluginManagerUtil(createPluginManager(initialProperties));
+    }
+
+    
+    
     /**
      * Sets logging to the specified level. 
      */

@@ -120,9 +120,9 @@ public class PluginManagerImpl implements PluginManager {
      * @see net.xeoh.plugins.base.PluginManager#addPluginsFrom(java.net.URI,
      * net.xeoh.plugins.base.options.AddPluginsFromOption[])
      */
-    public void addPluginsFrom(final URI url, final AddPluginsFromOption... options) {
+    public PluginManager addPluginsFrom(final URI url, final AddPluginsFromOption... options) {
         this.diagnosis.channel(PluginManagerTracer.class).status("add/start", new OptionInfo("url", url));
-        if(url == null) return;
+        if(url == null) return this;
         
         // Add from the given location
         if (!this.classPathManager.addFromLocation(url, options)) {
@@ -134,7 +134,7 @@ public class PluginManagerImpl implements PluginManager {
             this.pluginRegistry.report();
 
         this.diagnosis.channel(PluginManagerTracer.class).status("add/end", new OptionInfo("url", url));
-        return;
+        return this;
     }
 
     /*
