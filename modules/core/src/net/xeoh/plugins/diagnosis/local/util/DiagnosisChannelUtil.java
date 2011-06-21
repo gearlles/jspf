@@ -32,7 +32,7 @@ import static net.jcores.CoreKeeper.$;
 import java.io.Serializable;
 
 import net.jcores.interfaces.functions.Fn;
-import net.xeoh.plugins.base.util.VanillaUtil;
+import net.jcores.utils.VanillaUtil;
 import net.xeoh.plugins.diagnosis.local.DiagnosisChannel;
 import net.xeoh.plugins.diagnosis.local.options.StatusOption;
 import net.xeoh.plugins.diagnosis.local.options.status.OptionInfo;
