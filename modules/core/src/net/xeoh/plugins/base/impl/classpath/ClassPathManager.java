@@ -250,6 +250,14 @@ public class ClassPathManager {
                         this.logger.fine("Reason " + cause.getMessage());
                         cause = cause.getCause();
                     }
+                } catch (Exception e) {
+                    this.logger.finer("Ignored class " + name + " due to some other error");
+
+                    Throwable cause = e.getCause();
+                    while (cause != null) {
+                        this.logger.fine("Reason " + cause.getMessage());
+                        cause = cause.getCause();
+                    }
                 }
             }
         } catch (NoSuchRealmException e1) {

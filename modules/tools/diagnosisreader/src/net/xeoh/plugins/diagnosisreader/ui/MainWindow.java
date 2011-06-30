@@ -62,7 +62,7 @@ public class MainWindow extends MainWindowTemplate {
         $(this.dropPanel).onDrop(new F1<CoreObject<Object>, Void>() {
             @Override
             public Void f(final CoreObject<Object> arg0) {
-                $.oneTime(new F0() {
+                $.sys.oneTime(new F0() {
                     @Override
                     public void f() {
                         process(arg0.as(CoreFile.class));
