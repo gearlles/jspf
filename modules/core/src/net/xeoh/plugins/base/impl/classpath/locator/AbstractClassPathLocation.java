@@ -27,7 +27,7 @@
  */
 package net.xeoh.plugins.base.impl.classpath.locator;
 
-import static net.jcores.CoreKeeper.$;
+import static net.jcores.jre.CoreKeeper.$;
 
 import java.io.InputStream;
 import java.net.URI;

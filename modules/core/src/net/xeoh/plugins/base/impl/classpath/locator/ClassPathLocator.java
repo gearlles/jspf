@@ -27,7 +27,7 @@
  */
 package net.xeoh.plugins.base.impl.classpath.locator;
 
-import static net.jcores.CoreKeeper.$;
+import static net.jcores.jre.CoreKeeper.$;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import net.jcores.interfaces.functions.F1;
+import net.jcores.shared.interfaces.functions.F1;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.diagnosis.channels.tracing.SpawnerTracer;
 import net.xeoh.plugins.base.impl.PluginManagerImpl;
@@ -189,6 +189,8 @@ public class ClassPathLocator {
 
         // Process all possible locations
         for (String string : classpaths) {
+            if(string == null) continue;
+            
             try {
                 final URL url = new File(string).toURI().toURL();
                 

@@ -62,6 +62,7 @@ public class PluginConfigurationUtil extends VanillaPluginUtil<PluginConfigurati
     @SuppressWarnings("boxing")
     public int getInt(final Class<?> root, final String subkey,
                       final Integer... defautvalue) {
+        
         final String configuration = this.object.getConfiguration(root, subkey);
         if (configuration == null) {
             if (defautvalue.length >= 1) return defautvalue[0];

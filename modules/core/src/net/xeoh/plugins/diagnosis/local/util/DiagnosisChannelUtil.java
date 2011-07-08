@@ -27,12 +27,12 @@
  */
 package net.xeoh.plugins.diagnosis.local.util;
 
-import static net.jcores.CoreKeeper.$;
+import static net.jcores.jre.CoreKeeper.$;
 
 import java.io.Serializable;
 
-import net.jcores.interfaces.functions.Fn;
-import net.jcores.utils.VanillaUtil;
+import net.jcores.shared.interfaces.functions.Fn;
+import net.jcores.shared.utils.VanillaUtil;
 import net.xeoh.plugins.diagnosis.local.DiagnosisChannel;
 import net.xeoh.plugins.diagnosis.local.options.StatusOption;
 import net.xeoh.plugins.diagnosis.local.options.status.OptionInfo;

@@ -27,7 +27,7 @@
  */
 package net.xeoh.plugins.base.util;
 
-import net.jcores.utils.VanillaUtil;
+import net.jcores.shared.utils.VanillaUtil;
 import net.xeoh.plugins.base.Plugin;
 
 /**

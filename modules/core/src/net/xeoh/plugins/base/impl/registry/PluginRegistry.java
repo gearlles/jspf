@@ -27,7 +27,7 @@
  */
 package net.xeoh.plugins.base.impl.registry;
 
-import static net.jcores.CoreKeeper.$;
+import static net.jcores.jre.CoreKeeper.$;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import net.jcores.interfaces.functions.F1;
+import net.jcores.shared.interfaces.functions.F1;
 import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.impl.registry.PluginClassMetaInformation.Dependency;
 import net.xeoh.plugins.base.impl.registry.PluginClassMetaInformation.PluginClassStatus;

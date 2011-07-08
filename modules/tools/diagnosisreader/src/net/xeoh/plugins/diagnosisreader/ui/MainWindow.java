@@ -27,16 +27,16 @@
  */
 package net.xeoh.plugins.diagnosisreader.ui;
 
-import static net.jcores.CoreKeeper.$;
+import static net.jcores.jre.CoreKeeper.$;
 
 import java.io.File;
 import java.util.Collection;
 
-import net.jcores.cores.CoreFile;
-import net.jcores.cores.CoreObject;
-import net.jcores.interfaces.functions.F0;
-import net.jcores.interfaces.functions.F1;
-import net.jcores.options.OptionDropTypeFiles;
+import net.jcores.jre.cores.CoreFileJRE;
+import net.jcores.shared.cores.CoreObject;
+import net.jcores.shared.interfaces.functions.F0;
+import net.jcores.shared.interfaces.functions.F1;
+import net.jcores.shared.options.OptionDropTypeFiles;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.util.PluginManagerUtil;
 import net.xeoh.plugins.diagnosisreader.converters.Converter;
@@ -65,7 +65,7 @@ public class MainWindow extends MainWindowTemplate {
                 $.sys.oneTime(new F0() {
                     @Override
                     public void f() {
-                        process(arg0.as(CoreFile.class));
+                        process(arg0.as(CoreFileJRE.class));
                     }
                 }, 1);
                 return null;
@@ -87,7 +87,7 @@ public class MainWindow extends MainWindowTemplate {
      *
      * @param files
      */
-    void process(CoreFile files) {
+    void process(CoreFileJRE files) {
         final String selected = (String) this.converter.getSelectedItem();
         final PluginManagerUtil managerUtil = new PluginManagerUtil(this.pluginManager);
         final Collection<Converter> plugins = managerUtil.getPlugins(Converter.class);

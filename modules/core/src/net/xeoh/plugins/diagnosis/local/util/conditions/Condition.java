@@ -27,7 +27,7 @@
  */
 package net.xeoh.plugins.diagnosis.local.util.conditions;
 
-import static net.jcores.CoreKeeper.$;
+import static net.jcores.jre.CoreKeeper.$;
 
 import java.io.Serializable;
 import java.util.ArrayList;

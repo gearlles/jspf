@@ -27,7 +27,7 @@
  */
 package net.xeoh.plugins.core;
 
-import static net.jcores.CoreKeeper.$;
+import static net.jcores.jre.CoreKeeper.$;
 
 import java.io.File;
 

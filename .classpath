@@ -44,6 +44,6 @@
 	<classpathentry kind="lib" path="modules/tools/diagnosisreader/dependencies/forms.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="modules/plugins/remote.lipermi/dependencies/lipermi.mod.jar"/>
-	<classpathentry kind="lib" path="modules/core/dependencies/jcores.jar"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/jCores"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

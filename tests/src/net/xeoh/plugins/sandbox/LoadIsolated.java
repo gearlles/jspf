@@ -27,7 +27,7 @@
  */
 package net.xeoh.plugins.sandbox;
 
-import static net.jcores.CoreKeeper.$;
+import static net.jcores.jre.CoreKeeper.$;
 
 import java.io.File;
 import java.net.MalformedURLException;

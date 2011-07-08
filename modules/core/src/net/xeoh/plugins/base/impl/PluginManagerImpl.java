@@ -27,7 +27,7 @@
  */
 package net.xeoh.plugins.base.impl;
 
-import static net.jcores.CoreKeeper.$;
+import static net.jcores.jre.CoreKeeper.$;
 
 import java.net.URI;
 import java.util.Arrays;

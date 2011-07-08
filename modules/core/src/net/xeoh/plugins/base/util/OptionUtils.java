@@ -30,7 +30,7 @@ package net.xeoh.plugins.base.util;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import net.jcores.utils.VanillaUtil;
+import net.jcores.shared.utils.VanillaUtil;
 import net.xeoh.plugins.base.Option;
 
 /**
