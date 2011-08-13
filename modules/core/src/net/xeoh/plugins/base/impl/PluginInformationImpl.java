@@ -27,6 +27,8 @@
  */
 package net.xeoh.plugins.base.impl;
 
+import static net.jcores.jre.CoreKeeper.$;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -91,15 +93,20 @@ public class PluginInformationImpl implements PluginInformation {
             break;
 
         case AUTHORS:
-            Author author = plugin.getClass().getAnnotation(Author.class);
+            final Author author = plugin.getClass().getAnnotation(Author.class);
             if (author == null) break;
             rval.add(author.name());
             break;
 
         case VERSION:
-            Version version = plugin.getClass().getAnnotation(Version.class);
+            final Version version = plugin.getClass().getAnnotation(Version.class);
             if (version == null) break;
             rval.add(Integer.toString(version.version()));
+            
+            if(plugin == this.pluginManager) {
+                final String build = $(PluginManagerImpl.class.getResourceAsStream("jspf.version")).text().split("\n").hashmap().get("build");
+                rval.add("jspf.build:" + build);
+            }
             break;
 
         case CLASSPATH_ORIGIN:

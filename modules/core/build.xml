@@ -3,7 +3,8 @@
 <!-- General project description -->
 <project name="JSPF.core">
     <property name="core.modulename" value="core"/>
-    
+	
+    <tstamp/>
     
     <target name="compile.core" description="Compile the core plugin">
         <!-- Create output folder -->
@@ -25,7 +26,12 @@
     <target name="pack.core" description="Pack the core plugin with its dependencies">
         <!-- Create output folder -->
         <mkdir dir="${distribution.root}/"/>
-        
+
+    	
+    	<copy file="${modules.root}/${core.modulename}/src/net/xeoh/plugins/base/impl/jspf.version" tofile="${build.root}/${core.modulename}/net/xeoh/plugins/base/impl/jspf.version"/>
+        <replace file="${build.root}/${core.modulename}/net/xeoh/plugins/base/impl/jspf.version" token="@@@VERSION@@@" value="${version}"/>
+        <replace file="${build.root}/${core.modulename}/net/xeoh/plugins/base/impl/jspf.version" token="@@@BUILDSTAMP@@@" value="${DSTAMP}${TSTAMP}"/>     
+    	
         <!-- Unjar related -->
         <unjar dest="${build.root}/${core.modulename}/" src="${modules.root}/${core.modulename}/dependencies/classworlds-1.0.mod.jar"/>
         <unjar dest="${build.root}/${core.modulename}/" src="${modules.root}/${core.modulename}/dependencies/jcores.jar"/>

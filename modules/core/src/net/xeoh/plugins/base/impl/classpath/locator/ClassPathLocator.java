@@ -38,11 +38,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import net.jcores.shared.interfaces.functions.F1;
+import net.jcores.jre.interfaces.functions.F1;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.diagnosis.channels.tracing.SpawnerTracer;
 import net.xeoh.plugins.base.impl.PluginManagerImpl;
 import net.xeoh.plugins.base.impl.classpath.cache.JARCache;
+import net.xeoh.plugins.base.options.AddPluginsFromOption;
+import net.xeoh.plugins.base.options.addpluginsfrom.OptionSearchAround;
 import net.xeoh.plugins.base.util.PluginConfigurationUtil;
 import net.xeoh.plugins.diagnosis.local.Diagnosis;
 import net.xeoh.plugins.diagnosis.local.util.DiagnosisChannelUtil;
@@ -127,14 +129,51 @@ public class ClassPathLocator {
 
         return rval;
     }
+    
+    
+    
+    /**
+     * Gets all contributing classpaths for a given class by traversing all parent-classloader. 
+     * 
+     * @since 1.1
+     * @param clazz The class to get all classloaders for.
+     * @return A list of all contributing classloaders.
+     */
+    protected List<String> allClasspathsFor(Class<?> clazz) {
+        final DiagnosisChannelUtil<String> channel = new DiagnosisChannelUtil<String>(this.pluginManager.getPlugin(Diagnosis.class).channel(SpawnerTracer.class));
+        final List<String> rval = $.list();
+
+        channel.status("allclasspathsfor/start", "class", clazz.toString());
+        
+        // In case JSPF has been loaded from an URL class loader as well (Issue #29)
+        URLClassLoader ourloader = $(clazz.getClassLoader()).cast(URLClassLoader.class).get(0);
+        while (ourloader != null) { 
+            // Removed check for system classloader, might need its elements as well
+            channel.status("allclasspathsfor/urlloader");
+            rval.addAll($(ourloader.getURLs()).file().forEach(new F1<File, String>() {
+                @Override
+                public String f(File arg0) {
+                    channel.status("allclasspathsfor/urlloader/path", "path", arg0);
+                    return arg0.getAbsolutePath();
+                }
+            }).list());
+            ourloader = $(ourloader.getParent()).cast(URLClassLoader.class).get(0);
+        }
+        
+        channel.status("allclasspathsfor/end");
+        
+        return $(rval).unique().list();
+    }
+    
 
     /**
      * Finds all locations inside the current classpath.
+     * @param options 
      * 
-     * @return .
+     * @return A list of all locations in the current classpath.
      */
     @SuppressWarnings("boxing")
-    public Collection<AbstractClassPathLocation> findInCurrentClassPath() {
+    public Collection<AbstractClassPathLocation> findInCurrentClassPath(AddPluginsFromOption[] options) {
         final DiagnosisChannelUtil<String> channel = new DiagnosisChannelUtil<String>(this.pluginManager.getPlugin(Diagnosis.class).channel(SpawnerTracer.class));
         
         channel.status("findinclasspath/start");
@@ -148,25 +187,13 @@ public class ClassPathLocator {
         final String classpath = System.getProperty("java.class.path");
         final List<URL> toFilter = new ArrayList<URL>();
 
-        String[] classpaths = classpath.split(pathSep);
-
-        channel.status("findinclasspath/status", "pathseparator", pathSep, "blacklist", $(blacklist).join(";"));
+        // Get the starting point
+        final Class<?> startPoint = $(options).get(OptionSearchAround.class, new OptionSearchAround(getClass())).getClazz();
         
-        // Optional, our URL classloader ... In case JSPF has been loaded from an 
-        // URL class loader as well (Issue #29)
-        URLClassLoader ourloader = $(getClass().getClassLoader()).cast(URLClassLoader.class).get(0);
-        while (ourloader != null) { // Removed check for system classloader, might need its elements as well
-            channel.status("findinclasspath/urlloader");
-            classpaths = $(ourloader.getURLs()).file().forEach(new F1<File, String>() {
-                @Override
-                public String f(File arg0) {
-                    channel.status("findinclasspath/urlloader/path", "path", arg0);
-                    return arg0.getAbsolutePath();
-                }
-            }).add(classpaths).unique().array(String.class);
-            ourloader = $(ourloader.getParent()).cast(URLClassLoader.class).get(0);
-        }
-        
+        // Get all classpaths
+        List<String> classpaths = $(classpath.split(pathSep)).list();
+        classpaths.addAll(allClasspathsFor(startPoint));
+        classpaths = $(classpaths).unique().list();
 
         // Check if we should filter, if yes, get topmost classloader so we know
         // what to filter out

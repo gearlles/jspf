@@ -27,12 +27,16 @@
  */
 package net.xeoh.plugins.core;
 
+import static net.jcores.jre.CoreKeeper.$;
+
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import net.xeoh.plugins.base.Plugin;
+import net.xeoh.plugins.base.PluginInformation;
+import net.xeoh.plugins.base.PluginInformation.Information;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import net.xeoh.plugins.base.options.getplugin.OptionPluginSelector;
@@ -78,6 +82,7 @@ public class PluginManagerTest {
     public void testAddPluginsFrom() throws MalformedURLException {
         final PluginManager pm2 = PluginManagerFactory.createPluginManager();
 
+
         Assert.assertNull(pm2.getPlugin(TestAnnotations.class));
         //pm2.addPluginsFrom(new File("tests/plugins/test.coredefinition.jar").toURI());
         //pm2.addPluginsFrom(new File("tests/plugins/test.annotation.jar").toURI());
@@ -121,6 +126,19 @@ public class PluginManagerTest {
         }
 
     }
+    
+    /**
+     * 
+     */
+    @Test
+    public void testVersion() {
+        PluginInformation pi = this.pm.getPlugin(PluginInformation.class);
+        Collection<String> information = pi.getInformation(Information.VERSION, pm);
+        $(information).print();
+        
+    }
+
+    
 
     @SuppressWarnings("unchecked")
     private static Collection<Class<? extends Plugin>> getAllPluginClasses(Plugin plugin) {

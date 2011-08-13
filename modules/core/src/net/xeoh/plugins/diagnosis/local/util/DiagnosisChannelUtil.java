@@ -31,8 +31,8 @@ import static net.jcores.jre.CoreKeeper.$;
 
 import java.io.Serializable;
 
-import net.jcores.shared.interfaces.functions.Fn;
-import net.jcores.shared.utils.VanillaUtil;
+import net.jcores.jre.interfaces.functions.Fn;
+import net.jcores.jre.utils.VanillaUtil;
 import net.xeoh.plugins.diagnosis.local.DiagnosisChannel;
 import net.xeoh.plugins.diagnosis.local.options.StatusOption;
 import net.xeoh.plugins.diagnosis.local.options.status.OptionInfo;

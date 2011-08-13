@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import net.jcores.jre.cores.CoreString;
 import net.xeoh.plugins.base.impl.classpath.cache.JARCache;
 import net.xeoh.plugins.base.impl.classpath.locator.AbstractClassPathLocation;
 
@@ -85,7 +86,7 @@ public class MultiPluginClasspathLocation extends AbstractClassPathLocation {
      */
     @Override
     public URI[] getClasspathLocations() {
-        return $(this.allJARs).string().file().uri().array(URI.class);
+        return $(this.allJARs).as(CoreString.class).file().uri().array(URI.class);
     }
 
     /* (non-Javadoc)

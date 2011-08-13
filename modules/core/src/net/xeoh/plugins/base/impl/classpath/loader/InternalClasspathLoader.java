@@ -120,7 +120,7 @@ public class InternalClasspathLoader extends AbstractLoader {
         // Get all classpath locations of the current classpath
         final ClassPathManager manager = this.pluginManager.getClassPathManager();
         final ClassPathLocator locator = manager.getLocator();
-        final Collection<AbstractClassPathLocation> locations = locator.findInCurrentClassPath();
+        final Collection<AbstractClassPathLocation> locations = locator.findInCurrentClassPath(options);
 
         // Process all locations
         for (AbstractClassPathLocation location : locations) {

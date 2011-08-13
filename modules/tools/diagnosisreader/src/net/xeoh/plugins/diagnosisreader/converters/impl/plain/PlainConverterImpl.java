@@ -32,8 +32,8 @@ import static net.jcores.jre.CoreKeeper.$;
 import java.io.File;
 import java.io.Serializable;
 
-import net.jcores.jre.cores.CoreFileJRE;
-import net.jcores.shared.interfaces.functions.F1;
+import net.jcores.jre.cores.CoreFile;
+import net.jcores.jre.interfaces.functions.F1;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import net.xeoh.plugins.diagnosis.local.Diagnosis;
@@ -76,7 +76,7 @@ public class PlainConverterImpl implements Converter {
     @Override
     public void convert(File file) {
         
-        final CoreFileJRE f = $(file.getAbsolutePath() + ".txt").file().delete();
+        final CoreFile f = $(file.getAbsolutePath() + ".txt").file().delete();
         
         this.diagnosis.replay(file.getAbsolutePath(), new DiagnosisMonitor<Serializable>() {
             @Override

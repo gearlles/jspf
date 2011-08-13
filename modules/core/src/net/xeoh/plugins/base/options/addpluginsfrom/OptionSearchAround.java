@@ -1,7 +1,7 @@
 /*
- * VanillaPluginUtil.java
+ * OptionSearchAround.java
  * 
- * Copyright (c) 2011, Ralf Biedert All rights reserved.
+ * Copyright (c) 2009, Ralf Biedert All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -25,19 +25,38 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.base.util;
+package net.xeoh.plugins.base.options.addpluginsfrom;
 
-import net.jcores.jre.utils.VanillaUtil;
-import net.xeoh.plugins.base.Plugin;
+import net.xeoh.plugins.base.PluginManager;
+import net.xeoh.plugins.base.options.AddPluginsFromOption;
 
 /**
- * Vanilla wrapper for plugins.
+ * When JSPF searches for plugins, use the given class as the initial exploration 
+ * point for a classpath search. Usually this is not needed, but in very special cases
+ * (like when using an application server), it can help JSPF to find your plugins.<br/><br/>
+ * 
+ * <code>
+ * pluginManager.addPluginsFrom(uri, new OptionSearchAround(getClass()));
+ * </code>
  * 
  * @author Ralf Biedert
- * @param <T>
+ * @see PluginManager
  */
-public abstract class VanillaPluginUtil<T extends Plugin> extends VanillaUtil<T> {
-    public VanillaPluginUtil(T object) {
-        super(object);
+public class OptionSearchAround implements AddPluginsFromOption {
+    /** */
+    private static final long serialVersionUID = -8362751446846683259L;
+    
+    /** */
+    private Class<?> clazz;
+    
+    public OptionSearchAround(Class<?> clazz) {
+        this.clazz = clazz;
+    }
+    
+    /**
+     * @return the clazz
+     */
+    public Class<?> getClazz() {
+        return this.clazz;
     }
 }

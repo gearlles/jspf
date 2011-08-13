@@ -63,8 +63,9 @@ public interface PluginInformation extends Plugin {
         CAPABILITIES,
 
         /**
-         * Version of this plugin (S1). A version number of 10304 will be 
-         * returned as 1.03.04.
+         * Version of this plugin (S+). A version number of 10304 will be 
+         * returned as 1.03.04 at index 0. Additional versioning information may be 
+         * provided.
          * 
          *  @see Version
          */
