@@ -36,7 +36,7 @@ import net.jcores.jre.cores.CoreFile;
 import net.jcores.jre.cores.CoreObject;
 import net.jcores.jre.interfaces.functions.F0;
 import net.jcores.jre.interfaces.functions.F1;
-import net.jcores.jre.options.OptionDropTypeFiles;
+import net.jcores.jre.options.DropType;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.util.PluginManagerUtil;
 import net.xeoh.plugins.diagnosisreader.converters.Converter;
@@ -70,7 +70,7 @@ public class MainWindow extends MainWindowTemplate {
                 }, 1);
                 return null;
             }
-        }, new OptionDropTypeFiles());
+        }, DropType.FILES);
     }
 
     /**

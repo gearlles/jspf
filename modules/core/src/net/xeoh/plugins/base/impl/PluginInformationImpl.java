@@ -46,6 +46,7 @@ import net.xeoh.plugins.base.annotations.meta.Stateless;
 import net.xeoh.plugins.base.annotations.meta.Version;
 import net.xeoh.plugins.base.impl.registry.PluginMetaInformation;
 import net.xeoh.plugins.base.impl.registry.PluginRegistry;
+import net.xeoh.plugins.base.options.GetInformationOption;
 
 /**
  * TODO: Make plugin threadsafe
@@ -156,5 +157,13 @@ public class PluginInformationImpl implements PluginInformation {
         }
 
         return new String[0];
+    }
+
+    /* (non-Javadoc)
+     * @see net.xeoh.plugins.base.PluginInformation#getInformation(net.xeoh.plugins.base.Plugin, java.lang.Class)
+     */
+    @Override
+    public <T extends GetInformationOption> T getInformation(Plugin plugin, Class<T> query) {
+        return null;
     }
 }

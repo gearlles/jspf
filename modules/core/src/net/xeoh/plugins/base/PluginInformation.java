@@ -32,6 +32,7 @@ import java.util.Collection;
 import net.xeoh.plugins.base.annotations.Capabilities;
 import net.xeoh.plugins.base.annotations.meta.Author;
 import net.xeoh.plugins.base.annotations.meta.Version;
+import net.xeoh.plugins.base.options.GetInformationOption;
 
 /**
  * Returns various information about plugins, static as well as dynamic. 
@@ -100,4 +101,20 @@ public interface PluginInformation extends Plugin {
      * item for more details. If nothing sensible was found, an empty collection is returned.
      */
     public Collection<String> getInformation(Information item, Plugin plugin);
+    
+    /**
+     * Returns an {@link Information} item about a plugin. For example, to query a plugin's 
+     * classpath origin you would write:<br/><br/>
+     * 
+     * <code>
+     * getInformation(plugin, InformationOrigin.class);
+     * </code>
+     * 
+     * @param plugin The plugin for which the information is requested.
+     * @param query The information item to request. 
+     *
+     * @return The appropriate query result.
+     */
+    public <T extends GetInformationOption> T getInformation(Plugin plugin, Class<T> query);
+
 }

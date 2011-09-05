@@ -1,7 +1,7 @@
 /*
- * Profiling.java
+ * GetInformationOption.java
  * 
- * Copyright (c) 2011, Ralf Biedert All rights reserved.
+ * Copyright (c) 2009, Ralf Biedert All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -25,33 +25,17 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package net.xeoh.plugins.sandbox;
+package net.xeoh.plugins.base.options;
 
-import java.io.File;
-import java.net.URI;
-
-import net.xeoh.plugins.base.PluginInformation;
+import net.xeoh.plugins.base.Option;
 import net.xeoh.plugins.base.PluginManager;
-import net.xeoh.plugins.base.impl.PluginManagerFactory;
-import net.xeoh.plugins.base.options.getinformation.InformationAuthors;
-import net.xeoh.plugins.base.util.JSPFProperties;
 
-public class TestTiming {
-    public static void main(String[] args) {
-        System.out.println(new File("bin/").toURI());
-        
-        final JSPFProperties props = new JSPFProperties();
-
-        props.setProperty(PluginManager.class, "cache.enabled", "true");
-        props.setProperty(PluginManager.class, "cache.mode", "weak");
-        props.setProperty(PluginManager.class, "cache.file", "jspf.cache");
-        props.setProperty(PluginManager.class, "logging.level", "INFO");
-        props.setProperty(PluginManager.class, "classpath.filter.default.pattern", "");
-
-        PluginManager pm = PluginManagerFactory.createPluginManager(props);
-        pm.addPluginsFrom(URI.create("classpath://*"));
-        
-        final PluginInformation pi = pm.getPlugin(PluginInformation.class);
-        final InformationAuthors information = pi.getInformation(pi, InformationAuthors.class);
-    }
+/**
+ * The base type for all <code>getInformation()</code> options.
+ * 
+ * @author Ralf Biedert
+ * @see PluginManager
+ */
+public interface GetInformationOption extends Option {
+    //
 }

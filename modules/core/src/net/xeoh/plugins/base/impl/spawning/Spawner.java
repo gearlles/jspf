@@ -58,9 +58,6 @@ import net.xeoh.plugins.diagnosis.local.options.status.OptionInfo;
  * @author Ralf Biedert
  */
 public class Spawner {
-    /** */
-    //final Logger logger = Logger.getLogger(this.getClass().getName());
-
     /** Used for diagnosic messages */
     DiagnosisChannel<String> diagnosis;
 

@@ -1,19 +1,19 @@
 /*
- * Profiling.java
- * 
+ * AutoInject.java
+ *
  * Copyright (c) 2011, Ralf Biedert All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this list of
  * conditions and the following disclaimer. Redistributions in binary form must reproduce the
  * above copyright notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the author nor the names of its contributors may be used to endorse or
  * promote products derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS
  * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
@@ -23,35 +23,36 @@
  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  */
-package net.xeoh.plugins.sandbox;
+package net.xeoh.plugins.base.annotations.injections;
 
-import java.io.File;
-import java.net.URI;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import net.xeoh.plugins.base.PluginInformation;
+import net.jcores.jre.annotations.Beta;
 import net.xeoh.plugins.base.PluginManager;
-import net.xeoh.plugins.base.impl.PluginManagerFactory;
-import net.xeoh.plugins.base.options.getinformation.InformationAuthors;
-import net.xeoh.plugins.base.util.JSPFProperties;
 
-public class TestTiming {
-    public static void main(String[] args) {
-        System.out.println(new File("bin/").toURI());
-        
-        final JSPFProperties props = new JSPFProperties();
-
-        props.setProperty(PluginManager.class, "cache.enabled", "true");
-        props.setProperty(PluginManager.class, "cache.mode", "weak");
-        props.setProperty(PluginManager.class, "cache.file", "jspf.cache");
-        props.setProperty(PluginManager.class, "logging.level", "INFO");
-        props.setProperty(PluginManager.class, "classpath.filter.default.pattern", "");
-
-        PluginManager pm = PluginManagerFactory.createPluginManager(props);
-        pm.addPluginsFrom(URI.create("classpath://*"));
-        
-        final PluginInformation pi = pm.getPlugin(PluginInformation.class);
-        final InformationAuthors information = pi.getInformation(pi, InformationAuthors.class);
-    }
+/**
+ * Inject all possible instance implementing into this plugin. The same as if you annotated
+ * each variable and method with {@link InjectPlugin}.<br/><br/>
+ * 
+ * <code>
+ * &#064;AutoInject<br/>
+ * &#064;PluginImplementation<br/>
+ * public class MyPlugin ...;
+ * </code><br/><br/>
+ * 
+ * Please note: The annotated variable has to be <b>public</b>!
+ *
+ * @author Ralf Biedert
+ * @see PluginManager
+ *
+ */
+@Beta
+@Target(value = { ElementType.TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+public @interface AutoInject {
 }

@@ -173,7 +173,7 @@ public class NetworkProbe extends AbstractProbe {
     @SuppressWarnings("boxing")
     public void backgroundInit() {
         // (Ralf:) zomfg, this is one of the worst hacks i've done the last years. Deep within  jmdns we placed a variable to
-        // override a check if it is already save to transmit something. jmDNS usually takes 5 seconds to reach that state, but that's
+        // override a check if it is already safe to transmit something. jmDNS usually takes 5 seconds to reach that state, but that's
         // too long for us. If you set this variable the check will be skipped and the request should take place much faster.
         // Appears to work(tm).
         ServiceResolver.ANNOUNCE_OVERRIDE = true;
@@ -281,7 +281,7 @@ public class NetworkProbe extends AbstractProbe {
         this.discoverThreadCounter.incrementAndGet();
 
         // Create empty data.
-        ServiceInfo[] infos = new ServiceInfo[0];
+        ServiceInfo[] infos = {};
 
         // Magic: Get all network services of our type.
         try {
