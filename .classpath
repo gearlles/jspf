@@ -42,8 +42,8 @@
 	<classpathentry kind="lib" path="modules/tools/plugindoctor/dependencies/jarjar-1.0.jar"/>
 	<classpathentry kind="lib" path="tests/plugins/coolplugin.jar"/>
 	<classpathentry kind="lib" path="modules/tools/diagnosisreader/dependencies/forms.jar"/>
+	<classpathentry kind="lib" path="modules/core/dependencies/jcores.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/jCores"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/Thirdparty - Lipe RMI"/>
+	<classpathentry kind="lib" path="modules/plugins/remote.lipermi/dependencies/lipermi.mod.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
